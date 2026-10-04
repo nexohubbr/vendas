@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#8B4513">
-<title> Cocadas da Família</title>
+<title>Cocadas da Família</title>
 <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Cocadas da Família","short_name":"Cocadas","start_url":".","display":"standalone","background_color":"%23F4A460","theme_color":"%238B4513","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%238B4513%22/><text x=%2296%22 y=%22130%22 font-size=%22110%22 text-anchor=%22middle%22>🍬</text></svg>","sizes":"192x192","type":"image/svg+xml"}]}'>
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍬</text></svg>'>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -13,104 +13,100 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,sans-serif}
-  body{background:linear-gradient(135deg,#8B4513 0%,#D2691E 50%,#F4A460 100%);min-height:100vh;padding:12px;color:#3a2410}
-  .container{max-width:1200px;margin:0 auto}
-  header{background:rgba(255,255,255,0.95);border-radius:18px;padding:12px 16px;box-shadow:0 8px 25px rgba(0,0,0,0.3);margin-bottom:12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
-  header h1{font-size:1.3em;color:#8B4513}
-  .sync-status{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:0.75em;font-weight:bold}
-  .sync-online{background:#d4edda;color:#155724}
-  .sync-offline{background:#fff3cd;color:#856404}
-  .sync-dot{width:8px;height:8px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-  .user-select{display:flex;align-items:center;gap:6px;background:#fff8dc;padding:5px 10px;border-radius:25px;border:2px solid #D2691E;font-size:0.85em}
-  .user-select select{border:none;background:transparent;font-weight:bold;color:#8B4513;cursor:pointer;outline:none;font-size:0.95em}
-  .tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:5px;margin-bottom:12px}
-  .tab{padding:9px 6px;background:rgba(255,255,255,0.7);border:none;border-radius:10px;font-size:0.8em;font-weight:bold;cursor:pointer;color:#8B4513;transition:all 0.2s}
-  .tab:hover{background:rgba(255,255,255,0.9)}
-  .tab.active{background:linear-gradient(135deg,#D2691E,#8B4513);color:#fff;box-shadow:0 4px 12px rgba(139,69,19,0.4)}
-  .panel{background:rgba(255,255,255,0.95);border-radius:18px;padding:18px;box-shadow:0 8px 25px rgba(0,0,0,0.2);display:none}
-  .panel.active{display:block;animation:fadeIn 0.3s}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  h2{color:#8B4513;margin-bottom:12px;border-bottom:3px solid #F4A460;padding-bottom:6px;font-size:1.2em}
-  h3{color:#D2691E;margin:12px 0 8px;font-size:1.05em}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-  .card{background:linear-gradient(135deg,#fff8dc,#ffefd5);border-radius:13px;padding:13px;border:2px solid #F4A460;transition:transform 0.2s}
-  .card:hover{transform:translateY(-2px);box-shadow:0 6px 15px rgba(0,0,0,0.12)}
-  .card.vendido{background:linear-gradient(135deg,#d3d3d3,#a9a9a9);opacity:0.75;border-color:#888}
-  .card .tipo{font-size:1.1em;font-weight:bold;color:#8B4513}
-  .card .remessa{font-size:0.75em;color:#666;margin:2px 0}
-  .card .preco{font-size:0.95em;font-weight:bold;color:#D2691E;margin:4px 0}
-  .status{display:inline-block;padding:2px 8px;border-radius:15px;font-size:0.7em;font-weight:bold}
-  .status.disponivel{background:#90EE90;color:#006400}
-  .status.vendido{background:#FF6B6B;color:#fff}
-  .btn{padding:7px 12px;border:none;border-radius:9px;cursor:pointer;font-weight:bold;font-size:0.85em;transition:all 0.2s}
-  .btn-primary{background:linear-gradient(135deg,#D2691E,#8B4513);color:#fff}
-  .btn-success{background:#28a745;color:#fff}
-  .btn-danger{background:#dc3545;color:#fff}
-  .btn-warning{background:#ffc107;color:#333}
-  .btn-info{background:#17a2b8;color:#fff}
-  .btn-sm{padding:4px 8px;font-size:0.75em}
-  .btn:hover{transform:scale(1.04)}
-  .form-group{margin-bottom:8px}
-  .form-group label{display:block;font-weight:bold;margin-bottom:3px;color:#8B4513;font-size:0.85em}
-  .form-group input,.form-group select,.form-group textarea{width:100%;padding:7px;border:2px solid #F4A460;border-radius:7px;font-size:0.9em;background:#fff}
-  .form-group input:focus,.form-group select:focus{outline:none;border-color:#D2691E}
-  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .form-row-4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-  .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-  .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;justify-content:center;align-items:center;padding:12px}
-  .modal-overlay.active{display:flex}
-  .modal{background:#fff;border-radius:18px;padding:18px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
-  .modal-actions{display:flex;gap:6px;margin-top:12px;justify-content:flex-end;flex-wrap:wrap}
-  table{width:100%;border-collapse:collapse;margin-top:8px;background:#fff;border-radius:8px;overflow:hidden;font-size:0.8em}
-  th{background:linear-gradient(135deg,#D2691E,#8B4513);color:#fff;padding:6px;text-align:left}
-  td{padding:6px;border-bottom:1px solid #eee}
-  tr:hover{background:#fff8dc}
-  .badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:0.7em;font-weight:bold}
-  .badge-fiado{background:#FFC107;color:#333}
-  .badge-avista{background:#28a745;color:#fff}
-  .badge-pix{background:#17a2b8;color:#fff}
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
-  .stat-card{background:linear-gradient(135deg,#fff8dc,#ffefd5);padding:12px;border-radius:10px;border-left:4px solid #D2691E}
-  .stat-card .valor{font-size:1.3em;font-weight:bold;color:#8B4513}
-  .stat-card .label{color:#666;font-size:0.75em;margin-top:2px}
-  .filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:end;background:#fff8dc;padding:10px;border-radius:10px}
-  .filter-bar .form-group{margin:0;flex:1;min-width:120px}
-  .alert{padding:8px;border-radius:8px;margin-bottom:10px;background:#fff3cd;border-left:4px solid #ffc107;font-size:0.85em}
-  .alert-info{background:#d1ecf1;border-color:#17a2b8}
-  .alert-success{background:#d4edda;border-color:#28a745}
-  .alert-danger{background:#f8d7da;border-color:#dc3545}
-  .lucro-box{background:linear-gradient(135deg,#fff8dc,#ffefd5);border-radius:13px;padding:15px;margin-bottom:12px;border:2px solid #D2691E}
-  .lucro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:10px 0}
-  .lucro-item{background:#fff;padding:8px;border-radius:8px;text-align:center;border:2px solid #F4A460}
-  .lucro-item .v{font-size:1.1em;font-weight:bold;color:#8B4513}
-  .lucro-item .l{font-size:0.75em;color:#666;margin-top:2px}
-  .prolabore-item{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:8px 12px;border-radius:8px;margin-bottom:5px;border-left:4px solid #28a745}
-  .prolabore-item .nome{font-weight:bold;color:#8B4513;font-size:0.9em}
-  .prolabore-item .valor{font-size:1em;font-weight:bold;color:#28a745}
-  .prolabore-item .perc{font-size:0.8em;color:#666}
-  .export-bar{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
-  .search-box{position:relative}
-  .search-box input{padding-left:28px!important}
-  .search-box::before{content:'🔍';position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:0.8em}
-  .preco-tipo{background:#fff;padding:8px;border-radius:8px;border:2px solid #F4A460}
-  .preco-tipo label{font-size:0.8em!important}
-  .preco-tipo input{font-size:0.95em!important;font-weight:bold}
-  .item-acoes{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
-  .remessa-card{background:linear-gradient(135deg,#fff8dc,#ffefd5);border-radius:13px;padding:14px;border:2px solid #F4A460;margin-bottom:10px}
-  .remessa-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
-  .remessa-stats{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;font-size:0.9em}
-  .remessa-tipos{font-size:0.8em;color:#666;margin-top:4px}
-  .remessa-acoes{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
-  .pacote-badge{background:#8B4513;color:#fff;padding:2px 6px;border-radius:8px;font-size:0.7em;font-weight:bold}
-  @media(max-width:600px){
-    header h1{font-size:1.1em}
-    .form-row,.form-row-4,.form-row-2{grid-template-columns:1fr 1fr}
-    .tab{font-size:0.7em;padding:7px 3px}
-    table{font-size:0.7em}
-    th,td{padding:4px}
-  }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,sans-serif}
+body{background:linear-gradient(135deg,#8B4513 0%,#D2691E 50%,#F4A460 100%);min-height:100vh;padding:12px;color:#3a2410}
+.container{max-width:1200px;margin:0 auto}
+header{background:rgba(255,255,255,0.95);border-radius:18px;padding:12px 16px;box-shadow:0 8px 25px rgba(0,0,0,0.3);margin-bottom:12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
+header h1{font-size:1.3em;color:#8B4513}
+.sync-status{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:0.75em;font-weight:bold}
+.sync-online{background:#d4edda;color:#155724}
+.sync-offline{background:#fff3cd;color:#856404}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.user-select{display:flex;align-items:center;gap:6px;background:#fff8dc;padding:5px 10px;border-radius:25px;border:2px solid #D2691E;font-size:0.85em}
+.user-select select{border:none;background:transparent;font-weight:bold;color:#8B4513;cursor:pointer;outline:none;font-size:0.95em}
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:5px;margin-bottom:12px}
+.tab{padding:9px 6px;background:rgba(255,255,255,0.7);border:none;border-radius:10px;font-size:0.8em;font-weight:bold;cursor:pointer;color:#8B4513;transition:all 0.2s}
+.tab:hover{background:rgba(255,255,255,0.9)}
+.tab.active{background:linear-gradient(135deg,#D2691E,#8B4513);color:#fff;box-shadow:0 4px 12px rgba(139,69,19,0.4)}
+.panel{background:rgba(255,255,255,0.95);border-radius:18px;padding:18px;box-shadow:0 8px 25px rgba(0,0,0,0.2);display:none}
+.panel.active{display:block;animation:fadeIn 0.3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+h2{color:#8B4513;margin-bottom:12px;border-bottom:3px solid #F4A460;padding-bottom:6px;font-size:1.2em}
+h3{color:#D2691E;margin:12px 0 8px;font-size:1.05em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.card{background:linear-gradient(135deg,#fff8dc,#ffefd5);border-radius:13px;padding:13px;border:2px solid #F4A460;transition:transform 0.2s}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 15px rgba(0,0,0,0.12)}
+.card.vendido{background:linear-gradient(135deg,#d3d3d3,#a9a9a9);opacity:0.75;border-color:#888}
+.card .tipo{font-size:1.1em;font-weight:bold;color:#8B4513}
+.card .remessa{font-size:0.75em;color:#666;margin:2px 0}
+.card .preco{font-size:0.95em;font-weight:bold;color:#D2691E;margin:4px 0}
+.status{display:inline-block;padding:2px 8px;border-radius:15px;font-size:0.7em;font-weight:bold}
+.status.disponivel{background:#90EE90;color:#006400}
+.status.vendido{background:#FF6B6B;color:#fff}
+.btn{padding:7px 12px;border:none;border-radius:9px;cursor:pointer;font-weight:bold;font-size:0.85em;transition:all 0.2s;margin:2px}
+.btn-primary{background:linear-gradient(135deg,#D2691E,#8B4513);color:#fff}
+.btn-success{background:#28a745;color:#fff}
+.btn-danger{background:#dc3545;color:#fff}
+.btn-warning{background:#ffc107;color:#333}
+.btn-info{background:#17a2b8;color:#fff}
+.btn-sm{padding:4px 8px;font-size:0.75em}
+.btn:hover{transform:scale(1.04)}
+.form-group{margin-bottom:8px}
+.form-group label{display:block;font-weight:bold;margin-bottom:3px;color:#8B4513;font-size:0.85em}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:7px;border:2px solid #F4A460;border-radius:7px;font-size:0.9em;background:#fff}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:#D2691E}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form-row-4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;justify-content:center;align-items:center;padding:12px}
+.modal-overlay.active{display:flex}
+.modal{background:#fff;border-radius:18px;padding:18px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-actions{display:flex;gap:6px;margin-top:12px;justify-content:flex-end;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;margin-top:8px;background:#fff;border-radius:8px;overflow:hidden;font-size:0.8em}
+th{background:linear-gradient(135deg,#D2691E,#8B4513);color:#fff;padding:6px;text-align:left}
+td{padding:6px;border-bottom:1px solid #eee}
+tr:hover{background:#fff8dc}
+.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:0.7em;font-weight:bold}
+.badge-fiado{background:#FFC107;color:#333}
+.badge-avista{background:#28a745;color:#fff}
+.badge-pix{background:#17a2b8;color:#fff}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
+.stat-card{background:linear-gradient(135deg,#fff8dc,#ffefd5);padding:12px;border-radius:10px;border-left:4px solid #D2691E}
+.stat-card .valor{font-size:1.3em;font-weight:bold;color:#8B4513}
+.stat-card .label{color:#666;font-size:0.75em;margin-top:2px}
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:end;background:#fff8dc;padding:10px;border-radius:10px}
+.filter-bar .form-group{margin:0;flex:1;min-width:120px}
+.alert{padding:8px;border-radius:8px;margin-bottom:10px;background:#fff3cd;border-left:4px solid #ffc107;font-size:0.85em}
+.alert-info{background:#d1ecf1;border-color:#17a2b8}
+.alert-success{background:#d4edda;border-color:#28a745}
+.alert-danger{background:#f8d7da;border-color:#dc3545}
+.lucro-box{background:linear-gradient(135deg,#fff8dc,#ffefd5);border-radius:13px;padding:15px;margin-bottom:12px;border:2px solid #D2691E}
+.lucro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:10px 0}
+.lucro-item{background:#fff;padding:8px;border-radius:8px;text-align:center;border:2px solid #F4A460}
+.lucro-item .v{font-size:1.1em;font-weight:bold;color:#8B4513}
+.lucro-item .l{font-size:0.75em;color:#666;margin-top:2px}
+.prolabore-item{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:8px 12px;border-radius:8px;margin-bottom:5px;border-left:4px solid #28a745}
+.prolabore-item .nome{font-weight:bold;color:#8B4513;font-size:0.9em}
+.prolabore-item .valor{font-size:1em;font-weight:bold;color:#28a745}
+.prolabore-item .perc{font-size:0.8em;color:#666}
+.export-bar{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.search-box{position:relative}
+.search-box input{padding-left:28px!important}
+.search-box::before{content:'';position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:0.8em}
+.preco-tipo{background:#fff;padding:8px;border-radius:8px;border:2px solid #F4A460}
+.remessa-card{background:linear-gradient(135deg,#fff8dc,#ffefd5);border-radius:13px;padding:14px;border:2px solid #F4A460;margin-bottom:10px}
+.remessa-stats{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;font-size:0.9em}
+.remessa-tipos{font-size:0.8em;color:#666;margin-top:4px}
+.remessa-acoes{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.pacote-badge{background:#8B4513;color:#fff;padding:2px 6px;border-radius:8px;font-size:0.7em;font-weight:bold}
+@media(max-width:600px){
+header h1{font-size:1.1em}
+.form-row,.form-row-4,.form-row-2{grid-template-columns:1fr 1fr}
+.tab{font-size:0.7em;padding:7px 3px}
+table{font-size:0.7em}
+th,td{padding:4px}
+}
 </style>
 </head>
 <body>
@@ -120,10 +116,10 @@
       <h1>🍬 Cocadas da Família</h1>
       <span id="syncStatus" class="sync-status sync-offline"><span class="sync-dot"></span><span id="syncText">Offline (Local)</span></span>
     </div>
-    <div class="user-select">👤<select id="userSelect"><option value="">Selecione</option><option value="Luciano">Luciano (Pai)</option><option value="Verônica">Verônica (Mãe)</option><option value="Luciano Junior">Luciano Junior</option><option value="Alexandre">Alexandre</option></select></div>
+    <div class="user-select"><select id="userSelect"><option value="">Selecione</option><option value="Luciano">Luciano (Pai)</option><option value="Verônica">Verônica (Mãe)</option><option value="Luciano Junior">Luciano Junior</option><option value="Alexandre">Alexandre</option></select></div>
   </header>
   <div class="tabs">
-    <button class="tab active" data-tab="vender">🛒 Vender</button>
+    <button class="tab active" data-tab="vender"> Vender</button>
     <button class="tab" data-tab="remessas">📦 Remessas</button>
     <button class="tab" data-tab="relatorios">📊 Relatórios</button>
     <button class="tab" data-tab="fiados">💰 Fiados</button>
@@ -156,13 +152,13 @@
       <div class="form-row-4">
         <div class="form-group"><label>🥥 Coco (qtd)</label><input type="number" id="qtdCoco" min="0" value="0"></div>
         <div class="form-group"><label>🍫 Cacau (qtd)</label><input type="number" id="qtdCacau" min="0" value="0"></div>
-        <div class="form-group"><label> Banana (qtd)</label><input type="number" id="qtdBanana" min="0" value="0"></div>
+        <div class="form-group"><label>🍌 Banana (qtd)</label><input type="number" id="qtdBanana" min="0" value="0"></div>
         <div class="form-group"><label>🥜 Paçoca (qtd)</label><input type="number" id="qtdPacoca" min="0" value="0"></div>
       </div>
       <h4 style="color:#8B4513;margin:8px 0">💰 Preço de venda por tipo:</h4>
       <div class="form-row-4">
-        <div class="form-group preco-tipo"><label>🥥 Coco (R$)</label><input type="number" id="precoCoco" step="0.01" min="0" placeholder="2.00"></div>
-        <div class="form-group preco-tipo"><label> Cacau (R$)</label><input type="number" id="precoCacau" step="0.01" min="0" placeholder="2.50"></div>
+        <div class="form-group preco-tipo"><label> Coco (R$)</label><input type="number" id="precoCoco" step="0.01" min="0" placeholder="2.00"></div>
+        <div class="form-group preco-tipo"><label>🍫 Cacau (R$)</label><input type="number" id="precoCacau" step="0.01" min="0" placeholder="2.50"></div>
         <div class="form-group preco-tipo"><label>🍌 Banana (R$)</label><input type="number" id="precoBanana" step="0.01" min="0" placeholder="2.50"></div>
         <div class="form-group preco-tipo"><label>🥜 Paçoca (R$)</label><input type="number" id="precoPacoca" step="0.01" min="0" placeholder="1.00"></div>
       </div>
@@ -175,7 +171,7 @@
 
   <!-- RELATÓRIOS -->
   <div class="panel" id="panel-relatorios">
-    <h2> Relatórios de Vendas</h2>
+    <h2>📊 Relatórios de Vendas</h2>
     <div class="stats" id="statsGerais"></div>
     <div class="filter-bar">
       <div class="form-group search-box"><label>Buscar cliente</label><input type="text" id="filtroCliente" placeholder="Nome..."></div>
@@ -187,10 +183,10 @@
       <button class="btn btn-primary" onclick="renderRelatorios()">🔍 Filtrar</button>
     </div>
     <div class="export-bar">
-      <button class="btn btn-danger" onclick="exportarPDF()"> PDF Geral</button>
-      <button class="btn btn-success" onclick="exportarExcel()"> Excel</button>
+      <button class="btn btn-danger" onclick="exportarPDF()">📄 PDF Geral</button>
+      <button class="btn btn-success" onclick="exportarExcel()">📊 Excel</button>
       <button class="btn btn-info" onclick="exportarPDFVendedor()">👤 PDF Vendedor</button>
-      <button class="btn btn-warning" onclick="exportarPDFProduto()">🍬 PDF Produto</button>
+      <button class="btn btn-warning" onclick="exportarPDFProduto()"> PDF Produto</button>
     </div>
     <div style="overflow-x:auto"><table id="tabelaVendas"><thead><tr><th>Data</th><th>Vendedor</th><th>Produto</th><th>Remessa</th><th>Comprador</th><th>Valor</th><th>Pagto</th><th>Ações</th></tr></thead><tbody></tbody></table></div>
   </div>
@@ -200,7 +196,7 @@
     <h2>💰 Controle de Fiados</h2>
     <div class="filter-bar">
       <div class="form-group search-box"><label>Buscar devedor</label><input type="text" id="filtroFiadoCliente" placeholder="Nome..."></div>
-      <button class="btn btn-primary" onclick="renderFiados()">🔍 Filtrar</button>
+      <button class="btn btn-primary" onclick="renderFiados()"> Filtrar</button>
     </div>
     <div id="listaFiados"></div>
   </div>
@@ -219,7 +215,7 @@
 
   <!-- CONFIG -->
   <div class="panel" id="panel-config">
-    <h2>⚙️ Configurações</h2>
+    <h2>️ Configurações</h2>
     <div class="lucro-box">
       <h3>🔥 Sincronização Firebase</h3>
       <p style="font-size:0.85em;margin:6px 0">Status: <span id="configSyncStatus">Offline</span></p>
@@ -280,10 +276,10 @@
       <div class="form-group preco-tipo"><label>🥥 Coco (R$)</label><input type="number" id="editPrecoCoco" step="0.01" min="0"></div>
       <div class="form-group preco-tipo"><label>🍫 Cacau (R$)</label><input type="number" id="editPrecoCacau" step="0.01" min="0"></div>
       <div class="form-group preco-tipo"><label>🍌 Banana (R$)</label><input type="number" id="editPrecoBanana" step="0.01" min="0"></div>
-      <div class="form-group preco-tipo"><label>🥜 Paçoca (R$)</label><input type="number" id="editPrecoPacoca" step="0.01" min="0"></div>
+      <div class="form-group preco-tipo"><label> Paçoca (R$)</label><input type="number" id="editPrecoPacoca" step="0.01" min="0"></div>
     </div>
     <div class="form-group"><label>💵 Custo total (R$)</label><input type="number" id="editCusto" step="0.01" min="0"></div>
-    <div class="alert alert-info" style="font-size:0.8em">️ Alterar o preço só afeta vendas <b>futuras</b>. Vendas já feitas mantêm o valor original.</div>
+    <div class="alert alert-info" style="font-size:0.8em">⚠️ Alterar o preço só afeta vendas <b>futuras</b>. Vendas já feitas mantêm o valor original.</div>
     <div class="modal-actions">
       <button class="btn btn-danger" onclick="fecharEditar()">Cancelar</button>
       <button class="btn btn-success" onclick="salvarEdicao()">💾 Salvar</button>
@@ -303,520 +299,1211 @@
 <input type="file" id="fileImport" accept=".json" style="display:none">
 
 <script>
-let state={usuario:'',remessas:[],vendas:[],percentuais:{Luciano:20,Verônica:0,Alexandre:32,'Luciano Junior':32,Caixa:16},firebaseConfig:null};
-let db=null,unsubscribe=[],firebaseAtivo=false,itemSelecionado=null,editandoRemessaId=null,vendaPacote=false;
+// ============ ESTADO ============
+var state = {
+  usuario: '',
+  remessas: [],
+  vendas: [],
+  percentuais: {Luciano: 20, Verônica: 0, Alexandre: 32, 'Luciano Junior': 32, Caixa: 16},
+  firebaseConfig: null
+};
+var db = null;
+var unsubscribe = [];
+var firebaseAtivo = false;
+var itemSelecionado = null;
+var editandoRemessaId = null;
+var vendaPacote = false;
 
-function saveLocal(){localStorage.setItem('cocadasApp',JSON.stringify(state))}
-function loadLocal(){const d=localStorage.getItem('cocadasApp');if(d)state={...state,...JSON.parse(d)}}
+// ============ STORAGE ============
+function saveLocal() {
+  localStorage.setItem('cocadasApp', JSON.stringify(state));
+}
+function loadLocal() {
+  var d = localStorage.getItem('cocadasApp');
+  if (d) {
+    try {
+      var parsed = JSON.parse(d);
+      state.usuario = parsed.usuario || '';
+      state.remessas = parsed.remessas || [];
+      state.vendas = parsed.vendas || [];
+      if (parsed.percentuais) state.percentuais = parsed.percentuais;
+      if (parsed.firebaseConfig) state.firebaseConfig = parsed.firebaseConfig;
+    } catch(e) {
+      console.error('Erro ao carregar dados:', e);
+    }
+  }
+}
 loadLocal();
 
-// FIREBASE
-async function initFirebase(){
-  if(!state.firebaseConfig)return;
-  try{
-    if(typeof firebase==='undefined'){alert('Firebase não carregou. Verifique a internet.');return}
-    if(firebase.apps.length)await firebase.app().delete();
+// ============ FIREBASE ============
+function initFirebase() {
+  if (!state.firebaseConfig) return;
+  try {
+    if (typeof firebase === 'undefined') {
+      alert('Firebase não carregou. Verifique a internet.');
+      return;
+    }
+    if (firebase.apps.length) {
+      firebase.app().delete();
+    }
     firebase.initializeApp(state.firebaseConfig);
-    db=firebase.firestore();firebaseAtivo=true;
+    db = firebase.firestore();
+    firebaseAtivo = true;
     atualizarStatusSync(true);
+    
     unsubscribe.push(
-      db.collection('remessas').onSnapshot(s=>{state.remessas=s.docs.map(d=>({id:d.id,...d.data()}));renderTudo()}),
-      db.collection('vendas').onSnapshot(s=>{state.vendas=s.docs.map(d=>({id:d.id,...d.data()}));renderTudo()}),
-      db.collection('config').doc('principal').onSnapshot(doc=>{if(doc.exists){const c=doc.data();if(c.percentuais)state.percentuais=c.percentuais;renderLucros();renderConfig()}})
+      db.collection('remessas').onSnapshot(function(snap) {
+        state.remessas = snap.docs.map(function(d) {
+          var data = d.data();
+          data.id = d.id;
+          return data;
+        });
+        renderTudo();
+      }),
+      db.collection('vendas').onSnapshot(function(snap) {
+        state.vendas = snap.docs.map(function(d) {
+          var data = d.data();
+          data.id = d.id;
+          return data;
+        });
+        renderTudo();
+      }),
+      db.collection('config').doc('principal').onSnapshot(function(doc) {
+        if (doc.exists) {
+          var c = doc.data();
+          if (c.percentuais) state.percentuais = c.percentuais;
+          renderLucros();
+          renderConfig();
+        }
+      })
     );
-  }catch(e){console.error(e);alert('Erro Firebase: '+e.message);firebaseAtivo=false;atualizarStatusSync(false)}
+  } catch(e) {
+    console.error(e);
+    alert('Erro Firebase: ' + e.message);
+    firebaseAtivo = false;
+    atualizarStatusSync(false);
+  }
 }
-function atualizarStatusSync(on){
-  const el=document.getElementById('syncStatus'),txt=document.getElementById('syncText'),cfg=document.getElementById('configSyncStatus');
-  if(on){el.className='sync-status sync-online';txt.textContent='Online (Firebase)';if(cfg)cfg.textContent='✅ Online'}
-  else{el.className='sync-status sync-offline';txt.textContent=firebaseAtivo?'Sincronizando...':'Offline (Local)';if(cfg)cfg.textContent='❌ Offline'}
-}
-async function salvarFirebase(){
-  const t=document.getElementById('firebaseConfig').value.trim();
-  if(!t){alert('Cole as credenciais!');return}
-  try{
-    const cfg=JSON.parse(t);
-    if(!cfg.apiKey||!cfg.projectId)throw new Error('JSON inválido');
-    state.firebaseConfig=cfg;saveLocal();await initFirebase();alert('✅ Firebase conectado!');
-  }catch(e){alert('❌ Erro: '+e.message)}
-}
-async function desconectarFirebase(){
-  unsubscribe.forEach(u=>u());unsubscribe=[];
-  if(firebase.apps.length)await firebase.app().delete();
-  firebaseAtivo=false;db=null;state.firebaseConfig=null;saveLocal();atualizarStatusSync(false);alert('Desconectado.');
-}
-async function dbAdd(col,data){if(firebaseAtivo&&db){const r=await db.collection(col).add(data);return r.id}return Date.now().toString()+Math.random().toString(36).slice(2,7)}
-async function dbSet(col,id,data){if(firebaseAtivo&&db)await db.collection(col).doc(id).set(data)}
-async function dbDelete(col,id){if(firebaseAtivo&&db)await db.collection(col).doc(id).delete()}
-async function dbUpdate(col,id,data){if(firebaseAtivo&&db)await db.collection(col).doc(id).update(data)}
 
-// USUÁRIO
-const userSel=document.getElementById('userSelect');
-userSel.value=state.usuario||'';
-userSel.addEventListener('change',e=>{state.usuario=e.target.value;saveLocal();renderTudo()});
+function atualizarStatusSync(on) {
+  var el = document.getElementById('syncStatus');
+  var txt = document.getElementById('syncText');
+  var cfg = document.getElementById('configSyncStatus');
+  if (on) {
+    el.className = 'sync-status sync-online';
+    txt.textContent = 'Online (Firebase)';
+    if (cfg) cfg.textContent = '✅ Online';
+  } else {
+    el.className = 'sync-status sync-offline';
+    txt.textContent = firebaseAtivo ? 'Sincronizando...' : 'Offline (Local)';
+    if (cfg) cfg.textContent = '❌ Offline';
+  }
+}
 
-// TABS
-document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+function salvarFirebase() {
+  var t = document.getElementById('firebaseConfig').value.trim();
+  if (!t) { alert('Cole as credenciais!'); return; }
+  try {
+    var cfg = JSON.parse(t);
+    if (!cfg.apiKey || !cfg.projectId) throw new Error('JSON inválido');
+    state.firebaseConfig = cfg;
+    saveLocal();
+    initFirebase();
+    alert('✅ Firebase conectado!');
+  } catch(e) {
+    alert('❌ Erro: ' + e.message);
+  }
+}
+
+function desconectarFirebase() {
+  unsubscribe.forEach(function(u) { u(); });
+  unsubscribe = [];
+  if (firebase.apps.length) firebase.app().delete();
+  firebaseAtivo = false;
+  db = null;
+  state.firebaseConfig = null;
+  saveLocal();
+  atualizarStatusSync(false);
+  alert('Desconectado.');
+}
+
+function dbAdd(col, data) {
+  if (firebaseAtivo && db) {
+    return db.collection(col).add(data).then(function(ref) { return ref.id; });
+  }
+  return Promise.resolve(Date.now().toString() + Math.random().toString(36).slice(2,7));
+}
+function dbDelete(col, id) {
+  if (firebaseAtivo && db) {
+    return db.collection(col).doc(id).delete();
+  }
+  return Promise.resolve();
+}
+function dbUpdate(col, id, data) {
+  if (firebaseAtivo && db) {
+    return db.collection(col).doc(id).update(data);
+  }
+  return Promise.resolve();
+}
+
+// ============ USUÁRIO ============
+var userSel = document.getElementById('userSelect');
+userSel.value = state.usuario || '';
+userSel.addEventListener('change', function(e) {
+  state.usuario = e.target.value;
+  saveLocal();
+  renderTudo();
+});
+
+// ============ TABS ============
+document.querySelectorAll('.tab').forEach(function(t) {
+  t.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(function(x) { x.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function(x) { x.classList.remove('active'); });
     t.classList.add('active');
-    document.getElementById('panel-'+t.dataset.tab).classList.add('active');
-    if(t.dataset.tab==='config')renderConfig();
-    if(t.dataset.tab==='lucros')renderLucros();
+    document.getElementById('panel-' + t.dataset.tab).classList.add('active');
+    if (t.dataset.tab === 'config') renderConfig();
+    if (t.dataset.tab === 'lucros') renderLucros();
     renderTudo();
   });
 });
 
-// REMESSAS
-async function criarRemessa(){
-  const nome=document.getElementById('remessaNome').value.trim();
-  const data=document.getElementById('remessaData').value;
-  const custo=parseFloat(document.getElementById('remessaCusto').value)||0;
-  const tipos={
-    'Coco':{qtd:+document.getElementById('qtdCoco').value,preco:parseFloat(document.getElementById('precoCoco').value)||0},
-    'Cacau':{qtd:+document.getElementById('qtdCacau').value,preco:parseFloat(document.getElementById('precoCacau').value)||0},
-    'Banana':{qtd:+document.getElementById('qtdBanana').value,preco:parseFloat(document.getElementById('precoBanana').value)||0},
-    'Paçoca':{qtd:+document.getElementById('qtdPacoca').value,preco:parseFloat(document.getElementById('precoPacoca').value)||0}
-  };
-  if(!nome){alert('Preencha o nome!');return}
-  const total=Object.values(tipos).reduce((s,t)=>s+t.qtd,0);
-  if(total===0){alert('Adicione pelo menos 1 item!');return}
-  const semPreco=Object.entries(tipos).filter(([_,t])=>t.qtd>0&&t.preco<=0);
-  if(semPreco.length){alert('Defina o preço para: '+semPreco.map(([n])=>n).join(', '));return}
-
-  const itens=[];
-  Object.entries(tipos).forEach(([tipo,d])=>{
-    for(let i=0;i<d.qtd;i++)itens.push({id:'i'+Date.now()+Math.random().toString(36).slice(2,7),tipo,vendido:false});
-  });
-  const remessa={nome,data:data||new Date().toISOString().slice(0,10),precos:{Coco:tipos.Coco.preco,Cacau:tipos.Cacau.preco,Banana:tipos.Banana.preco,'Paçoca':tipos.Paçoca.preco},custo,itens};
-  const id=await dbAdd('remessas',remessa);
-  remessa.id=id;
-  if(!firebaseAtivo){state.remessas.push(remessa);saveLocal()}
-  document.getElementById('remessaNome').value='';
-  ['qtdCoco','qtdCacau','qtdBanana','qtdPacoca','precoCoco','precoCacau','precoBanana','precoPacoca','remessaCusto'].forEach(i=>document.getElementById(i).value='');
-  renderTudo();alert('✅ Remessa "'+nome+'" criada com '+total+' itens!');
-}
-
-async function excluirRemessa(id){
-  const r=state.remessas.find(x=>x.id===id);
-  const temVenda=r.itens.some(i=>i.vendido);
-  if(temVenda){if(!confirm('️ Esta remessa tem vendas. Excluir TUDO (remessa + vendas)?'))return}
-  else{if(!confirm('Excluir "'+r.nome+'"?'))return}
-  if(temVenda){
-    const ids=r.itens.map(i=>i.id);
-    const vendasParaExcluir=state.vendas.filter(v=>ids.includes(v.itemId));
-    for(const v of vendasParaExcluir)await dbDelete('vendas',v.id);
-    if(!firebaseAtivo)state.vendas=state.vendas.filter(v=>!ids.includes(v.itemId));
+// ============ HELPERS ============
+function getPrecoItem(item, remessa) {
+  // Compatibilidade: remessas antigas têm 'preco' único, novas têm 'precos' por tipo
+  if (remessa.precos && remessa.precos[item.tipo] !== undefined) {
+    return remessa.precos[item.tipo];
   }
-  await dbDelete('remessas',id);
-  if(!firebaseAtivo)state.remessas=state.remessas.filter(x=>x.id!==id);
-  renderTudo();alert('Remessa excluída!');
-}
-
-function abrirEditar(id){
-  const r=state.remessas.find(x=>x.id===id);
-  editandoRemessaId=id;
-  document.getElementById('editarInfo').innerHTML=`<b>${r.nome}</b> • 📅 ${formatarData(r.data)}`;
-  document.getElementById('editPrecoCoco').value=r.precos.Coco||0;
-  document.getElementById('editPrecoCacau').value=r.precos.Cacau||0;
-  document.getElementById('editPrecoBanana').value=r.precos.Banana||0;
-  document.getElementById('editPrecoPacoca').value=r.precos['Paçoca']||0;
-  document.getElementById('editCusto').value=r.custo||0;
-  document.getElementById('modalEditar').classList.add('active');
-}
-async function salvarEdicao(){
-  const r=state.remessas.find(x=>x.id===editandoRemessaId);
-  r.precos={Coco:parseFloat(document.getElementById('editPrecoCoco').value)||0,Cacau:parseFloat(document.getElementById('editPrecoCacau').value)||0,Banana:parseFloat(document.getElementById('editPrecoBanana').value)||0,'Paçoca':parseFloat(document.getElementById('editPrecoPacoca').value)||0};
-  r.custo=parseFloat(document.getElementById('editCusto').value)||0;
-  await dbUpdate('remessas',r.id,{precos:r.precos,custo:r.custo});
-  if(!firebaseAtivo)saveLocal();
-  fecharEditar();renderTudo();alert('✅ Preços atualizados!');
-}
-function fecharEditar(){document.getElementById('modalEditar').classList.remove('active');editandoRemessaId=null}
-
-function renderRemessas(){
-  const div=document.getElementById('listaRemessas');
-  if(state.remessas.length===0){div.innerHTML='<p style="color:#888">Nenhuma remessa.</p>';return}
-  div.innerHTML=state.remessas.map(r=>{
-    const total=r.itens.length,vendidos=r.itens.filter(i=>i.vendido).length,disp=total-vendidos;
-    const porTipo={};
-    r.itens.filter(i=>!i.vendido).forEach(i=>porTipo[i.tipo]=(porTipo[i.tipo]||0)+1);
-    const tiposTxt=Object.entries(porTipo).map(([t,q])=>`${t}: ${q}`).join(' | ')||'Todas vendidas';
-    const precosTxt=Object.entries(r.precos||{}).map(([t,p])=>`${t}: R$ ${p.toFixed(2)}`).join(' • ');
-    return `<div class="remessa-card">
-      <div class="remessa-header"><div class="tipo" style="font-size:1.1em;font-weight:bold;color:#8B4513">${r.nome}</div></div>
-      <div class="remessa-tipos">📅 ${formatarData(r.data)} • 💵 Custo: R$ ${(r.custo||0).toFixed(2)}</div>
-      <div class="remessa-tipos" style="margin-top:3px"><b>Preços:</b> ${precosTxt}</div>
-      <div class="remessa-stats"><b>Total:</b>${total} <span style="color:#28a745"><b>Disp:</b>${disp}</span> <span style="color:#dc3545"><b>Vend:</b>${vendidos}</span></div>
-      <div class="remessa-tipos">${tiposTxt}</div>
-      <div class="remessa-acoes">
-        <button class="btn btn-warning btn-sm" onclick="abrirEditar('${r.id}')">✏️ Editar preços</button>
-        <button class="btn btn-danger btn-sm" onclick="excluirRemessa('${r.id}')">🗑️ Excluir remessa</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ESTOQUE
-function findItem(id){for(const r of state.remessas)for(const i of r.itens)if(i.id===id)return{item:i,remessa:r};return null}
-
-function renderEstoque(){
-  const grid=document.getElementById('estoqueGrid');
-  const busca=(document.getElementById('buscaComprador').value||'').toLowerCase();
-  const fTipo=document.getElementById('filtroTipo').value;
-  const fStatus=document.getElementById('filtroStatus').value;
-  const todosItens=[];
-  state.remessas.forEach(r=>r.itens.forEach(i=>todosItens.push({item:i,remessa:r})));
-  let itens=todosItens;
-  if(fTipo)itens=itens.filter(x=>x.item.tipo===fTipo);
-  if(fStatus==='disponivel')itens=itens.filter(x=>!x.item.vendido);
-  if(fStatus==='vendido')itens=itens.filter(x=>x.item.vendido);
-
-  if(itens.length===0){grid.innerHTML='<div class="alert">📦 Nenhum item encontrado.</div>'}
-  else{
-    grid.innerHTML=itens.map(({item,remessa})=>{
-      const venda=state.vendas.find(v=>v.itemId===item.id);
-      const emoji={'Coco':'🥥','Cacau':'','Banana':'🍌','Paçoca':'🥜'}[item.tipo]||'';
-      const preco=(remessa.precos&&remessa.precos[item.tipo])||remessa.preco||0;
-      const isPacoca=item.tipo==='Paçoca';
-      return `<div class="card ${item.vendido?'vendido':''}">
-        <div class="tipo">${emoji} ${item.tipo}${isPacoca?'<span class="pacote-badge">PACOTE×10</span>':''}</div>
-        <div class="remessa"> ${remessa.nome}</div>
-        <div class="preco">R$ ${preco.toFixed(2)}${isPacoca?' <small>(un)</small>':''}</div>
-        ${item.vendido?`<span class="status vendido">Vendido</span><div style="font-size:0.75em;margin-top:4px">👤${venda.vendedor}<br>🛍️${venda.comprador}${venda.pacote?'<br>📦 Pacote de 10':''}</div>`:`<span class="status disponivel">Disponível</span><br><button class="btn btn-success btn-sm" style="margin-top:5px;width:100%" onclick="abrirVenda('${item.id}')">🛒 Vender</button>`}
-      </div>`;
-    }).join('');
+  if (remessa.preco !== undefined) {
+    return remessa.preco;
   }
-
-  if(busca.length>=2){
-    const vendasCliente=state.vendas.filter(v=>v.comprador.toLowerCase().includes(busca));
-    const hist=document.getElementById('historicoBusca');
-    if(vendasCliente.length===0)hist.innerHTML=`<h3>🔍 "${busca}"</h3><p style="color:#888">Nenhuma venda.</p>`;
-    else hist.innerHTML=`<h3> "${busca}" (${vendasCliente.length})</h3><div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Vendedor</th><th>Produto</th><th>Remessa</th><th>Valor</th><th>Pagto</th></tr></thead><tbody>${vendasCliente.map(v=>{const f=findItem(v.itemId);return `<tr><td>${formatarDataHora(v.data)}</td><td>${v.vendedor}</td><td>${f?f.item.tipo:'?'}</td><td>${f?f.remessa.nome:'?'}</td><td>R$${v.valor.toFixed(2)}</td><td><span class="badge badge-${v.pagamento==='Fiado'?'fiado':v.pagamento==='Pix'?'pix':'avista'}">${v.pagamento}</span></td></tr>`}).join('')}</tbody></table></div>`;
-  }else document.getElementById('historicoBusca').innerHTML='';
+  return 0;
 }
 
-document.getElementById('buscaComprador').addEventListener('input',renderEstoque);
-document.getElementById('filtroTipo').addEventListener('change',renderEstoque);
-document.getElementById('filtroStatus').addEventListener('change',renderEstoque);
-
-function abrirVenda(itemId){
-  if(!state.usuario){alert('️ Selecione seu nome no topo!');return}
-  const f=findItem(itemId);
-  if(!f||f.item.vendido)return;
-  itemSelecionado=itemId;vendaPacote=false;
-  const emoji={'Coco':'','Cacau':'🍫','Banana':'🍌','Paçoca':''}[f.item.tipo];
-  const preco=(f.remessa.precos&&f.remessa.precos[f.item.tipo])||f.remessa.preco||0;
-  document.getElementById('modalInfo').innerHTML=`<b>${emoji} ${f.item.tipo}</b> • 📦 ${f.remessa.nome}<br>👤 Vendedor: <b>${state.usuario}</b> • 💰 R$ ${preco.toFixed(2)}`;
-  document.getElementById('vendaValor').value=preco.toFixed(2);
-  document.getElementById('vendaComprador').value='';
-  document.getElementById('vendaObs').value='';
-  document.getElementById('pacoteInfo').style.display='none';
-
-  // Se for paçoca, oferecer pacote de 10
-  if(f.item.tipo==='Paçoca'){
-    const itensPacoca=f.remessa.itens.filter(i=>i.tipo==='Paçoca'&&!i.vendido);
-    if(itensPacoca.length>=10){
-      document.getElementById('pacoteInfo').style.display='block';
-      document.getElementById('pacoteInfo').innerHTML=`<b>📦 Pacote de 10 paçocas:</b> R$ ${(preco*10).toFixed(2)}<br><button class="btn btn-primary btn-sm" onclick="venderPacote()" style="margin-top:5px">Vender pacote de 10</button>`;
+function findItem(id) {
+  for (var i = 0; i < state.remessas.length; i++) {
+    var r = state.remessas[i];
+    for (var j = 0; j < r.itens.length; j++) {
+      if (r.itens[j].id === id) {
+        return { item: r.itens[j], remessa: r };
+      }
     }
   }
+  return null;
+}
 
-  const compradores=[...new Set(state.vendas.map(v=>v.comprador))];
-  document.getElementById('listaCompradores').innerHTML=compradores.map(c=>`<option value="${c}">`).join('');
+function formatarData(iso) {
+  if (!iso) return '-';
+  var d = new Date(iso.length === 10 ? iso + 'T00:00:00' : iso);
+  return d.toLocaleDateString('pt-BR');
+}
+function formatarDataHora(iso) {
+  var d = new Date(iso);
+  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+}
+
+// ============ REMESSAS ============
+function criarRemessa() {
+  var nome = document.getElementById('remessaNome').value.trim();
+  var data = document.getElementById('remessaData').value;
+  var custo = parseFloat(document.getElementById('remessaCusto').value) || 0;
+  
+  var qtdCoco = parseInt(document.getElementById('qtdCoco').value) || 0;
+  var qtdCacau = parseInt(document.getElementById('qtdCacau').value) || 0;
+  var qtdBanana = parseInt(document.getElementById('qtdBanana').value) || 0;
+  var qtdPacoca = parseInt(document.getElementById('qtdPacoca').value) || 0;
+  
+  var precoCoco = parseFloat(document.getElementById('precoCoco').value) || 0;
+  var precoCacau = parseFloat(document.getElementById('precoCacau').value) || 0;
+  var precoBanana = parseFloat(document.getElementById('precoBanana').value) || 0;
+  var precoPacoca = parseFloat(document.getElementById('precoPacoca').value) || 0;
+  
+  if (!nome) { alert('Preencha o nome da remessa!'); return; }
+  
+  var total = qtdCoco + qtdCacau + qtdBanana + qtdPacoca;
+  if (total === 0) { alert('Adicione pelo menos 1 item!'); return; }
+  
+  // Valida preços
+  if (qtdCoco > 0 && precoCoco <= 0) { alert('Defina o preço do Coco!'); return; }
+  if (qtdCacau > 0 && precoCacau <= 0) { alert('Defina o preço do Cacau!'); return; }
+  if (qtdBanana > 0 && precoBanana <= 0) { alert('Defina o preço da Banana!'); return; }
+  if (qtdPacoca > 0 && precoPacoca <= 0) { alert('Defina o preço da Paçoca!'); return; }
+  
+  var itens = [];
+  var now = Date.now();
+  for (var i = 0; i < qtdCoco; i++) itens.push({ id: 'i' + now + '_' + i + '_coco', tipo: 'Coco', vendido: false });
+  for (var i = 0; i < qtdCacau; i++) itens.push({ id: 'i' + now + '_' + i + '_cacau', tipo: 'Cacau', vendido: false });
+  for (var i = 0; i < qtdBanana; i++) itens.push({ id: 'i' + now + '_' + i + '_banana', tipo: 'Banana', vendido: false });
+  for (var i = 0; i < qtdPacoca; i++) itens.push({ id: 'i' + now + '_' + i + '_pacoca', tipo: 'Paçoca', vendido: false });
+  
+  var remessa = {
+    nome: nome,
+    data: data || new Date().toISOString().slice(0,10),
+    precos: { Coco: precoCoco, Cacau: precoCacau, Banana: precoBanana, 'Paçoca': precoPacoca },
+    custo: custo,
+    itens: itens
+  };
+  
+  dbAdd('remessas', remessa).then(function(id) {
+    remessa.id = id;
+    if (!firebaseAtivo) {
+      state.remessas.push(remessa);
+      saveLocal();
+    }
+    // Limpa formulário
+    document.getElementById('remessaNome').value = '';
+    document.getElementById('remessaData').value = '';
+    document.getElementById('remessaCusto').value = '';
+    document.getElementById('qtdCoco').value = '0';
+    document.getElementById('qtdCacau').value = '0';
+    document.getElementById('qtdBanana').value = '0';
+    document.getElementById('qtdPacoca').value = '0';
+    document.getElementById('precoCoco').value = '';
+    document.getElementById('precoCacau').value = '';
+    document.getElementById('precoBanana').value = '';
+    document.getElementById('precoPacoca').value = '';
+    renderTudo();
+    alert('✅ Remessa "' + nome + '" criada com ' + total + ' itens!');
+  });
+}
+
+function excluirRemessa(id) {
+  var r = null;
+  for (var i = 0; i < state.remessas.length; i++) {
+    if (state.remessas[i].id === id) { r = state.remessas[i]; break; }
+  }
+  if (!r) return;
+  
+  var temVenda = false;
+  for (var i = 0; i < r.itens.length; i++) {
+    if (r.itens[i].vendido) { temVenda = true; break; }
+  }
+  
+  var msg = temVenda ? '⚠️ Esta remessa tem vendas. Excluir TUDO (remessa + vendas)?' : 'Excluir "' + r.nome + '"?';
+  if (!confirm(msg)) return;
+  
+  if (temVenda) {
+    var ids = r.itens.map(function(i) { return i.id; });
+    var vendasParaExcluir = state.vendas.filter(function(v) { return ids.indexOf(v.itemId) !== -1; });
+    var promises = [];
+    vendasParaExcluir.forEach(function(v) {
+      promises.push(dbDelete('vendas', v.id));
+    });
+    promises.push(dbDelete('remessas', id));
+    Promise.all(promises).then(function() {
+      if (!firebaseAtivo) {
+        state.vendas = state.vendas.filter(function(v) { return ids.indexOf(v.itemId) === -1; });
+        state.remessas = state.remessas.filter(function(x) { return x.id !== id; });
+        saveLocal();
+      }
+      renderTudo();
+      alert('Remessa excluída!');
+    });
+  } else {
+    dbDelete('remessas', id).then(function() {
+      if (!firebaseAtivo) {
+        state.remessas = state.remessas.filter(function(x) { return x.id !== id; });
+        saveLocal();
+      }
+      renderTudo();
+      alert('Remessa excluída!');
+    });
+  }
+}
+
+function abrirEditar(id) {
+  var r = null;
+  for (var i = 0; i < state.remessas.length; i++) {
+    if (state.remessas[i].id === id) { r = state.remessas[i]; break; }
+  }
+  if (!r) return;
+  
+  editandoRemessaId = id;
+  document.getElementById('editarInfo').innerHTML = '<b>' + r.nome + '</b> • 📅 ' + formatarData(r.data);
+  document.getElementById('editPrecoCoco').value = (r.precos && r.precos.Coco) || r.preco || 0;
+  document.getElementById('editPrecoCacau').value = (r.precos && r.precos.Cacau) || r.preco || 0;
+  document.getElementById('editPrecoBanana').value = (r.precos && r.precos.Banana) || r.preco || 0;
+  document.getElementById('editPrecoPacoca').value = (r.precos && r.precos['Paçoca']) || r.preco || 0;
+  document.getElementById('editCusto').value = r.custo || 0;
+  document.getElementById('modalEditar').classList.add('active');
+}
+
+function salvarEdicao() {
+  var r = null;
+  for (var i = 0; i < state.remessas.length; i++) {
+    if (state.remessas[i].id === editandoRemessaId) { r = state.remessas[i]; break; }
+  }
+  if (!r) return;
+  
+  r.precos = {
+    Coco: parseFloat(document.getElementById('editPrecoCoco').value) || 0,
+    Cacau: parseFloat(document.getElementById('editPrecoCacau').value) || 0,
+    Banana: parseFloat(document.getElementById('editPrecoBanana').value) || 0,
+    'Paçoca': parseFloat(document.getElementById('editPrecoPacoca').value) || 0
+  };
+  r.custo = parseFloat(document.getElementById('editCusto').value) || 0;
+  
+  dbUpdate('remessas', r.id, { precos: r.precos, custo: r.custo }).then(function() {
+    if (!firebaseAtivo) saveLocal();
+    fecharEditar();
+    renderTudo();
+    alert('✅ Preços atualizados!');
+  });
+}
+
+function fecharEditar() {
+  document.getElementById('modalEditar').classList.remove('active');
+  editandoRemessaId = null;
+}
+
+function renderRemessas() {
+  var div = document.getElementById('listaRemessas');
+  if (state.remessas.length === 0) {
+    div.innerHTML = '<p style="color:#888">Nenhuma remessa cadastrada.</p>';
+    return;
+  }
+  
+  var html = '';
+  state.remessas.forEach(function(r) {
+    var total = r.itens.length;
+    var vendidos = 0;
+    var porTipo = {};
+    r.itens.forEach(function(i) {
+      if (i.vendido) vendidos++;
+      else porTipo[i.tipo] = (porTipo[i.tipo] || 0) + 1;
+    });
+    var disp = total - vendidos;
+    
+    var tiposTxt = '';
+    Object.keys(porTipo).forEach(function(t) {
+      if (tiposTxt) tiposTxt += ' | ';
+      tiposTxt += t + ': ' + porTipo[t];
+    });
+    if (!tiposTxt) tiposTxt = 'Todas vendidas';
+    
+    var precosTxt = '';
+    if (r.precos) {
+      Object.keys(r.precos).forEach(function(t) {
+        if (precosTxt) precosTxt += ' • ';
+        precosTxt += t + ': R$ ' + r.precos[t].toFixed(2);
+      });
+    } else if (r.preco !== undefined) {
+      precosTxt = 'Todos: R$ ' + r.preco.toFixed(2);
+    }
+    
+    html += '<div class="remessa-card">';
+    html += '<div style="font-size:1.1em;font-weight:bold;color:#8B4513">' + r.nome + '</div>';
+    html += '<div class="remessa-tipos">📅 ' + formatarData(r.data) + ' • 💵 Custo: R$ ' + (r.custo || 0).toFixed(2) + '</div>';
+    html += '<div class="remessa-tipos" style="margin-top:3px"><b>Preços:</b> ' + precosTxt + '</div>';
+    html += '<div class="remessa-stats"><b>Total:</b> ' + total + ' <span style="color:#28a745"><b>Disp:</b> ' + disp + '</span> <span style="color:#dc3545"><b>Vend:</b> ' + vendidos + '</span></div>';
+    html += '<div class="remessa-tipos">' + tiposTxt + '</div>';
+    html += '<div class="remessa-acoes">';
+    html += '<button class="btn btn-warning btn-sm" onclick="abrirEditar(\'' + r.id + '\')">✏️ Editar preços</button>';
+    html += '<button class="btn btn-danger btn-sm" onclick="excluirRemessa(\'' + r.id + '\')">🗑️ Excluir remessa</button>';
+    html += '</div>';
+    html += '</div>';
+  });
+  
+  div.innerHTML = html;
+}
+
+// ============ ESTOQUE ============
+function renderEstoque() {
+  var grid = document.getElementById('estoqueGrid');
+  var busca = (document.getElementById('buscaComprador').value || '').toLowerCase();
+  var fTipo = document.getElementById('filtroTipo').value;
+  var fStatus = document.getElementById('filtroStatus').value;
+  
+  var todosItens = [];
+  state.remessas.forEach(function(r) {
+    r.itens.forEach(function(i) {
+      todosItens.push({ item: i, remessa: r });
+    });
+  });
+  
+  var itens = todosItens;
+  if (fTipo) itens = itens.filter(function(x) { return x.item.tipo === fTipo; });
+  if (fStatus === 'disponivel') itens = itens.filter(function(x) { return !x.item.vendido; });
+  if (fStatus === 'vendido') itens = itens.filter(function(x) { return x.item.vendido; });
+  
+  if (itens.length === 0) {
+    grid.innerHTML = '<div class="alert">📦 Nenhum item encontrado.</div>';
+  } else {
+    var html = '';
+    itens.forEach(function(x) {
+      var item = x.item;
+      var remessa = x.remessa;
+      var venda = null;
+      state.vendas.forEach(function(v) {
+        if (v.itemId === item.id) venda = v;
+      });
+      var emoji = {'Coco':'🥥','Cacau':'','Banana':'🍌','Paçoca':'🥜'}[item.tipo] || '🍬';
+      var preco = getPrecoItem(item, remessa);
+      var isPacoca = item.tipo === 'Paçoca';
+      
+      html += '<div class="card ' + (item.vendido ? 'vendido' : '') + '">';
+      html += '<div class="tipo">' + emoji + ' ' + item.tipo;
+      if (isPacoca) html += ' <span class="pacote-badge">PACOTE×10</span>';
+      html += '</div>';
+      html += '<div class="remessa">📦 ' + remessa.nome + '</div>';
+      html += '<div class="preco">R$ ' + preco.toFixed(2) + (isPacoca ? ' <small>(un)</small>' : '') + '</div>';
+      
+      if (item.vendido) {
+        html += '<span class="status vendido">Vendido</span>';
+        html += '<div style="font-size:0.75em;margin-top:4px">👤 ' + (venda ? venda.vendedor : '?');
+        html += '<br>🛍️ ' + (venda ? venda.comprador : '?');
+        if (venda && venda.pacote) html += '<br>📦 Pacote de 10';
+        html += '</div>';
+      } else {
+        html += '<span class="status disponivel">Disponível</span>';
+        html += '<br><button class="btn btn-success btn-sm" style="margin-top:5px;width:100%" onclick="abrirVenda(\'' + item.id + '\')"> Vender</button>';
+      }
+      html += '</div>';
+    });
+    grid.innerHTML = html;
+  }
+  
+  // Histórico de busca
+  if (busca.length >= 2) {
+    var vendasCliente = state.vendas.filter(function(v) {
+      return v.comprador.toLowerCase().indexOf(busca) !== -1;
+    });
+    var hist = document.getElementById('historicoBusca');
+    if (vendasCliente.length === 0) {
+      hist.innerHTML = '<h3>🔍 "' + busca + '"</h3><p style="color:#888">Nenhuma venda.</p>';
+    } else {
+      var h = '<h3>🔍 "' + busca + '" (' + vendasCliente.length + ')</h3>';
+      h += '<div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Vendedor</th><th>Produto</th><th>Remessa</th><th>Valor</th><th>Pagto</th></tr></thead><tbody>';
+      vendasCliente.forEach(function(v) {
+        var f = findItem(v.itemId);
+        var badgeClass = v.pagamento === 'Fiado' ? 'badge-fiado' : v.pagamento === 'Pix' ? 'badge-pix' : 'badge-avista';
+        h += '<tr><td>' + formatarDataHora(v.data) + '</td><td>' + v.vendedor + '</td><td>' + (f ? f.item.tipo : '?') + '</td><td>' + (f ? f.remessa.nome : '?') + '</td><td>R$ ' + v.valor.toFixed(2) + '</td><td><span class="badge ' + badgeClass + '">' + v.pagamento + '</span></td></tr>';
+      });
+      h += '</tbody></table></div>';
+      hist.innerHTML = h;
+    }
+  } else {
+    document.getElementById('historicoBusca').innerHTML = '';
+  }
+}
+
+document.getElementById('buscaComprador').addEventListener('input', renderEstoque);
+document.getElementById('filtroTipo').addEventListener('change', renderEstoque);
+document.getElementById('filtroStatus').addEventListener('change', renderEstoque);
+
+// ============ VENDA ============
+function abrirVenda(itemId) {
+  if (!state.usuario) { alert('⚠️ Selecione seu nome no topo!'); return; }
+  var f = findItem(itemId);
+  if (!f || f.item.vendido) return;
+  
+  itemSelecionado = itemId;
+  vendaPacote = false;
+  
+  var emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'','Paçoca':'🥜'}[f.item.tipo] || '🍬';
+  var preco = getPrecoItem(f.item, f.remessa);
+  
+  document.getElementById('modalInfo').innerHTML = '<b>' + emoji + ' ' + f.item.tipo + '</b> • 📦 ' + f.remessa.nome + '<br>👤 Vendedor: <b>' + state.usuario + '</b> • 💰 R$ ' + preco.toFixed(2);
+  document.getElementById('vendaValor').value = preco.toFixed(2);
+  document.getElementById('vendaComprador').value = '';
+  document.getElementById('vendaObs').value = '';
+  document.getElementById('pacoteInfo').style.display = 'none';
+  
+  // Se for paçoca, oferecer pacote de 10
+  if (f.item.tipo === 'Paçoca') {
+    var itensPacoca = f.remessa.itens.filter(function(i) { return i.tipo === 'Paçoca' && !i.vendido; });
+    if (itensPacoca.length >= 10) {
+      document.getElementById('pacoteInfo').style.display = 'block';
+      document.getElementById('pacoteInfo').innerHTML = '<b>📦 Pacote de 10 paçocas:</b> R$ ' + (preco * 10).toFixed(2) + '<br><button class="btn btn-primary btn-sm" onclick="venderPacote()" style="margin-top:5px">Vender pacote de 10</button>';
+    }
+  }
+  
+  // Datalist de compradores
+  var compradores = [];
+  state.vendas.forEach(function(v) {
+    if (compradores.indexOf(v.comprador) === -1) compradores.push(v.comprador);
+  });
+  document.getElementById('listaCompradores').innerHTML = compradores.map(function(c) { return '<option value="' + c + '">'; }).join('');
+  
   document.getElementById('modalVenda').classList.add('active');
 }
 
-function venderPacote(){
-  vendaPacote=true;
-  const f=findItem(itemSelecionado);
-  const preco=(f.remessa.precos&&f.remessa.precos['Paçoca'])||f.remessa.preco||0;
-  document.getElementById('vendaValor').value=(preco*10).toFixed(2);
-  document.getElementById('pacoteInfo').innerHTML='✅ <b>Pacote de 10 paçocas selecionado!</b> Total: R$'+(preco*10).toFixed(2);
+function venderPacote() {
+  vendaPacote = true;
+  var f = findItem(itemSelecionado);
+  var preco = getPrecoItem(f.item, f.remessa);
+  document.getElementById('vendaValor').value = (preco * 10).toFixed(2);
+  document.getElementById('pacoteInfo').innerHTML = '✅ <b>Pacote de 10 paçocas selecionado!</b> Total: R$ ' + (preco * 10).toFixed(2);
 }
 
-async function confirmarVenda(){
-  const comprador=document.getElementById('vendaComprador').value.trim();
-  const valor=parseFloat(document.getElementById('vendaValor').value);
-  const pagamento=document.getElementById('vendaPagamento').value;
-  const obs=document.getElementById('vendaObs').value.trim();
-  if(!comprador){alert('Informe o comprador!');return}
-  if(!valor||valor<=0){alert('Valor inválido!');return}
-
-  const f=findItem(itemSelecionado);
-  if(!f)return;
-
-  const itensParaVender=[f.item];
-  if(vendaPacote&&f.item.tipo==='Paçoca'){
-    const outrosPacoca=f.remessa.itens.filter(i=>i.tipo==='Paçoca'&&!i.vendido&&i.id!==f.item.id);
-    for(let i=0;i<9&&i<outrosPacoca.length;i++)itensParaVender.push(outrosPacoca[i]);
+function confirmarVenda() {
+  var comprador = document.getElementById('vendaComprador').value.trim();
+  var valor = parseFloat(document.getElementById('vendaValor').value);
+  var pagamento = document.getElementById('vendaPagamento').value;
+  var obs = document.getElementById('vendaObs').value.trim();
+  
+  if (!comprador) { alert('Informe o comprador!'); return; }
+  if (!valor || valor <= 0) { alert('Valor inválido!'); return; }
+  
+  var f = findItem(itemSelecionado);
+  if (!f) return;
+  
+  var itensParaVender = [f.item];
+  if (vendaPacote && f.item.tipo === 'Paçoca') {
+    var outrosPacoca = f.remessa.itens.filter(function(i) { return i.tipo === 'Paçoca' && !i.vendido && i.id !== f.item.id; });
+    for (var i = 0; i < 9 && i < outrosPacoca.length; i++) {
+      itensParaVender.push(outrosPacoca[i]);
+    }
   }
-
-  const venda={
-    itemId:f.item.id,
-    itemIdPacote:vendaPacote?itensParaVender.map(i=>i.id):null,
-    vendedor:state.usuario,comprador,valor,pagamento,obs,
-    pacote:vendaPacote,
-    data:new Date().toISOString(),pago:pagamento!=='Fiado'
+  
+  var itemIdPacote = vendaPacote ? itensParaVender.map(function(i) { return i.id; }) : null;
+  
+  var venda = {
+    itemId: f.item.id,
+    itemIdPacote: itemIdPacote,
+    vendedor: state.usuario,
+    comprador: comprador,
+    valor: valor,
+    pagamento: pagamento,
+    obs: obs,
+    pacote: vendaPacote,
+    data: new Date().toISOString(),
+    pago: pagamento !== 'Fiado'
   };
-
-  itensParaVender.forEach(i=>i.vendido=true);
-  const vendaId=await dbAdd('vendas',venda);
-  venda.id=vendaId;
-  if(firebaseAtivo&&db){
-    await dbUpdate('remessas',f.remessa.id,{itens:f.remessa.itens});
-  }else saveLocal();
-
-  fecharModal();renderTudo();
-  alert('✅ Venda registrada!'+(vendaPacote?' (Pacote de 10 paçocas)':''));
+  
+  itensParaVender.forEach(function(i) { i.vendido = true; });
+  
+  dbAdd('vendas', venda).then(function(vendaId) {
+    venda.id = vendaId;
+    if (firebaseAtivo && db) {
+      return dbUpdate('remessas', f.remessa.id, { itens: f.remessa.itens });
+    } else {
+      saveLocal();
+      return Promise.resolve();
+    }
+  }).then(function() {
+    fecharModal();
+    renderTudo();
+    alert('✅ Venda registrada!' + (vendaPacote ? ' (Pacote de 10 paçocas)' : ''));
+  });
 }
 
-function fecharModal(){document.getElementById('modalVenda').classList.remove('active');itemSelecionado=null;vendaPacote=false}
+function fecharModal() {
+  document.getElementById('modalVenda').classList.remove('active');
+  itemSelecionado = null;
+  vendaPacote = false;
+}
 
-// EXCLUIR VENDA INDIVIDUAL
-async function excluirVenda(vendaId){
-  const v=state.vendas.find(x=>x.id===vendaId);
-  if(!v)return;
-  if(!confirm('Excluir esta venda? O item voltará para disponível.'))return;
-  const f=findItem(v.itemId);
-  if(f)f.item.vendido=false;
+// ============ EXCLUIR VENDA ============
+function excluirVenda(vendaId) {
+  var v = null;
+  state.vendas.forEach(function(x) { if (x.id === vendaId) v = x; });
+  if (!v) return;
+  if (!confirm('Excluir esta venda? O item voltará para disponível.')) return;
+  
+  var f = findItem(v.itemId);
+  if (f) f.item.vendido = false;
+  
   // Se foi pacote, liberar todos os itens
-  if(v.pacote&&v.itemIdPacote){
-    v.itemIdPacote.forEach(id=>{const ff=findItem(id);if(ff)ff.item.vendido=false});
+  if (v.pacote && v.itemIdPacote) {
+    v.itemIdPacote.forEach(function(id) {
+      var ff = findItem(id);
+      if (ff) ff.item.vendido = false;
+    });
   }
-  await dbDelete('vendas',vendaId);
-  if(firebaseAtivo&&db&&f)await dbUpdate('remessas',f.remessa.id,{itens:f.remessa.itens});
-  if(!firebaseAtivo){state.vendas=state.vendas.filter(x=>x.id!==vendaId);saveLocal()}
-  renderTudo();alert('Venda excluída!');
+  
+  dbDelete('vendas', vendaId).then(function() {
+    if (firebaseAtivo && db && f) {
+      return dbUpdate('remessas', f.remessa.id, { itens: f.remessa.itens });
+    } else {
+      state.vendas = state.vendas.filter(function(x) { return x.id !== vendaId; });
+      saveLocal();
+      return Promise.resolve();
+    }
+  }).then(function() {
+    renderTudo();
+    alert('Venda excluída!');
+  });
 }
 
-// RELATÓRIOS
-function renderStats(){
-  const div=document.getElementById('statsGerais');
-  const totalVendas=state.vendas.length;
-  const totalValor=state.vendas.reduce((s,v)=>s+v.valor,0);
-  const avista=state.vendas.filter(v=>v.pagamento==='À vista').reduce((s,v)=>s+v.valor,0);
-  const pix=state.vendas.filter(v=>v.pagamento==='Pix').reduce((s,v)=>s+v.valor,0);
-  const fiado=state.vendas.filter(v=>v.pagamento==='Fiado'&&!v.pago).reduce((s,v)=>s+v.valor,0);
-  const fiadoPago=state.vendas.filter(v=>v.pagamento==='Fiado'&&v.pago).reduce((s,v)=>s+v.valor,0);
-  const custoTotal=state.remessas.reduce((s,r)=>s+(r.custo||0),0);
-  const lucro=totalValor-custoTotal;
-  div.innerHTML=`
-    <div class="stat-card"><div class="valor">${totalVendas}</div><div class="label">Vendas</div></div>
-    <div class="stat-card"><div class="valor">R$${totalValor.toFixed(2)}</div><div class="label">Faturamento</div></div>
-    <div class="stat-card"><div class="valor">R$${avista.toFixed(2)}</div><div class="label">💵 À vista</div></div>
-    <div class="stat-card"><div class="valor">R$${pix.toFixed(2)}</div><div class="label"> Pix</div></div>
-    <div class="stat-card"><div class="valor">R$${fiado.toFixed(2)}</div><div class="label">⚠️ Fiado pend.</div></div>
-    <div class="stat-card"><div class="valor">R$${lucro.toFixed(2)}</div><div class="label">💹 Lucro</div></div>`;
+// ============ RELATÓRIOS ============
+function renderStats() {
+  var div = document.getElementById('statsGerais');
+  var totalVendas = state.vendas.length;
+  var totalValor = state.vendas.reduce(function(s, v) { return s + v.valor; }, 0);
+  var avista = state.vendas.filter(function(v) { return v.pagamento === 'À vista'; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  var pix = state.vendas.filter(function(v) { return v.pagamento === 'Pix'; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  var fiado = state.vendas.filter(function(v) { return v.pagamento === 'Fiado' && !v.pago; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  var fiadoPago = state.vendas.filter(function(v) { return v.pagamento === 'Fiado' && v.pago; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  var custoTotal = state.remessas.reduce(function(s, r) { return s + (r.custo || 0); }, 0);
+  var lucro = totalValor - custoTotal;
+  
+  div.innerHTML = '<div class="stat-card"><div class="valor">' + totalVendas + '</div><div class="label">Vendas</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + totalValor.toFixed(2) + '</div><div class="label">Faturamento</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + avista.toFixed(2) + '</div><div class="label">💵 À vista</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + pix.toFixed(2) + '</div><div class="label">📱 Pix</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + fiado.toFixed(2) + '</div><div class="label">️ Fiado pend.</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + lucro.toFixed(2) + '</div><div class="label">💹 Lucro</div></div>';
 }
 
-function getVendasFiltradas(){
-  const fc=(document.getElementById('filtroCliente').value||'').toLowerCase();
-  const fv=document.getElementById('filtroVendedor').value;
-  const fr=document.getElementById('filtroRemessa').value;
-  const fp=document.getElementById('filtroPagamento').value;
-  const fd=document.getElementById('filtroDataDe').value;
-  const fa=document.getElementById('filtroDataAte').value;
-  let vendas=[...state.vendas].sort((a,b)=>new Date(b.data)-new Date(a.data));
-  if(fc)vendas=vendas.filter(v=>v.comprador.toLowerCase().includes(fc));
-  if(fv)vendas=vendas.filter(v=>v.vendedor===fv);
-  if(fr){const rem=state.remessas.find(r=>r.id===fr);if(rem){const ids=rem.itens.map(i=>i.id);vendas=vendas.filter(v=>ids.includes(v.itemId))}}
-  if(fp)vendas=vendas.filter(v=>v.pagamento===fp);
-  if(fd)vendas=vendas.filter(v=>v.data.slice(0,10)>=fd);
-  if(fa)vendas=vendas.filter(v=>v.data.slice(0,10)<=fa);
+function getVendasFiltradas() {
+  var fc = (document.getElementById('filtroCliente').value || '').toLowerCase();
+  var fv = document.getElementById('filtroVendedor').value;
+  var fr = document.getElementById('filtroRemessa').value;
+  var fp = document.getElementById('filtroPagamento').value;
+  var fd = document.getElementById('filtroDataDe').value;
+  var fa = document.getElementById('filtroDataAte').value;
+  
+  var vendas = state.vendas.slice().sort(function(a, b) { return new Date(b.data) - new Date(a.data); });
+  if (fc) vendas = vendas.filter(function(v) { return v.comprador.toLowerCase().indexOf(fc) !== -1; });
+  if (fv) vendas = vendas.filter(function(v) { return v.vendedor === fv; });
+  if (fr) {
+    var rem = null;
+    state.remessas.forEach(function(r) { if (r.id === fr) rem = r; });
+    if (rem) {
+      var ids = rem.itens.map(function(i) { return i.id; });
+      vendas = vendas.filter(function(v) { return ids.indexOf(v.itemId) !== -1; });
+    }
+  }
+  if (fp) vendas = vendas.filter(function(v) { return v.pagamento === fp; });
+  if (fd) vendas = vendas.filter(function(v) { return v.data.slice(0,10) >= fd; });
+  if (fa) vendas = vendas.filter(function(v) { return v.data.slice(0,10) <= fa; });
   return vendas;
 }
 
-function renderRelatorios(){
-  const selR=document.getElementById('filtroRemessa');
-  const atual=selR.value;
-  selR.innerHTML='<option value="">Todas</option>'+state.remessas.map(r=>`<option value="${r.id}">${r.nome}</option>`).join('');
-  selR.value=atual;
-  const vendas=getVendasFiltradas();
-  const tb=document.querySelector('#tabelaVendas tbody');
-  if(vendas.length===0){tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:#888">Nenhuma venda.</td></tr>';return}
-  tb.innerHTML=vendas.map(v=>{
-    const f=findItem(v.itemId);
-    const badge=v.pagamento==='Fiado'?'badge-fiado':v.pagamento==='Pix'?'badge-pix':'badge-avista';
-    return `<tr>
-      <td>${formatarDataHora(v.data)}</td><td><b>${v.vendedor}</b></td><td>${f?f.item.tipo:'?'}${v.pacote?'<br><small>📦Pacote×10</small>':''}</td>
-      <td>${f?f.remessa.nome:'?'}</td><td>${v.comprador}</td><td>R$${v.valor.toFixed(2)}</td>
-      <td><span class="badge ${badge}">${v.pagamento}</span></td>
-      <td><button class="btn btn-primary btn-sm" onclick="verDetalhes('${v.id}')">️</button> <button class="btn btn-danger btn-sm" onclick="excluirVenda('${v.id}')">🗑️</button></td>
-    </tr>`;
-  }).join('');
+function renderRelatorios() {
+  var selR = document.getElementById('filtroRemessa');
+  var atual = selR.value;
+  selR.innerHTML = '<option value="">Todas</option>' + state.remessas.map(function(r) { return '<option value="' + r.id + '">' + r.nome + '</option>'; }).join('');
+  selR.value = atual;
+  
+  var vendas = getVendasFiltradas();
+  var tb = document.querySelector('#tabelaVendas tbody');
+  if (vendas.length === 0) {
+    tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#888">Nenhuma venda.</td></tr>';
+    return;
+  }
+  
+  var html = '';
+  vendas.forEach(function(v) {
+    var f = findItem(v.itemId);
+    var badgeClass = v.pagamento === 'Fiado' ? 'badge-fiado' : v.pagamento === 'Pix' ? 'badge-pix' : 'badge-avista';
+    html += '<tr>';
+    html += '<td>' + formatarDataHora(v.data) + '</td>';
+    html += '<td><b>' + v.vendedor + '</b></td>';
+    html += '<td>' + (f ? f.item.tipo : '?') + (v.pacote ? '<br><small>📦Pacote×10</small>' : '') + '</td>';
+    html += '<td>' + (f ? f.remessa.nome : '?') + '</td>';
+    html += '<td>' + v.comprador + '</td>';
+    html += '<td>R$ ' + v.valor.toFixed(2) + '</td>';
+    html += '<td><span class="badge ' + badgeClass + '">' + v.pagamento + '</span></td>';
+    html += '<td><button class="btn btn-primary btn-sm" onclick="verDetalhes(\'' + v.id + '\')">️</button> <button class="btn btn-danger btn-sm" onclick="excluirVenda(\'' + v.id + '\')">️</button></td>';
+    html += '</tr>';
+  });
+  tb.innerHTML = html;
 }
 
-function verDetalhes(id){
-  const v=state.vendas.find(x=>x.id===id);
-  const f=findItem(v.itemId);
-  document.getElementById('detalhesConteudo').innerHTML=`
-    <div style="background:#fff8dc;padding:10px;border-radius:8px">
-      <p><b>📅 Data:</b>${formatarDataHora(v.data)}</p>
-      <p><b>👤 Vendedor:</b>${v.vendedor}</p>
-      <p><b>🍬 Produto:</b>${f?f.item.tipo:'?'}${v.pacote?' (Pacote de 10 paçocas)':''}</p>
-      <p><b> Remessa:</b>${f?f.remessa.nome:'?'}</p>
-      <p><b>🛍️ Comprador:</b>${v.comprador}</p>
-      <p><b> Valor:</b>R$${v.valor.toFixed(2)}</p>
-      <p><b>💳 Pagamento:</b>${v.pagamento}</p>
-      ${v.obs?`<p><b> Obs:</b>${v.obs}</p>`:''}
-      ${v.pagamento==='Fiado'?`<p><b>Status:</b>${v.pago?'✅ Pago em '+formatarData(v.dataPagamento):'⚠️ Pendente'}</p>`:''}
-    </div>`;
+function verDetalhes(id) {
+  var v = null;
+  state.vendas.forEach(function(x) { if (x.id === id) v = x; });
+  if (!v) return;
+  var f = findItem(v.itemId);
+  
+  var html = '<div style="background:#fff8dc;padding:10px;border-radius:8px">';
+  html += '<p><b>📅 Data:</b> ' + formatarDataHora(v.data) + '</p>';
+  html += '<p><b>👤 Vendedor:</b> ' + v.vendedor + '</p>';
+  html += '<p><b>🍬 Produto:</b> ' + (f ? f.item.tipo : '?') + (v.pacote ? ' (Pacote de 10 paçocas)' : '') + '</p>';
+  html += '<p><b>📦 Remessa:</b> ' + (f ? f.remessa.nome : '?') + '</p>';
+  html += '<p><b>🛍️ Comprador:</b> ' + v.comprador + '</p>';
+  html += '<p><b>💰 Valor:</b> R$ ' + v.valor.toFixed(2) + '</p>';
+  html += '<p><b>💳 Pagamento:</b> ' + v.pagamento + '</p>';
+  if (v.obs) html += '<p><b>📝 Obs:</b> ' + v.obs + '</p>';
+  if (v.pagamento === 'Fiado') html += '<p><b>Status:</b> ' + (v.pago ? '✅ Pago em ' + formatarData(v.dataPagamento) : '⚠️ Pendente') + '</p>';
+  html += '</div>';
+  
+  document.getElementById('detalhesConteudo').innerHTML = html;
   document.getElementById('modalDetalhes').classList.add('active');
 }
-function fecharDetalhes(){document.getElementById('modalDetalhes').classList.remove('active')}
+function fecharDetalhes() { document.getElementById('modalDetalhes').classList.remove('active'); }
 
-// FIADOS
-function renderFiados(){
-  const div=document.getElementById('listaFiados');
-  const fc=(document.getElementById('filtroFiadoCliente').value||'').toLowerCase();
-  let fiados=state.vendas.filter(v=>v.pagamento==='Fiado');
-  if(fc)fiados=fiados.filter(v=>v.comprador.toLowerCase().includes(fc));
-  if(fiados.length===0){div.innerHTML='<p style="color:#888">Nenhum fiado.</p>';return}
-  const pendentes=fiados.filter(v=>!v.pago),pagos=fiados.filter(v=>v.pago);
-  let html='';
-  if(pendentes.length){const total=pendentes.reduce((s,v)=>s+v.valor,0);html+=`<div class="alert" style="background:#ffe5e5;border-color:#dc3545"><b>⚠️ Pendentes:</b>${pendentes.length} venda(s) • Total: <b>R$${total.toFixed(2)}</b></div>`;html+=renderTabelaFiado(pendentes)}
-  if(pagos.length){const total=pagos.reduce((s,v)=>s+v.valor,0);html+=`<h3 style="margin-top:12px">✅ Pagos (R$${total.toFixed(2)})</h3>`;html+=renderTabelaFiado(pagos)}
-  div.innerHTML=html;
-}
-function renderTabelaFiado(lista){
-  return `<div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Comprador</th><th>Vendedor</th><th>Produto</th><th>Valor</th><th>Status</th><th>Ação</th></tr></thead><tbody>${lista.map(v=>{const f=findItem(v.itemId);return `<tr><td>${formatarData(v.data)}</td><td><b>${v.comprador}</b></td><td>${v.vendedor}</td><td>${f?f.item.tipo:'?'}${v.pacote?'<br><small>📦Pacote</small>':''}</td><td>R$${v.valor.toFixed(2)}</td><td>${v.pago?'<span class="badge badge-avista">PAGO</span>':'<span class="badge badge-fiado">PEND.</span>'}</td><td>${!v.pago?`<button class="btn btn-success btn-sm" onclick="marcarPago('${v.id}')">✅ Receber</button>`:''}</td></tr>`}).join('')}</tbody></table></div>`;
-}
-async function marcarPago(id){
-  const v=state.vendas.find(x=>x.id===id);
-  v.pago=true;v.dataPagamento=new Date().toISOString();
-  if(firebaseAtivo&&db)await dbUpdate('vendas',id,{pago:true,dataPagamento:v.dataPagamento});
-  else saveLocal();
-  renderTudo();alert('✅ Marcado como pago!');
+// ============ FIADOS ============
+function renderFiados() {
+  var div = document.getElementById('listaFiados');
+  var fc = (document.getElementById('filtroFiadoCliente').value || '').toLowerCase();
+  var fiados = state.vendas.filter(function(v) { return v.pagamento === 'Fiado'; });
+  if (fc) fiados = fiados.filter(function(v) { return v.comprador.toLowerCase().indexOf(fc) !== -1; });
+  
+  if (fiados.length === 0) { div.innerHTML = '<p style="color:#888">Nenhum fiado.</p>'; return; }
+  
+  var pendentes = fiados.filter(function(v) { return !v.pago; });
+  var pagos = fiados.filter(function(v) { return v.pago; });
+  var html = '';
+  
+  if (pendentes.length) {
+    var total = pendentes.reduce(function(s, v) { return s + v.valor; }, 0);
+    html += '<div class="alert" style="background:#ffe5e5;border-color:#dc3545"><b>⚠️ Pendentes:</b> ' + pendentes.length + ' venda(s) • Total: <b>R$ ' + total.toFixed(2) + '</b></div>';
+    html += renderTabelaFiado(pendentes);
+  }
+  if (pagos.length) {
+    var total2 = pagos.reduce(function(s, v) { return s + v.valor; }, 0);
+    html += '<h3 style="margin-top:12px">✅ Pagos (R$ ' + total2.toFixed(2) + ')</h3>';
+    html += renderTabelaFiado(pagos);
+  }
+  div.innerHTML = html;
 }
 
-// LUCROS
-function renderLucros(){
-  const sel=document.getElementById('lucroRemessa');
-  sel.innerHTML='<option value="">Todas (consolidado)</option>'+state.remessas.map(r=>`<option value="${r.id}">${r.nome}</option>`).join('');
-  const periodo=document.getElementById('lucroPeriodo').value;
-  document.getElementById('lucroPeriodoCustom').style.display=periodo==='custom'?'block':'none';
-  let remessas=state.remessas;
-  const selId=sel.value;
-  if(selId)remessas=remessas.filter(r=>r.id===selId);
-  if(remessas.length===0){document.getElementById('lucrosConteudo').innerHTML='<p style="color:#888">Nenhuma remessa.</p>';return}
-  let dataDe=null,dataAte=null;
-  if(periodo==='7'){const d=new Date();d.setDate(d.getDate()-7);dataDe=d.toISOString().slice(0,10)}
-  else if(periodo==='30'){const d=new Date();d.setDate(d.getDate()-30);dataDe=d.toISOString().slice(0,10)}
-  else if(periodo==='custom'){dataDe=document.getElementById('lucroDe').value||null;dataAte=document.getElementById('lucroAte').value||null}
-  let html='',totalReceita=0,totalCusto=0,totalLucro=0,dataMin=null,dataMax=null;
-  remessas.forEach(r=>{
-    const ids=r.itens.map(i=>i.id);
-    let vendas=state.vendas.filter(v=>ids.includes(v.itemId));
-    if(dataDe)vendas=vendas.filter(v=>v.data.slice(0,10)>=dataDe);
-    if(dataAte)vendas=vendas.filter(v=>v.data.slice(0,10)<=dataAte);
-    const vendidos=vendas.length;
-    const receita=vendas.reduce((s,v)=>s+v.valor,0);
-    const custo=r.custo||0;
-    const custoProp=vendidos>0&&r.itens.length>0?(custo*vendidos/r.itens.length):0;
-    const lucro=receita-custoProp;
-    if(vendas.length>0){const datas=vendas.map(v=>v.data.slice(0,10)).sort();const dMin=datas[0],dMax=datas[datas.length-1];if(!dataMin||dMin<dataMin)dataMin=dMin;if(!dataMax||dMax>dataMax)dataMax=dMax}
-    totalReceita+=receita;totalCusto+=custoProp;totalLucro+=lucro;
-    if(!selId||state.remessas.length>1)html+=renderBlocoLucro(r,vendas,receita,custoProp,lucro);
+function renderTabelaFiado(lista) {
+  var html = '<div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Comprador</th><th>Vendedor</th><th>Produto</th><th>Valor</th><th>Status</th><th>Ação</th></tr></thead><tbody>';
+  lista.forEach(function(v) {
+    var f = findItem(v.itemId);
+    html += '<tr>';
+    html += '<td>' + formatarData(v.data) + '</td>';
+    html += '<td><b>' + v.comprador + '</b></td>';
+    html += '<td>' + v.vendedor + '</td>';
+    html += '<td>' + (f ? f.item.tipo : '?') + (v.pacote ? '<br><small>📦Pacote</small>' : '') + '</td>';
+    html += '<td>R$ ' + v.valor.toFixed(2) + '</td>';
+    html += '<td>' + (v.pago ? '<span class="badge badge-avista">PAGO</span>' : '<span class="badge badge-fiado">PEND.</span>') + '</td>';
+    html += '<td>' + (!v.pago ? '<button class="btn btn-success btn-sm" onclick="marcarPago(\'' + v.id + '\')">✅ Receber</button>' : '') + '</td>';
+    html += '</tr>';
   });
-  if(selId){const r=remessas[0];const ids=r.itens.map(i=>i.id);let vendas=state.vendas.filter(v=>ids.includes(v.itemId));if(dataDe)vendas=vendas.filter(v=>v.data.slice(0,10)>=dataDe);if(dataAte)vendas=vendas.filter(v=>v.data.slice(0,10)<=dataAte);const receita=vendas.reduce((s,v)=>s+v.valor,0);const custo=r.custo||0;const vendidos=vendas.length;const custoProp=vendidos>0&&r.itens.length>0?(custo*vendidos/r.itens.length):0;const lucro=receita-custoProp;html=renderBlocoLucro(r,vendas,receita,custoProp,lucro,true)}
-  if(remessas.length>1||!selId){html+=`<div class="lucro-box" style="border-color:#28a745;background:linear-gradient(135deg,#d4edda,#c3e6cb)"><h3 style="color:#155724">💼 CONSOLIDADO GERAL</h3><div class="lucro-grid"><div class="lucro-item"><div class="v">${dataMin?formatarData(dataMin)+' a '+formatarData(dataMax):'-'}</div><div class="l">Período</div></div><div class="lucro-item"><div class="v">R$${totalReceita.toFixed(2)}</div><div class="l">Receita</div></div><div class="lucro-item"><div class="v">R$${totalCusto.toFixed(2)}</div><div class="l">Custo</div></div><div class="lucro-item" style="border-color:#28a745"><div class="v" style="color:#28a745">R$${totalLucro.toFixed(2)}</div><div class="l">💰 LUCRO</div></div></div>${renderProlabore(totalLucro)}</div>`}
-  document.getElementById('lucrosConteudo').innerHTML=html;
-}
-function renderBlocoLucro(r,vendas,receita,custo,lucro,detalhado=false){
-  const vendidos=vendas.length;
-  const datas=vendas.map(v=>v.data.slice(0,10)).sort();
-  const periodo=datas.length?formatarData(datas[0])+' a '+formatarData(datas[datas.length-1]):'-';
-  const porTipo={};
-  vendas.forEach(v=>{const f=findItem(v.itemId);if(f){if(!porTipo[f.item.tipo])porTipo[f.item.tipo]={qtd:0,valor:0};porTipo[f.item.tipo].qtd++;porTipo[f.item.tipo].valor+=v.valor}});
-  const tiposTxt=Object.entries(porTipo).map(([t,d])=>`${d.qtd} ${t} (R$${d.valor.toFixed(2)})`).join(' • ')||'-';
-  return `<div class="lucro-box"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px"><h3 style="margin:0">📦 ${r.nome}</h3><span style="font-size:0.8em;color:#666">📅${periodo}</span></div><div style="font-size:0.85em;margin-bottom:6px"><b>Vendeu:</b>${tiposTxt}</div><div class="lucro-grid"><div class="lucro-item"><div class="v">${vendidos}</div><div class="l">Vendidas</div></div><div class="lucro-item"><div class="v">R$${custo.toFixed(2)}</div><div class="l">💵 Custo</div></div><div class="lucro-item"><div class="v">R$${receita.toFixed(2)}</div><div class="l">💰 Vendeu</div></div><div class="lucro-item" style="border-color:${lucro>=0?'#28a745':'#dc3545'}"><div class="v" style="color:${lucro>=0?'#28a745':'#dc3545'}">R$${lucro.toFixed(2)}</div><div class="l">${lucro>=0?'LUCRO':'📉PREJUÍZO'}</div></div></div>${lucro>0?renderProlabore(lucro):'<p style="color:#888;text-align:center;margin-top:8px">Sem lucro.</p>'}</div>`;
-}
-function renderProlabore(lucro){
-  const perc=state.percentuais;const total=Object.values(perc).reduce((a,b)=>a+b,0);
-  const items=[{nome:'Luciano (Pai)',key:'Luciano'},{nome:'Verônica (Mãe)',key:'Verônica'},{nome:'Alexandre',key:'Alexandre'},{nome:'Luciano Junior',key:'Luciano Junior'},{nome:'Caixa da Empresa',key:'Caixa'}];
-  return `<div style="margin-top:10px"><h4 style="color:#8B4513;margin-bottom:6px;font-size:0.95em">💼 Pró-Labore (lucro: R$${lucro.toFixed(2)})</h4>${items.map(it=>{const p=perc[it.key]||0;const v=lucro*p/100;return `<div class="prolabore-item"><div><div class="nome">${it.nome}</div><div class="perc">${p}%</div></div><div class="valor">R$${v.toFixed(2)}</div></div>`}).join('')}${Math.abs(total-100)>0.01?`<div class="alert alert-danger" style="margin-top:6px">⚠️ Total: ${total}% (deveria ser 100%)</div>`:''}</div>`;
+  html += '</tbody></table></div>';
+  return html;
 }
 
-// EXPORTAR
-function exportarPDF(){
-  const vendas=getVendasFiltradas();if(vendas.length===0){alert('Nenhuma venda!');return}
-  const{jsPDF}=window.jspdf;const doc=new jsPDF();
-  doc.setFontSize(14);doc.text('Relatório de Vendas - Cocadas da Família',14,15);
-  doc.setFontSize(9);doc.text('Gerado: '+new Date().toLocaleString('pt-BR'),14,21);
-  const rows=vendas.map(v=>{const f=findItem(v.itemId);return[formatarDataHora(v.data),v.vendedor,f?f.item.tipo:'?',f?f.remessa.nome:'?',v.comprador,'R$'+v.valor.toFixed(2),v.pagamento+(v.pacote?' (Pacote×10)':'')]});
-  doc.autoTable({head:[['Data','Vendedor','Produto','Remessa','Comprador','Valor','Pagto']],body:rows,startY:26,styles:{fontSize:7},headStyles:{fillColor:[139,69,19]}});
-  const total=vendas.reduce((s,v)=>s+v.valor,0);doc.setFontSize(10);doc.text('Total: R$'+total.toFixed(2)+' ('+vendas.length+' vendas)',14,doc.lastAutoTable.finalY+5);
-  doc.save('relatorio-vendas-'+new Date().toISOString().slice(0,10)+'.pdf');
+function marcarPago(id) {
+  var v = null;
+  state.vendas.forEach(function(x) { if (x.id === id) v = x; });
+  if (!v) return;
+  v.pago = true;
+  v.dataPagamento = new Date().toISOString();
+  
+  dbUpdate('vendas', id, { pago: true, dataPagamento: v.dataPagamento }).then(function() {
+    if (!firebaseAtivo) saveLocal();
+    renderTudo();
+    alert('✅ Marcado como pago!');
+  });
 }
-function exportarPDFVendedor(){
-  const vendedores=['Luciano','Verônica','Luciano Junior','Alexandre'];
-  const{jsPDF}=window.jspdf;const doc=new jsPDF();
-  doc.setFontSize(14);doc.text('Relatório por Vendedor',14,15);doc.setFontSize(9);doc.text('Gerado: '+new Date().toLocaleString('pt-BR'),14,21);
-  let y=28;
-  vendedores.forEach(vend=>{
-    const vendas=state.vendas.filter(v=>v.vendedor===vend);const total=vendas.reduce((s,v)=>s+v.valor,0);
-    if(y>250){doc.addPage();y=20}
-    doc.setFontSize(11);doc.setTextColor(139,69,19);doc.text('👤 '+vend+' — '+vendas.length+' vendas — R$'+total.toFixed(2),14,y);y+=5;doc.setTextColor(0);
-    if(vendas.length>0){const rows=vendas.map(v=>{const f=findItem(v.itemId);return[formatarData(v.data),f?f.item.tipo:'?',v.comprador,'R$'+v.valor.toFixed(2),v.pagamento]});doc.autoTable({head:[['Data','Produto','Comprador','Valor','Pagto']],body:rows,startY:y,styles:{fontSize:7},headStyles:{fillColor:[210,105,30]}});y=doc.lastAutoTable.finalY+6}
-    else{doc.setFontSize(8);doc.text('Nenhuma venda.',14,y);y+=6}
+
+// ============ LUCROS ============
+function renderLucros() {
+  var sel = document.getElementById('lucroRemessa');
+  sel.innerHTML = '<option value="">Todas (consolidado)</option>' + state.remessas.map(function(r) { return '<option value="' + r.id + '">' + r.nome + '</option>'; }).join('');
+  
+  var periodo = document.getElementById('lucroPeriodo').value;
+  document.getElementById('lucroPeriodoCustom').style.display = periodo === 'custom' ? 'block' : 'none';
+  
+  var remessas = state.remessas.slice();
+  var selId = sel.value;
+  if (selId) {
+    remessas = remessas.filter(function(r) { return r.id === selId; });
+  }
+  
+  if (remessas.length === 0) {
+    document.getElementById('lucrosConteudo').innerHTML = '<p style="color:#888">Nenhuma remessa.</p>';
+    return;
+  }
+  
+  var dataDe = null, dataAte = null;
+  if (periodo === '7') { var d = new Date(); d.setDate(d.getDate() - 7); dataDe = d.toISOString().slice(0,10); }
+  else if (periodo === '30') { var d = new Date(); d.setDate(d.getDate() - 30); dataDe = d.toISOString().slice(0,10); }
+  else if (periodo === 'custom') {
+    dataDe = document.getElementById('lucroDe').value || null;
+    dataAte = document.getElementById('lucroAte').value || null;
+  }
+  
+  var html = '';
+  var totalReceita = 0, totalCusto = 0, totalLucro = 0;
+  var dataMin = null, dataMax = null;
+  
+  remessas.forEach(function(r) {
+    var ids = r.itens.map(function(i) { return i.id; });
+    var vendas = state.vendas.filter(function(v) { return ids.indexOf(v.itemId) !== -1; });
+    if (dataDe) vendas = vendas.filter(function(v) { return v.data.slice(0,10) >= dataDe; });
+    if (dataAte) vendas = vendas.filter(function(v) { return v.data.slice(0,10) <= dataAte; });
+    
+    var vendidos = vendas.length;
+    var receita = vendas.reduce(function(s, v) { return s + v.valor; }, 0);
+    var custo = r.custo || 0;
+    var custoProp = vendidos > 0 && r.itens.length > 0 ? (custo * vendidos / r.itens.length) : 0;
+    var lucro = receita - custoProp;
+    
+    if (vendas.length > 0) {
+      var datas = vendas.map(function(v) { return v.data.slice(0,10); }).sort();
+      if (!dataMin || datas[0] < dataMin) dataMin = datas[0];
+      if (!dataMax || datas[datas.length-1] > dataMax) dataMax = datas[datas.length-1];
+    }
+    
+    totalReceita += receita;
+    totalCusto += custoProp;
+    totalLucro += lucro;
+    
+    if (!selId || state.remessas.length > 1) {
+      html += renderBlocoLucro(r, vendas, receita, custoProp, lucro);
+    }
+  });
+  
+  if (selId) {
+    var r = remessas[0];
+    var ids = r.itens.map(function(i) { return i.id; });
+    var vendas = state.vendas.filter(function(v) { return ids.indexOf(v.itemId) !== -1; });
+    if (dataDe) vendas = vendas.filter(function(v) { return v.data.slice(0,10) >= dataDe; });
+    if (dataAte) vendas = vendas.filter(function(v) { return v.data.slice(0,10) <= dataAte; });
+    var receita = vendas.reduce(function(s, v) { return s + v.valor; }, 0);
+    var custo = r.custo || 0;
+    var vendidos = vendas.length;
+    var custoProp = vendidos > 0 && r.itens.length > 0 ? (custo * vendidos / r.itens.length) : 0;
+    var lucro = receita - custoProp;
+    html = renderBlocoLucro(r, vendas, receita, custoProp, lucro, true);
+  }
+  
+  if (remessas.length > 1 || !selId) {
+    html += '<div class="lucro-box" style="border-color:#28a745;background:linear-gradient(135deg,#d4edda,#c3e6cb)">';
+    html += '<h3 style="color:#155724">💼 CONSOLIDADO GERAL</h3>';
+    html += '<div class="lucro-grid">';
+    html += '<div class="lucro-item"><div class="v">' + (dataMin ? formatarData(dataMin) + ' a ' + formatarData(dataMax) : '-') + '</div><div class="l">Período</div></div>';
+    html += '<div class="lucro-item"><div class="v">R$ ' + totalReceita.toFixed(2) + '</div><div class="l">Receita</div></div>';
+    html += '<div class="lucro-item"><div class="v">R$ ' + totalCusto.toFixed(2) + '</div><div class="l">Custo</div></div>';
+    html += '<div class="lucro-item" style="border-color:#28a745"><div class="v" style="color:#28a745">R$ ' + totalLucro.toFixed(2) + '</div><div class="l">💰 LUCRO</div></div>';
+    html += '</div>';
+    html += renderProlabore(totalLucro);
+    html += '</div>';
+  }
+  
+  document.getElementById('lucrosConteudo').innerHTML = html;
+}
+
+function renderBlocoLucro(r, vendas, receita, custo, lucro, detalhado) {
+  var vendidos = vendas.length;
+  var datas = vendas.map(function(v) { return v.data.slice(0,10); }).sort();
+  var periodo = datas.length ? formatarData(datas[0]) + ' a ' + formatarData(datas[datas.length-1]) : '-';
+  
+  var porTipo = {};
+  vendas.forEach(function(v) {
+    var f = findItem(v.itemId);
+    if (f) {
+      if (!porTipo[f.item.tipo]) porTipo[f.item.tipo] = { qtd: 0, valor: 0 };
+      porTipo[f.item.tipo].qtd++;
+      porTipo[f.item.tipo].valor += v.valor;
+    }
+  });
+  
+  var tiposTxt = '';
+  Object.keys(porTipo).forEach(function(t) {
+    if (tiposTxt) tiposTxt += ' • ';
+    tiposTxt += porTipo[t].qtd + ' ' + t + ' (R$ ' + porTipo[t].valor.toFixed(2) + ')';
+  });
+  if (!tiposTxt) tiposTxt = '-';
+  
+  var html = '<div class="lucro-box">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px">';
+  html += '<h3 style="margin:0">📦 ' + r.nome + '</h3>';
+  html += '<span style="font-size:0.8em;color:#666"> ' + periodo + '</span>';
+  html += '</div>';
+  html += '<div style="font-size:0.85em;margin-bottom:6px"><b>Vendeu:</b> ' + tiposTxt + '</div>';
+  html += '<div class="lucro-grid">';
+  html += '<div class="lucro-item"><div class="v">' + vendidos + '</div><div class="l">Vendidas</div></div>';
+  html += '<div class="lucro-item"><div class="v">R$ ' + custo.toFixed(2) + '</div><div class="l">💵 Custo</div></div>';
+  html += '<div class="lucro-item"><div class="v">R$ ' + receita.toFixed(2) + '</div><div class="l">💰 Vendeu</div></div>';
+  html += '<div class="lucro-item" style="border-color:' + (lucro >= 0 ? '#28a745' : '#dc3545') + '"><div class="v" style="color:' + (lucro >= 0 ? '#28a745' : '#dc3545') + '">R$ ' + lucro.toFixed(2) + '</div><div class="l">' + (lucro >= 0 ? '💹 LUCRO' : '📉 PREJUÍZO') + '</div></div>';
+  html += '</div>';
+  if (lucro > 0) html += renderProlabore(lucro);
+  else html += '<p style="color:#888;text-align:center;margin-top:8px">Sem lucro.</p>';
+  html += '</div>';
+  return html;
+}
+
+function renderProlabore(lucro) {
+  var perc = state.percentuais;
+  var total = 0;
+  Object.keys(perc).forEach(function(k) { total += perc[k]; });
+  
+  var items = [
+    { nome: 'Luciano (Pai)', key: 'Luciano' },
+    { nome: 'Verônica (Mãe)', key: 'Verônica' },
+    { nome: 'Alexandre', key: 'Alexandre' },
+    { nome: 'Luciano Junior', key: 'Luciano Junior' },
+    { nome: 'Caixa da Empresa', key: 'Caixa' }
+  ];
+  
+  var html = '<div style="margin-top:10px">';
+  html += '<h4 style="color:#8B4513;margin-bottom:6px;font-size:0.95em">💼 Pró-Labore (lucro: R$ ' + lucro.toFixed(2) + ')</h4>';
+  items.forEach(function(it) {
+    var p = perc[it.key] || 0;
+    var v = lucro * p / 100;
+    html += '<div class="prolabore-item">';
+    html += '<div><div class="nome">' + it.nome + '</div><div class="perc">' + p + '%</div></div>';
+    html += '<div class="valor">R$ ' + v.toFixed(2) + '</div>';
+    html += '</div>';
+  });
+  if (Math.abs(total - 100) > 0.01) {
+    html += '<div class="alert alert-danger" style="margin-top:6px">⚠️ Total: ' + total.toFixed(2) + '% (deveria ser 100%)</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+// ============ EXPORTAR ============
+function exportarPDF() {
+  var vendas = getVendasFiltradas();
+  if (vendas.length === 0) { alert('Nenhuma venda!'); return; }
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF();
+  doc.setFontSize(14);
+  doc.text('Relatório de Vendas - Cocadas da Família', 14, 15);
+  doc.setFontSize(9);
+  doc.text('Gerado: ' + new Date().toLocaleString('pt-BR'), 14, 21);
+  
+  var rows = vendas.map(function(v) {
+    var f = findItem(v.itemId);
+    return [
+      formatarDataHora(v.data),
+      v.vendedor,
+      f ? f.item.tipo : '?',
+      f ? f.remessa.nome : '?',
+      v.comprador,
+      'R$ ' + v.valor.toFixed(2),
+      v.pagamento + (v.pacote ? ' (Pacote×10)' : '')
+    ];
+  });
+  
+  doc.autoTable({
+    head: [['Data','Vendedor','Produto','Remessa','Comprador','Valor','Pagto']],
+    body: rows,
+    startY: 26,
+    styles: { fontSize: 7 },
+    headStyles: { fillColor: [139, 69, 19] }
+  });
+  
+  var total = vendas.reduce(function(s, v) { return s + v.valor; }, 0);
+  doc.setFontSize(10);
+  doc.text('Total: R$ ' + total.toFixed(2) + ' (' + vendas.length + ' vendas)', 14, doc.lastAutoTable.finalY + 5);
+  doc.save('relatorio-vendas-' + new Date().toISOString().slice(0,10) + '.pdf');
+}
+
+function exportarPDFVendedor() {
+  var vendedores = ['Luciano', 'Verônica', 'Luciano Junior', 'Alexandre'];
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF();
+  doc.setFontSize(14);
+  doc.text('Relatório por Vendedor', 14, 15);
+  doc.setFontSize(9);
+  doc.text('Gerado: ' + new Date().toLocaleString('pt-BR'), 14, 21);
+  
+  var y = 28;
+  vendedores.forEach(function(vend) {
+    var vendas = state.vendas.filter(function(v) { return v.vendedor === vend; });
+    var total = vendas.reduce(function(s, v) { return s + v.valor; }, 0);
+    if (y > 250) { doc.addPage(); y = 20; }
+    doc.setFontSize(11);
+    doc.setTextColor(139, 69, 19);
+    doc.text(vend + ' - ' + vendas.length + ' vendas - R$ ' + total.toFixed(2), 14, y);
+    y += 5;
+    doc.setTextColor(0);
+    if (vendas.length > 0) {
+      var rows = vendas.map(function(v) {
+        var f = findItem(v.itemId);
+        return [formatarData(v.data), f ? f.item.tipo : '?', v.comprador, 'R$ ' + v.valor.toFixed(2), v.pagamento];
+      });
+      doc.autoTable({
+        head: [['Data','Produto','Comprador','Valor','Pagto']],
+        body: rows,
+        startY: y,
+        styles: { fontSize: 7 },
+        headStyles: { fillColor: [210, 105, 30] }
+      });
+      y = doc.lastAutoTable.finalY + 6;
+    } else {
+      doc.setFontSize(8);
+      doc.text('Nenhuma venda.', 14, y);
+      y += 6;
+    }
   });
   doc.save('relatorio-vendedores.pdf');
 }
-function exportarPDFProduto(){
-  const tipos=['Coco','Cacau','Banana','Paçoca'];
-  const{jsPDF}=window.jspdf;const doc=new jsPDF();
-  doc.setFontSize(14);doc.text('Relatório por Produto',14,15);doc.setFontSize(9);doc.text('Gerado: '+new Date().toLocaleString('pt-BR'),14,21);
-  let y=28;
-  tipos.forEach(tipo=>{
-    const vendas=state.vendas.filter(v=>{const f=findItem(v.itemId);return f&&f.item.tipo===tipo});const total=vendas.reduce((s,v)=>s+v.valor,0);
-    if(y>250){doc.addPage();y=20}
-    const emoji={'Coco':'🥥','Cacau':'🍫','Banana':'','Paçoca':'🥜'}[tipo];
-    doc.setFontSize(11);doc.setTextColor(139,69,19);doc.text(emoji+' '+tipo+' — '+vendas.length+' vendas — R$'+total.toFixed(2),14,y);y+=5;doc.setTextColor(0);
-    if(vendas.length>0){const rows=vendas.map(v=>{const f=findItem(v.itemId);return[formatarData(v.data),v.vendedor,v.comprador,'R$'+v.valor.toFixed(2),v.pagamento]});doc.autoTable({head:[['Data','Vendedor','Comprador','Valor','Pagto']],body:rows,startY:y,styles:{fontSize:7},headStyles:{fillColor:[210,105,30]}});y=doc.lastAutoTable.finalY+6}
-    else{doc.setFontSize(8);doc.text('Nenhuma venda.',14,y);y+=6}
+
+function exportarPDFProduto() {
+  var tipos = ['Coco', 'Cacau', 'Banana', 'Paçoca'];
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF();
+  doc.setFontSize(14);
+  doc.text('Relatório por Produto', 14, 15);
+  doc.setFontSize(9);
+  doc.text('Gerado: ' + new Date().toLocaleString('pt-BR'), 14, 21);
+  
+  var y = 28;
+  tipos.forEach(function(tipo) {
+    var vendas = state.vendas.filter(function(v) {
+      var f = findItem(v.itemId);
+      return f && f.item.tipo === tipo;
+    });
+    var total = vendas.reduce(function(s, v) { return s + v.valor; }, 0);
+    if (y > 250) { doc.addPage(); y = 20; }
+    var emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[tipo] || '';
+    doc.setFontSize(11);
+    doc.setTextColor(139, 69, 19);
+    doc.text(emoji + ' ' + tipo + ' - ' + vendas.length + ' vendas - R$ ' + total.toFixed(2), 14, y);
+    y += 5;
+    doc.setTextColor(0);
+    if (vendas.length > 0) {
+      var rows = vendas.map(function(v) {
+        var f = findItem(v.itemId);
+        return [formatarData(v.data), v.vendedor, v.comprador, 'R$ ' + v.valor.toFixed(2), v.pagamento];
+      });
+      doc.autoTable({
+        head: [['Data','Vendedor','Comprador','Valor','Pagto']],
+        body: rows,
+        startY: y,
+        styles: { fontSize: 7 },
+        headStyles: { fillColor: [210, 105, 30] }
+      });
+      y = doc.lastAutoTable.finalY + 6;
+    } else {
+      doc.setFontSize(8);
+      doc.text('Nenhuma venda.', 14, y);
+      y += 6;
+    }
   });
   doc.save('relatorio-produtos.pdf');
 }
-function exportarExcel(){
-  const vendas=getVendasFiltradas();if(vendas.length===0){alert('Nenhuma venda!');return}
-  const dados=vendas.map(v=>{const f=findItem(v.itemId);return{'Data':formatarDataHora(v.data),'Vendedor':v.vendedor,'Produto':f?f.item.tipo:'','Remessa':f?f.remessa.nome:'','Comprador':v.comprador,'Valor':v.valor,'Pagamento':v.pagamento,'Pacote':v.pacote?'Sim (×10)':'Não','Status':v.pagamento==='Fiado'?(v.pago?'Pago':'Pendente'):'OK','Observação':v.obs||''}});
-  const ws=XLSX.utils.json_to_sheet(dados);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Vendas');XLSX.writeFile(wb,'relatorio-vendas-'+new Date().toISOString().slice(0,10)+'.xlsx');
+
+function exportarExcel() {
+  var vendas = getVendasFiltradas();
+  if (vendas.length === 0) { alert('Nenhuma venda!'); return; }
+  var dados = vendas.map(function(v) {
+    var f = findItem(v.itemId);
+    return {
+      'Data': formatarDataHora(v.data),
+      'Vendedor': v.vendedor,
+      'Produto': f ? f.item.tipo : '',
+      'Remessa': f ? f.remessa.nome : '',
+      'Comprador': v.comprador,
+      'Valor': v.valor,
+      'Pagamento': v.pagamento,
+      'Pacote': v.pacote ? 'Sim (x10)' : 'Não',
+      'Status': v.pagamento === 'Fiado' ? (v.pago ? 'Pago' : 'Pendente') : 'OK',
+      'Observação': v.obs || ''
+    };
+  });
+  var ws = XLSX.utils.json_to_sheet(dados);
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Vendas');
+  XLSX.writeFile(wb, 'relatorio-vendas-' + new Date().toISOString().slice(0,10) + '.xlsx');
 }
 
-// CONFIG
-function renderConfig(){
-  document.getElementById('firebaseConfig').value=state.firebaseConfig?JSON.stringify(state.firebaseConfig,null,2):'';
-  document.getElementById('percLuciano').value=state.percentuais.Luciano;
-  document.getElementById('percVeronica').value=state.percentuais.Verônica;
-  document.getElementById('percAlexandre').value=state.percentuais.Alexandre;
-  document.getElementById('percLucianoJr').value=state.percentuais['Luciano Junior'];
-  document.getElementById('percCaixa').value=state.percentuais.Caixa;
+// ============ CONFIG ============
+function renderConfig() {
+  document.getElementById('firebaseConfig').value = state.firebaseConfig ? JSON.stringify(state.firebaseConfig, null, 2) : '';
+  document.getElementById('percLuciano').value = state.percentuais.Luciano;
+  document.getElementById('percVeronica').value = state.percentuais.Verônica;
+  document.getElementById('percAlexandre').value = state.percentuais.Alexandre;
+  document.getElementById('percLucianoJr').value = state.percentuais['Luciano Junior'];
+  document.getElementById('percCaixa').value = state.percentuais.Caixa;
 }
-function salvarPercentuais(){
-  const p={Luciano:parseFloat(document.getElementById('percLuciano').value)||0,Verônica:parseFloat(document.getElementById('percVeronica').value)||0,Alexandre:parseFloat(document.getElementById('percAlexandre').value)||0,'Luciano Junior':parseFloat(document.getElementById('percLucianoJr').value)||0,Caixa:parseFloat(document.getElementById('percCaixa').value)||0};
-  const total=Object.values(p).reduce((a,b)=>a+b,0);
-  if(Math.abs(total-100)>0.01){if(!confirm('Total é '+total.toFixed(2)+'% (deveria ser 100%). Salvar mesmo?'))return}
-  state.percentuais=p;
-  if(firebaseAtivo&&db)dbSet('config','principal',{percentuais:p});
-  saveLocal();alert('✅ Percentuais salvos!');renderLucros();
+
+function salvarPercentuais() {
+  var p = {
+    Luciano: parseFloat(document.getElementById('percLuciano').value) || 0,
+    Verônica: parseFloat(document.getElementById('percVeronica').value) || 0,
+    Alexandre: parseFloat(document.getElementById('percAlexandre').value) || 0,
+    'Luciano Junior': parseFloat(document.getElementById('percLucianoJr').value) || 0,
+    Caixa: parseFloat(document.getElementById('percCaixa').value) || 0
+  };
+  var total = 0;
+  Object.keys(p).forEach(function(k) { total += p[k]; });
+  if (Math.abs(total - 100) > 0.01) {
+    if (!confirm('Total é ' + total.toFixed(2) + '% (deveria ser 100%). Salvar mesmo?')) return;
+  }
+  state.percentuais = p;
+  if (firebaseAtivo && db) {
+    db.collection('config').doc('principal').set({ percentuais: p });
+  }
+  saveLocal();
+  alert('✅ Percentuais salvos!');
+  renderLucros();
 }
-function exportarDados(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='backup-cocadas-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url)}
-function importarDados(){document.getElementById('fileImport').click()}
-document.getElementById('fileImport').addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const data=JSON.parse(ev.target.result);if(!confirm('Substituir TODOS os dados?'))return;state={...state,...data};saveLocal();renderTudo();alert('✅ Restaurado!')}catch(err){alert('❌ Arquivo inválido!')}};reader.readAsText(file)});
-async function limparTudo(){if(!confirm('️ Apagar TUDO?'))return;if(!confirm('Tem certeza MESMO?'))return;if(firebaseAtivo&&db){const r=await db.collection('remessas').get();const v=await db.collection('vendas').get();const batch=db.batch();r.docs.forEach(d=>batch.delete(d.ref));v.docs.forEach(d=>batch.delete(d.ref));await batch.commit()}state.remessas=[];state.vendas=[];saveLocal();renderTudo();alert('Dados apagados.')}
 
-// UTIL
-function formatarData(iso){if(!iso)return'-';const d=new Date(iso.length===10?iso+'T00:00:00':iso);return d.toLocaleDateString('pt-BR')}
-function formatarDataHora(iso){const d=new Date(iso);return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
-function renderTudo(){renderEstoque();renderRemessas();renderStats();renderRelatorios();renderFiados()}
+function exportarDados() {
+  var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'backup-cocadas-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
-// PWA
-if('serviceWorker'in navigator){const swCode=`const C='cocadas-v2';self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(clients.claim())});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{const c=resp.clone();caches.open(C).then(ca=>ca.put(e.request,c));return resp}).catch(()=>caches.match(e.request))))}`;const blob=new Blob([swCode],{type:'application/javascript'});navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(e=>console.log('SW:',e))}
+function importarDados() {
+  document.getElementById('fileImport').click();
+}
+document.getElementById('fileImport').addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      if (!confirm('Substituir TODOS os dados?')) return;
+      state.usuario = data.usuario || '';
+      state.remessas = data.remessas || [];
+      state.vendas = data.vendas || [];
+      if (data.percentuais) state.percentuais = data.percentuais;
+      if (data.firebaseConfig) state.firebaseConfig = data.firebaseConfig;
+      saveLocal();
+      renderTudo();
+      alert('✅ Restaurado!');
+    } catch(err) {
+      alert('❌ Arquivo inválido!');
+    }
+  };
+  reader.readAsText(file);
+});
 
-renderConfig();renderTudo();
-if(state.firebaseConfig)initFirebase();
+function limparTudo() {
+  if (!confirm('⚠️ Apagar TUDO?')) return;
+  if (!confirm('Tem certeza MESMO?')) return;
+  if (firebaseAtivo && db) {
+    db.collection('remessas').get().then(function(r) {
+      db.collection('vendas').get().then(function(v) {
+        var batch = db.batch();
+        r.docs.forEach(function(d) { batch.delete(d.ref); });
+        v.docs.forEach(function(d) { batch.delete(d.ref); });
+        batch.commit().then(function() {
+          state.remessas = [];
+          state.vendas = [];
+          saveLocal();
+          renderTudo();
+          alert('Dados apagados.');
+        });
+      });
+    });
+  } else {
+    state.remessas = [];
+    state.vendas = [];
+    saveLocal();
+    renderTudo();
+    alert('Dados apagados.');
+  }
+}
+
+// ============ RENDER TUDO ============
+function renderTudo() {
+  renderEstoque();
+  renderRemessas();
+  renderStats();
+  renderRelatorios();
+  renderFiados();
+}
+
+// ============ PWA ============
+if ('serviceWorker' in navigator) {
+  var swCode = "var C='cocadas-v3';self.addEventListener('install',function(e){self.skipWaiting()});self.addEventListener('activate',function(e){e.waitUntil(clients.claim())});self.addEventListener('fetch',function(e){if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(resp){var c=resp.clone();caches.open(C).then(function(ca){ca.put(e.request,c)});return resp}).catch(function(){return caches.match(e.request)})})})";
+  var blob = new Blob([swCode], { type: 'application/javascript' });
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(function(e) { console.log('SW:', e); });
+}
+
+// ============ INIT ============
+renderConfig();
+renderTudo();
+if (state.firebaseConfig) initFirebase();
 </script>
 </body>
 </html>
