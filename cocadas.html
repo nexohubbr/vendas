@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#8B4513">
 <title>🍬 Cocadas da Família</title>
+
+<!-- PWA Manifest inline -->
+<link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Cocadas da Família","short_name":"Cocadas","start_url":".","display":"standalone","background_color":"%23F4A460","theme_color":"%238B4513","orientation":"portrait","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%238B4513%22/><text x=%2296%22 y=%22130%22 font-size=%22110%22 text-anchor=%22middle%22>🍬</text></svg>","sizes":"192x192","type":"image/svg+xml"},{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22100%22 fill=%22%238B4513%22/><text x=%22256%22 y=%22340%22 font-size=%22300%22 text-anchor=%22middle%22>🍬</text></svg>","sizes":"512x512","type":"image/svg+xml"}]}'>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍬</text></svg>'>
+
+<!-- Bibliotecas via CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.0/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
   body {
@@ -12,137 +25,183 @@
   }
   .container { max-width:1200px; margin:0 auto; }
   header {
-    background:rgba(255,255,255,0.95); border-radius:20px; padding:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.3); margin-bottom:20px;
-    display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:15px;
+    background:rgba(255,255,255,0.95); border-radius:20px; padding:15px 20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3); margin-bottom:15px;
+    display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;
   }
-  header h1 { font-size:1.8em; color:#8B4513; }
-  header h1 span { font-size:1.2em; }
+  header h1 { font-size:1.5em; color:#8B4513; }
+  .sync-status {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:4px 10px; border-radius:20px; font-size:0.8em; font-weight:bold;
+  }
+  .sync-online { background:#d4edda; color:#155724; }
+  .sync-offline { background:#fff3cd; color:#856404; }
+  .sync-dot { width:8px; height:8px; border-radius:50%; background:currentColor; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
   .user-select {
-    display:flex; align-items:center; gap:10px;
-    background:#fff8dc; padding:8px 15px; border-radius:30px;
-    border:2px solid #D2691E;
+    display:flex; align-items:center; gap:8px;
+    background:#fff8dc; padding:6px 12px; border-radius:30px;
+    border:2px solid #D2691E; font-size:0.9em;
   }
   .user-select select {
-    border:none; background:transparent; font-size:1em; font-weight:bold; color:#8B4513;
+    border:none; background:transparent; font-weight:bold; color:#8B4513;
     cursor:pointer; outline:none;
   }
   .tabs {
-    display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr));
+    gap:6px; margin-bottom:15px;
   }
   .tab {
-    flex:1; min-width:120px; padding:14px; background:rgba(255,255,255,0.7);
-    border:none; border-radius:12px; font-size:1em; font-weight:bold;
-    cursor:pointer; color:#8B4513; transition:all 0.3s;
+    padding:10px 8px; background:rgba(255,255,255,0.7);
+    border:none; border-radius:12px; font-size:0.85em; font-weight:bold;
+    cursor:pointer; color:#8B4513; transition:all 0.2s;
   }
-  .tab:hover { background:rgba(255,255,255,0.9); transform:translateY(-2px); }
+  .tab:hover { background:rgba(255,255,255,0.9); }
   .tab.active {
     background:linear-gradient(135deg,#D2691E,#8B4513); color:#fff;
     box-shadow:0 5px 15px rgba(139,69,19,0.4);
   }
   .panel {
-    background:rgba(255,255,255,0.95); border-radius:20px; padding:25px;
+    background:rgba(255,255,255,0.95); border-radius:20px; padding:20px;
     box-shadow:0 10px 30px rgba(0,0,0,0.2); display:none;
   }
-  .panel.active { display:block; animation:fadeIn 0.4s; }
+  .panel.active { display:block; animation:fadeIn 0.3s; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
-  h2 { color:#8B4513; margin-bottom:15px; border-bottom:3px solid #F4A460; padding-bottom:8px; }
-  h3 { color:#D2691E; margin:15px 0 10px; }
+  h2 { color:#8B4513; margin-bottom:15px; border-bottom:3px solid #F4A460; padding-bottom:8px; font-size:1.3em; }
+  h3 { color:#D2691E; margin:15px 0 10px; font-size:1.1em; }
 
-  /* Cards de estoque */
-  .grid {
-    display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:15px;
-  }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
   .card {
     background:linear-gradient(135deg,#fff8dc,#ffefd5); border-radius:15px;
-    padding:18px; border:2px solid #F4A460; position:relative;
-    transition:transform 0.2s;
+    padding:15px; border:2px solid #F4A460; transition:transform 0.2s;
   }
   .card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
-  .card.vendido {
-    background:linear-gradient(135deg,#d3d3d3,#a9a9a9); opacity:0.7;
-    border-color:#888;
-  }
-  .card .tipo { font-size:1.3em; font-weight:bold; color:#8B4513; margin-bottom:5px; }
-  .card .remessa { font-size:0.85em; color:#666; margin-bottom:8px; }
-  .card .preco { font-size:1.1em; font-weight:bold; color:#D2691E; margin-bottom:10px; }
-  .card .status {
-    display:inline-block; padding:4px 10px; border-radius:20px;
-    font-size:0.8em; font-weight:bold;
+  .card.vendido { background:linear-gradient(135deg,#d3d3d3,#a9a9a9); opacity:0.75; border-color:#888; }
+  .card .tipo { font-size:1.2em; font-weight:bold; color:#8B4513; }
+  .card .remessa { font-size:0.8em; color:#666; margin:3px 0; }
+  .card .preco { font-size:1em; font-weight:bold; color:#D2691E; margin:5px 0; }
+  .status {
+    display:inline-block; padding:3px 10px; border-radius:20px;
+    font-size:0.75em; font-weight:bold;
   }
   .status.disponivel { background:#90EE90; color:#006400; }
   .status.vendido { background:#FF6B6B; color:#fff; }
+
   .btn {
-    padding:10px 18px; border:none; border-radius:10px; cursor:pointer;
-    font-weight:bold; font-size:0.95em; transition:all 0.2s;
+    padding:8px 14px; border:none; border-radius:10px; cursor:pointer;
+    font-weight:bold; font-size:0.9em; transition:all 0.2s;
   }
   .btn-primary { background:linear-gradient(135deg,#D2691E,#8B4513); color:#fff; }
-  .btn-primary:hover { transform:scale(1.05); box-shadow:0 5px 15px rgba(0,0,0,0.2); }
   .btn-success { background:#28a745; color:#fff; }
   .btn-danger { background:#dc3545; color:#fff; }
   .btn-warning { background:#ffc107; color:#333; }
-  .btn-sm { padding:6px 12px; font-size:0.85em; }
+  .btn-info { background:#17a2b8; color:#fff; }
+  .btn-sm { padding:5px 10px; font-size:0.8em; }
+  .btn:hover { transform:scale(1.05); }
 
-  /* Formulários */
-  .form-group { margin-bottom:12px; }
-  .form-group label { display:block; font-weight:bold; margin-bottom:5px; color:#8B4513; }
+  .form-group { margin-bottom:10px; }
+  .form-group label { display:block; font-weight:bold; margin-bottom:4px; color:#8B4513; font-size:0.9em; }
   .form-group input, .form-group select, .form-group textarea {
-    width:100%; padding:10px; border:2px solid #F4A460; border-radius:8px;
-    font-size:1em; background:#fff;
+    width:100%; padding:8px; border:2px solid #F4A460; border-radius:8px;
+    font-size:0.95em; background:#fff;
   }
   .form-group input:focus, .form-group select:focus { outline:none; border-color:#D2691E; }
   .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .form-row-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
 
-  /* Modal */
   .modal-overlay {
     display:none; position:fixed; top:0; left:0; width:100%; height:100%;
     background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;
+    padding:15px;
   }
   .modal-overlay.active { display:flex; }
   .modal {
-    background:#fff; border-radius:20px; padding:25px; max-width:500px; width:90%;
+    background:#fff; border-radius:20px; padding:20px; max-width:500px; width:100%;
     max-height:90vh; overflow-y:auto;
   }
-  .modal h2 { margin-bottom:15px; }
-  .modal-actions { display:flex; gap:10px; margin-top:15px; justify-content:flex-end; }
+  .modal-actions { display:flex; gap:8px; margin-top:15px; justify-content:flex-end; flex-wrap:wrap; }
 
-  /* Tabela */
-  table { width:100%; border-collapse:collapse; margin-top:10px; background:#fff; border-radius:10px; overflow:hidden; }
-  th { background:linear-gradient(135deg,#D2691E,#8B4513); color:#fff; padding:10px; text-align:left; font-size:0.9em; }
-  td { padding:10px; border-bottom:1px solid #eee; font-size:0.9em; }
+  table { width:100%; border-collapse:collapse; margin-top:10px; background:#fff; border-radius:10px; overflow:hidden; font-size:0.85em; }
+  th { background:linear-gradient(135deg,#D2691E,#8B4513); color:#fff; padding:8px; text-align:left; }
+  td { padding:8px; border-bottom:1px solid #eee; }
   tr:hover { background:#fff8dc; }
   .badge {
-    display:inline-block; padding:3px 8px; border-radius:12px; font-size:0.75em; font-weight:bold;
+    display:inline-block; padding:2px 8px; border-radius:12px; font-size:0.75em; font-weight:bold;
   }
   .badge-fiado { background:#FFC107; color:#333; }
   .badge-avista { background:#28a745; color:#fff; }
   .badge-pix { background:#17a2b8; color:#fff; }
 
-  /* Dashboard */
-  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:15px; margin-bottom:20px; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:15px; }
   .stat-card {
-    background:linear-gradient(135deg,#fff8dc,#ffefd5); padding:20px;
-    border-radius:15px; border-left:5px solid #D2691E;
+    background:linear-gradient(135deg,#fff8dc,#ffefd5); padding:15px;
+    border-radius:12px; border-left:4px solid #D2691E;
   }
-  .stat-card .valor { font-size:1.8em; font-weight:bold; color:#8B4513; }
-  .stat-card .label { color:#666; font-size:0.9em; margin-top:5px; }
+  .stat-card .valor { font-size:1.4em; font-weight:bold; color:#8B4513; }
+  .stat-card .label { color:#666; font-size:0.8em; margin-top:3px; }
 
   .filter-bar {
-    display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px; align-items:end;
+    display:flex; gap:8px; flex-wrap:wrap; margin-bottom:15px; align-items:end;
+    background:#fff8dc; padding:12px; border-radius:12px;
   }
-  .filter-bar .form-group { margin:0; flex:1; min-width:150px; }
+  .filter-bar .form-group { margin:0; flex:1; min-width:140px; }
 
   .alert {
-    padding:12px; border-radius:10px; margin-bottom:15px;
-    background:#fff3cd; border-left:4px solid #ffc107;
+    padding:10px; border-radius:10px; margin-bottom:12px;
+    background:#fff3cd; border-left:4px solid #ffc107; font-size:0.9em;
   }
   .alert-info { background:#d1ecf1; border-color:#17a2b8; }
   .alert-success { background:#d4edda; border-color:#28a745; }
+  .alert-danger { background:#f8d7da; border-color:#dc3545; }
+
+  .lucro-box {
+    background:linear-gradient(135deg,#fff8dc,#ffefd5);
+    border-radius:15px; padding:18px; margin-bottom:15px;
+    border:2px solid #D2691E;
+  }
+  .lucro-header {
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:10px; margin-bottom:12px;
+  }
+  .lucro-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:10px; margin:12px 0;
+  }
+  .lucro-item {
+    background:#fff; padding:10px; border-radius:10px; text-align:center;
+    border:2px solid #F4A460;
+  }
+  .lucro-item .v { font-size:1.2em; font-weight:bold; color:#8B4513; }
+  .lucro-item .l { font-size:0.8em; color:#666; margin-top:3px; }
+  .prolabore-list { margin-top:12px; }
+  .prolabore-item {
+    display:flex; justify-content:space-between; align-items:center;
+    background:#fff; padding:10px 15px; border-radius:10px; margin-bottom:6px;
+    border-left:4px solid #28a745;
+  }
+  .prolabore-item .nome { font-weight:bold; color:#8B4513; }
+  .prolabore-item .valor { font-size:1.1em; font-weight:bold; color:#28a745; }
+  .prolabore-item .perc { font-size:0.85em; color:#666; }
+
+  .export-bar {
+    display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;
+  }
+
+  .search-box {
+    position:relative;
+  }
+  .search-box input { padding-left:32px !important; }
+  .search-box::before {
+    content:'🔍'; position:absolute; left:10px; top:50%;
+    transform:translateY(-50%); font-size:0.9em;
+  }
 
   @media (max-width:600px){
-    header h1 { font-size:1.3em; }
-    .form-row { grid-template-columns:1fr; }
-    .tab { min-width:100px; font-size:0.9em; padding:10px; }
+    header h1 { font-size:1.2em; }
+    .form-row, .form-row-4 { grid-template-columns:1fr 1fr; }
+    .tab { font-size:0.75em; padding:8px 4px; }
+    table { font-size:0.75em; }
+    th, td { padding:5px; }
   }
 </style>
 </head>
@@ -150,11 +209,15 @@
 <div class="container">
 
   <header>
-    <h1><span>🍬</span> Cocadas da Família</h1>
+    <div>
+      <h1>🍬 Cocadas da Família</h1>
+      <span id="syncStatus" class="sync-status sync-offline">
+        <span class="sync-dot"></span> <span id="syncText">Offline (Local)</span>
+      </span>
+    </div>
     <div class="user-select">
-      👤 Vendedor:
-      <select id="userSelect">
-        <option value="">-- Selecione --</option>
+      👤 <select id="userSelect">
+        <option value="">Selecione</option>
         <option value="Luciano">Luciano (Pai)</option>
         <option value="Verônica">Verônica (Mãe)</option>
         <option value="Luciano Junior">Luciano Junior</option>
@@ -168,47 +231,75 @@
     <button class="tab" data-tab="remessas">📦 Remessas</button>
     <button class="tab" data-tab="relatorios">📊 Relatórios</button>
     <button class="tab" data-tab="fiados">💰 Fiados</button>
+    <button class="tab" data-tab="lucros">💹 Lucros</button>
+    <button class="tab" data-tab="config">⚙️ Config</button>
   </div>
 
   <!-- VENDER -->
   <div class="panel active" id="panel-vender">
     <h2>🛒 Estoque Disponível</h2>
+    <div class="filter-bar">
+      <div class="form-group search-box">
+        <label>Buscar comprador</label>
+        <input type="text" id="buscaComprador" placeholder="Nome do cliente...">
+      </div>
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="filtroTipo">
+          <option value="">Todos</option>
+          <option>Coco</option><option>Cacau</option>
+          <option>Banana</option><option>Paçoca</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="filtroStatus">
+          <option value="disponivel">Disponíveis</option>
+          <option value="vendido">Vendidos</option>
+          <option value="">Todos</option>
+        </select>
+      </div>
+    </div>
     <div id="estoqueGrid" class="grid"></div>
+    <div id="historicoBusca" style="margin-top:20px;"></div>
   </div>
 
   <!-- REMESSAS -->
   <div class="panel" id="panel-remessas">
     <h2>📦 Gerenciar Remessas</h2>
     <div class="alert alert-info">
-      Uma <b>remessa</b> é cada compra de cocadas que você faz para revender.
-      Adicione uma nova remessa com a quantidade de cada tipo.
+      <b>Remessa</b> = cada compra de cocadas para revender. Informe o <b>custo total</b> (quanto você pagou) para calcular o lucro depois.
     </div>
-
-    <div style="background:#fff8dc;padding:15px;border-radius:12px;margin-bottom:20px;">
+    <div style="background:#fff8dc;padding:15px;border-radius:12px;margin-bottom:15px;">
       <h3>➕ Nova Remessa</h3>
       <div class="form-row">
         <div class="form-group">
-          <label>Nome da Remessa</label>
+          <label>Nome</label>
           <input type="text" id="remessaNome" placeholder="Ex: Remessa 1">
         </div>
         <div class="form-group">
-          <label>Data</label>
+          <label>Data da compra</label>
           <input type="date" id="remessaData">
         </div>
       </div>
-      <div class="form-row">
+      <div class="form-row-4">
         <div class="form-group"><label>🥥 Coco</label><input type="number" id="qtdCoco" min="0" value="0"></div>
         <div class="form-group"><label>🍫 Cacau</label><input type="number" id="qtdCacau" min="0" value="0"></div>
         <div class="form-group"><label>🍌 Banana</label><input type="number" id="qtdBanana" min="0" value="0"></div>
         <div class="form-group"><label>🥜 Paçoca</label><input type="number" id="qtdPacoca" min="0" value="0"></div>
       </div>
-      <div class="form-group">
-        <label>Preço unitário (R$)</label>
-        <input type="number" id="remessaPreco" step="0.01" min="0" placeholder="5.00">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Preço de venda unitário (R$)</label>
+          <input type="number" id="remessaPreco" step="0.01" min="0" placeholder="5.00">
+        </div>
+        <div class="form-group">
+          <label>Custo total da remessa (R$) 💵</label>
+          <input type="number" id="remessaCusto" step="0.01" min="0" placeholder="25.00">
+        </div>
       </div>
       <button class="btn btn-primary" onclick="criarRemessa()">➕ Adicionar Remessa</button>
     </div>
-
     <h3>📋 Remessas Cadastradas</h3>
     <div id="listaRemessas"></div>
   </div>
@@ -216,43 +307,56 @@
   <!-- RELATÓRIOS -->
   <div class="panel" id="panel-relatorios">
     <h2>📊 Relatórios de Vendas</h2>
-
     <div class="stats" id="statsGerais"></div>
 
     <div class="filter-bar">
+      <div class="form-group search-box">
+        <label>Buscar cliente</label>
+        <input type="text" id="filtroCliente" placeholder="Nome...">
+      </div>
       <div class="form-group">
-        <label>Filtrar por vendedor</label>
+        <label>Vendedor</label>
         <select id="filtroVendedor">
           <option value="">Todos</option>
-          <option>Luciano</option>
-          <option>Verônica</option>
-          <option>Luciano Junior</option>
-          <option>Alexandre</option>
+          <option>Luciano</option><option>Verônica</option>
+          <option>Luciano Junior</option><option>Alexandre</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Filtrar por remessa</label>
+        <label>Remessa</label>
         <select id="filtroRemessa"><option value="">Todas</option></select>
       </div>
       <div class="form-group">
-        <label>Filtrar por pagamento</label>
+        <label>Pagamento</label>
         <select id="filtroPagamento">
           <option value="">Todos</option>
-          <option>À vista</option>
-          <option>Pix</option>
-          <option>Fiado</option>
+          <option>À vista</option><option>Pix</option><option>Fiado</option>
         </select>
+      </div>
+      <div class="form-group">
+        <label>De</label>
+        <input type="date" id="filtroDataDe">
+      </div>
+      <div class="form-group">
+        <label>Até</label>
+        <input type="date" id="filtroDataAte">
       </div>
       <button class="btn btn-primary" onclick="renderRelatorios()">🔍 Filtrar</button>
     </div>
 
-    <h3>📝 Vendas Registradas</h3>
+    <div class="export-bar">
+      <button class="btn btn-danger" onclick="exportarPDF()">📄 Exportar PDF</button>
+      <button class="btn btn-success" onclick="exportarExcel()">📊 Exportar Excel</button>
+      <button class="btn btn-info" onclick="exportarPDFVendedor()">👤 PDF por Vendedor</button>
+      <button class="btn btn-warning" onclick="exportarPDFProduto()">🍬 PDF por Produto</button>
+    </div>
+
     <div style="overflow-x:auto;">
       <table id="tabelaVendas">
         <thead>
           <tr>
             <th>Data</th><th>Vendedor</th><th>Produto</th><th>Remessa</th>
-            <th>Comprador</th><th>Valor</th><th>Pagamento</th><th>Ações</th>
+            <th>Comprador</th><th>Valor</th><th>Pagto</th><th>Ações</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -263,10 +367,123 @@
   <!-- FIADOS -->
   <div class="panel" id="panel-fiados">
     <h2>💰 Controle de Fiados</h2>
-    <div class="alert">
-      Aqui ficam todas as vendas feitas no <b>fiado</b>. Você pode marcar como <b>pago</b> quando o cliente quitar.
+    <div class="filter-bar">
+      <div class="form-group search-box">
+        <label>Buscar devedor</label>
+        <input type="text" id="filtroFiadoCliente" placeholder="Nome...">
+      </div>
+      <button class="btn btn-primary" onclick="renderFiados()">🔍 Filtrar</button>
     </div>
     <div id="listaFiados"></div>
+  </div>
+
+  <!-- LUCROS -->
+  <div class="panel" id="panel-lucros">
+    <h2>💹 Lucros e Pró-Labore</h2>
+    <div class="alert alert-info">
+      Cálculo automático do lucro por remessa e distribuição do <b>pró-labore</b> conforme percentuais configurados.
+    </div>
+    <div class="filter-bar">
+      <div class="form-group">
+        <label>Selecionar Remessa</label>
+        <select id="lucroRemessa" onchange="renderLucros()">
+          <option value="">Todas (consolidado)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Período</label>
+        <select id="lucroPeriodo" onchange="renderLucros()">
+          <option value="">Todo</option>
+          <option value="7">Últimos 7 dias</option>
+          <option value="30">Últimos 30 dias</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </div>
+      <div class="form-group" id="lucroPeriodoCustom" style="display:none;">
+        <label>De / Até</label>
+        <div style="display:flex;gap:5px;">
+          <input type="date" id="lucroDe" onchange="renderLucros()">
+          <input type="date" id="lucroAte" onchange="renderLucros()">
+        </div>
+      </div>
+    </div>
+    <div id="lucrosConteudo"></div>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="panel" id="panel-config">
+    <h2>⚙️ Configurações</h2>
+
+    <div class="lucro-box">
+      <h3>🔥 Sincronização Firebase (Online)</h3>
+      <p style="font-size:0.9em;margin:8px 0;">
+        Para sincronizar entre celulares/computadores, crie um projeto gratuito no
+        <a href="https://console.firebase.google.com" target="_blank" style="color:#D2691E;">Firebase</a>
+        e cole as credenciais abaixo.
+      </p>
+      <details style="margin:10px 0;">
+        <summary style="cursor:pointer;font-weight:bold;color:#D2691E;">📖 Como configurar (clique para ver)</summary>
+        <ol style="margin:10px 0;padding-left:20px;font-size:0.9em;">
+          <li>Acesse <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a></li>
+          <li>Clique em <b>"Adicionar projeto"</b> → dê um nome → crie</li>
+          <li>No menu lateral, clique em <b>"Criação" → "Firestore Database"</b> → <b>"Criar banco de dados"</b> → modo teste → escolher localização → concluir</li>
+          <li>Clique na ⚙️ (engrenagem) → <b>"Configurações do projeto"</b></li>
+          <li>Em <b>"Seus apps"</b>, clique no ícone <b>&lt;/&gt;</b> (Web) → registre um app</li>
+          <li>Copie o objeto <b>firebaseConfig</b> e cole abaixo</li>
+        </ol>
+      </details>
+      <div class="form-group">
+        <label>Credenciais Firebase (JSON)</label>
+        <textarea id="firebaseConfig" rows="8" placeholder='Cole aqui o objeto firebaseConfig, ex:
+{
+  "apiKey": "...",
+  "authDomain": "...",
+  "projectId": "...",
+  ...
+}' style="font-family:monospace;font-size:0.85em;"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-success" onclick="salvarFirebase()">💾 Conectar</button>
+        <button class="btn btn-danger" onclick="desconectarFirebase()">🔌 Desconectar</button>
+        <button class="btn btn-warning" onclick="exportarDados()">📤 Backup dos dados</button>
+        <button class="btn btn-info" onclick="importarDados()">📥 Restaurar backup</button>
+      </div>
+    </div>
+
+    <div class="lucro-box">
+      <h3>💼 Percentuais do Pró-Labore</h3>
+      <p style="font-size:0.85em;color:#666;margin-bottom:10px;">
+        Total deve ser 100%. O lucro de cada remessa é dividido conforme estes percentuais.
+      </p>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Luciano (Pai) %</label>
+          <input type="number" id="percLuciano" min="0" max="100" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Verônica (Mãe) %</label>
+          <input type="number" id="percVeronica" min="0" max="100" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Alexandre %</label>
+          <input type="number" id="percAlexandre" min="0" max="100" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Luciano Junior %</label>
+          <input type="number" id="percLucianoJr" min="0" max="100" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Caixa da Empresa %</label>
+          <input type="number" id="percCaixa" min="0" max="100" step="0.01">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="salvarPercentuais()">💾 Salvar Percentuais</button>
+    </div>
+
+    <div class="lucro-box">
+      <h3>⚠️ Zona de Perigo</h3>
+      <button class="btn btn-danger" onclick="limparTudo()">🗑️ Apagar TODOS os dados</button>
+    </div>
   </div>
 
 </div>
@@ -275,10 +492,11 @@
 <div class="modal-overlay" id="modalVenda">
   <div class="modal">
     <h2>🛒 Registrar Venda</h2>
-    <div id="modalInfo" style="background:#fff8dc;padding:10px;border-radius:10px;margin-bottom:15px;"></div>
+    <div id="modalInfo" style="background:#fff8dc;padding:10px;border-radius:10px;margin-bottom:12px;"></div>
     <div class="form-group">
       <label>Nome do Comprador</label>
-      <input type="text" id="vendaComprador" placeholder="Nome completo">
+      <input type="text" id="vendaComprador" placeholder="Nome completo" list="listaCompradores">
+      <datalist id="listaCompradores"></datalist>
     </div>
     <div class="form-group">
       <label>Valor (R$)</label>
@@ -287,9 +505,7 @@
     <div class="form-group">
       <label>Forma de Pagamento</label>
       <select id="vendaPagamento">
-        <option>À vista</option>
-        <option>Pix</option>
-        <option>Fiado</option>
+        <option>À vista</option><option>Pix</option><option>Fiado</option>
       </select>
     </div>
     <div class="form-group">
@@ -298,12 +514,12 @@
     </div>
     <div class="modal-actions">
       <button class="btn btn-danger" onclick="fecharModal()">Cancelar</button>
-      <button class="btn btn-success" onclick="confirmarVenda()">✅ Confirmar Venda</button>
+      <button class="btn btn-success" onclick="confirmarVenda()">✅ Confirmar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL DE DETALHES -->
+<!-- MODAL DETALHES -->
 <div class="modal-overlay" id="modalDetalhes">
   <div class="modal">
     <h2>📋 Detalhes da Venda</h2>
@@ -314,27 +530,135 @@
   </div>
 </div>
 
+<input type="file" id="fileImport" accept=".json" style="display:none;">
+
 <script>
 // ============ ESTADO ============
 let state = {
   usuario: '',
-  remessas: [],   // {id, nome, data, preco, itens:[{id,tipo,remessaId,vendido}]}
-  vendas: []      // {id, itemId, vendedor, comprador, valor, pagamento, data, obs, pago:false}
+  remessas: [],
+  vendas: [],
+  percentuais: {
+    Luciano: 20,
+    Verônica: 0,
+    Alexandre: 32,
+    'Luciano Junior': 32,
+    Caixa: 16
+  },
+  firebaseConfig: null
 };
 
-function save(){ localStorage.setItem('cocadasApp', JSON.stringify(state)); }
-function load(){
+let db = null;
+let unsubscribe = [];
+let firebaseAtivo = false;
+
+// ============ STORAGE ============
+function saveLocal(){ localStorage.setItem('cocadasApp', JSON.stringify(state)); }
+function loadLocal(){
   const d = localStorage.getItem('cocadasApp');
-  if(d) state = JSON.parse(d);
+  if(d) state = {...state, ...JSON.parse(d)};
 }
-load();
+loadLocal();
+
+// ============ FIREBASE ============
+async function initFirebase(){
+  if(!state.firebaseConfig) return;
+  try {
+    if(typeof firebase === 'undefined') { alert('Firebase não carregou. Verifique a internet.'); return; }
+    if(firebase.apps.length) firebase.app().delete();
+    firebase.initializeApp(state.firebaseConfig);
+    db = firebase.firestore();
+    firebaseAtivo = true;
+    atualizarStatusSync(true);
+
+    // Listeners em tempo real
+    unsubscribe.push(
+      db.collection('remessas').onSnapshot(snap=>{
+        state.remessas = snap.docs.map(d=>({id:d.id, ...d.data()}));
+        renderTudo();
+      }),
+      db.collection('vendas').onSnapshot(snap=>{
+        state.vendas = snap.docs.map(d=>({id:d.id, ...d.data()}));
+        renderTudo();
+      }),
+      db.collection('config').doc('principal').onSnapshot(doc=>{
+        if(doc.exists){
+          const cfg = doc.data();
+          if(cfg.percentuais) state.percentuais = cfg.percentuais;
+          renderLucros(); renderConfig();
+        }
+      })
+    );
+  } catch(e){
+    console.error(e);
+    alert('Erro Firebase: '+e.message);
+    firebaseAtivo = false;
+    atualizarStatusSync(false);
+  }
+}
+
+function atualizarStatusSync(online){
+  const el = document.getElementById('syncStatus');
+  const txt = document.getElementById('syncText');
+  if(online){
+    el.className = 'sync-status sync-online';
+    txt.textContent = 'Online (Firebase)';
+  } else {
+    el.className = 'sync-status sync-offline';
+    txt.textContent = firebaseAtivo ? 'Sincronizando...' : 'Offline (Local)';
+  }
+}
+
+async function salvarFirebase(){
+  const txt = document.getElementById('firebaseConfig').value.trim();
+  if(!txt){ alert('Cole as credenciais!'); return; }
+  try {
+    const cfg = JSON.parse(txt);
+    if(!cfg.apiKey || !cfg.projectId) throw new Error('JSON inválido');
+    state.firebaseConfig = cfg;
+    saveLocal();
+    await initFirebase();
+    alert('✅ Firebase conectado!');
+  } catch(e){
+    alert('❌ Erro: '+e.message);
+  }
+}
+
+async function desconectarFirebase(){
+  unsubscribe.forEach(u=>u()); unsubscribe = [];
+  if(firebase.apps.length) await firebase.app().delete();
+  firebaseAtivo = false; db = null;
+  state.firebaseConfig = null;
+  saveLocal();
+  atualizarStatusSync(false);
+  alert('Desconectado. Voltou para modo local.');
+}
+
+// ============ HELPERS FIREBASE ============
+async function dbAdd(col, data){
+  if(firebaseAtivo && db){
+    const ref = await db.collection(col).add(data);
+    return ref.id;
+  }
+  return Date.now().toString() + Math.random().toString(36).slice(2,7);
+}
+async function dbSet(col, id, data){
+  if(firebaseAtivo && db){
+    await db.collection(col).doc(id).set(data);
+  }
+}
+async function dbDelete(col, id){
+  if(firebaseAtivo && db){
+    await db.collection(col).doc(id).delete();
+  }
+}
 
 // ============ USUÁRIO ============
 const userSel = document.getElementById('userSelect');
 userSel.value = state.usuario || '';
 userSel.addEventListener('change', e=>{
   state.usuario = e.target.value;
-  save();
+  saveLocal();
   renderTudo();
 });
 
@@ -345,56 +669,70 @@ document.querySelectorAll('.tab').forEach(t=>{
     document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');
     document.getElementById('panel-'+t.dataset.tab).classList.add('active');
+    if(t.dataset.tab==='config') renderConfig();
+    if(t.dataset.tab==='lucros') renderLucros();
     renderTudo();
   });
 });
 
 // ============ REMESSAS ============
-function criarRemessa(){
+async function criarRemessa(){
   const nome = document.getElementById('remessaNome').value.trim();
   const data = document.getElementById('remessaData').value;
   const preco = parseFloat(document.getElementById('remessaPreco').value);
+  const custo = parseFloat(document.getElementById('remessaCusto').value) || 0;
   const tipos = {
     'Coco': +document.getElementById('qtdCoco').value,
     'Cacau': +document.getElementById('qtdCacau').value,
     'Banana': +document.getElementById('qtdBanana').value,
     'Paçoca': +document.getElementById('qtdPacoca').value
   };
-  if(!nome || !preco || preco<=0){ alert('Preencha nome e preço!'); return; }
+  if(!nome || !preco || preco<=0){ alert('Preencha nome e preço de venda!'); return; }
   const total = Object.values(tipos).reduce((a,b)=>a+b,0);
   if(total===0){ alert('Adicione pelo menos 1 item!'); return; }
 
-  const remessa = {
-    id: Date.now(),
-    nome, data: data || new Date().toISOString().slice(0,10),
-    preco, itens:[]
-  };
+  const itens = [];
   Object.entries(tipos).forEach(([tipo,qtd])=>{
     for(let i=0;i<qtd;i++){
-      remessa.itens.push({ id: Date.now()+Math.random(), tipo, remessaId: remessa.id, vendido:false });
+      itens.push({ id: 'i'+Date.now()+Math.random().toString(36).slice(2,7), tipo, vendido:false });
     }
   });
-  state.remessas.push(remessa);
-  save();
+
+  const remessa = {
+    nome, data: data || new Date().toISOString().slice(0,10),
+    preco, custo, itens
+  };
+
+  const id = await dbAdd('remessas', remessa);
+  remessa.id = id;
+  if(!firebaseAtivo){
+    state.remessas.push(remessa);
+    saveLocal();
+  }
+
   // limpa
   document.getElementById('remessaNome').value='';
-  ['qtdCoco','qtdCacau','qtdBanana','qtdPacoca','remessaPreco'].forEach(i=>document.getElementById(i).value='');
+  ['qtdCoco','qtdCacau','qtdBanana','qtdPacoca','remessaPreco','remessaCusto'].forEach(i=>document.getElementById(i).value='');
   renderTudo();
   alert('✅ Remessa "'+nome+'" criada com '+total+' itens!');
 }
 
-function excluirRemessa(id){
+async function excluirRemessa(id){
   const r = state.remessas.find(x=>x.id===id);
   const temVenda = r.itens.some(i=>i.vendido);
-  if(temVenda){ alert('❌ Não é possível excluir: já há vendas nesta remessa!'); return; }
-  if(!confirm('Excluir remessa "'+r.nome+'"?')) return;
-  state.remessas = state.remessas.filter(x=>x.id!==id);
-  save(); renderTudo();
+  if(temVenda){ alert('❌ Já há vendas nesta remessa!'); return; }
+  if(!confirm('Excluir "'+r.nome+'"?')) return;
+  await dbDelete('remessas', id);
+  if(!firebaseAtivo){
+    state.remessas = state.remessas.filter(x=>x.id!==id);
+    saveLocal();
+  }
+  renderTudo();
 }
 
 function renderRemessas(){
   const div = document.getElementById('listaRemessas');
-  if(state.remessas.length===0){ div.innerHTML='<p style="color:#888;">Nenhuma remessa cadastrada.</p>'; return; }
+  if(state.remessas.length===0){ div.innerHTML='<p style="color:#888;">Nenhuma remessa.</p>'; return; }
   div.innerHTML = state.remessas.map(r=>{
     const total = r.itens.length;
     const vendidos = r.itens.filter(i=>i.vendido).length;
@@ -405,95 +743,155 @@ function renderRemessas(){
     return `
       <div class="card" style="margin-bottom:10px;">
         <div class="tipo">${r.nome}</div>
-        <div class="remessa">📅 ${formatarData(r.data)} • 💰 R$ ${r.preco.toFixed(2)} un.</div>
+        <div class="remessa">📅 ${formatarData(r.data)} • 💰 Venda: R$ ${r.preco.toFixed(2)} • 💵 Custo: R$ ${(r.custo||0).toFixed(2)}</div>
         <div style="margin:8px 0;">
-          <b>Total:</b> ${total} | <b style="color:#28a745;">Disponível:</b> ${disp} | <b style="color:#dc3545;">Vendidas:</b> ${vendidos}
+          <b>Total:</b> ${total} | <b style="color:#28a745;">Disp:</b> ${disp} | <b style="color:#dc3545;">Vend:</b> ${vendidos}
         </div>
-        <div style="font-size:0.9em;color:#666;">${tiposTxt}</div>
-        ${vendidos===0 ? `<button class="btn btn-danger btn-sm" style="margin-top:10px;" onclick="excluirRemessa(${r.id})">🗑️ Excluir</button>` : ''}
+        <div style="font-size:0.85em;color:#666;">${tiposTxt}</div>
+        ${vendidos===0 ? `<button class="btn btn-danger btn-sm" style="margin-top:8px;" onclick="excluirRemessa('${r.id}')">🗑️ Excluir</button>` : ''}
       </div>
     `;
   }).join('');
 }
 
-// ============ ESTOQUE / VENDER ============
+// ============ ESTOQUE ============
 let itemSelecionado = null;
+
+function findItem(id){
+  for(const r of state.remessas) for(const i of r.itens) if(i.id===id) return {item:i, remessa:r};
+  return null;
+}
 
 function renderEstoque(){
   const grid = document.getElementById('estoqueGrid');
-  const todosItens = [];
-  state.remessas.forEach(r=> r.itens.forEach(i=> todosItens.push({...i, remessa:r})) );
+  const busca = (document.getElementById('buscaComprador').value||'').toLowerCase();
+  const fTipo = document.getElementById('filtroTipo').value;
+  const fStatus = document.getElementById('filtroStatus').value;
 
-  if(todosItens.length===0){
-    grid.innerHTML = '<div class="alert">📦 Nenhuma remessa cadastrada ainda. Vá em <b>Remessas</b> para adicionar!</div>';
-    return;
+  const todosItens = [];
+  state.remessas.forEach(r=> r.itens.forEach(i=> todosItens.push({item:i, remessa:r})) );
+
+  let itens = todosItens;
+  if(fTipo) itens = itens.filter(x=>x.item.tipo===fTipo);
+  if(fStatus==='disponivel') itens = itens.filter(x=>!x.item.vendido);
+  if(fStatus==='vendido') itens = itens.filter(x=>x.item.vendido);
+
+  if(itens.length===0){
+    grid.innerHTML = '<div class="alert">📦 Nenhum item encontrado. Vá em <b>Remessas</b>!</div>';
+  } else {
+    grid.innerHTML = itens.map(({item,remessa})=>{
+      const venda = state.vendas.find(v=>v.itemId===item.id);
+      const emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[item.tipo] || '🍬';
+      return `
+        <div class="card ${item.vendido?'vendido':''}">
+          <div class="tipo">${emoji} ${item.tipo}</div>
+          <div class="remessa">📦 ${remessa.nome}</div>
+          <div class="preco">R$ ${remessa.preco.toFixed(2)}</div>
+          ${item.vendido
+            ? `<span class="status vendido">Vendido</span>
+               <div style="font-size:0.8em;margin-top:5px;">
+                 👤 ${venda.vendedor}<br>
+                 🛍️ ${venda.comprador}
+               </div>`
+            : `<span class="status disponivel">Disponível</span>
+               <br><button class="btn btn-success btn-sm" style="margin-top:6px;width:100%;" onclick="abrirVenda('${item.id}')">🛒 Vender</button>`
+          }
+        </div>
+      `;
+    }).join('');
   }
 
-  grid.innerHTML = todosItens.map(i=>{
-    const venda = state.vendas.find(v=>v.itemId===i.id);
-    const emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[i.tipo] || '🍬';
-    return `
-      <div class="card ${i.vendido?'vendido':''}">
-        <div class="tipo">${emoji} ${i.tipo}</div>
-        <div class="remessa">📦 ${i.remessa.nome}</div>
-        <div class="preco">R$ ${i.remessa.preco.toFixed(2)}</div>
-        ${i.vendido
-          ? `<span class="status vendido">Vendido</span><br><small>👤 ${venda.vendedor}</small>`
-          : `<span class="status disponivel">Disponível</span>
-             <br><button class="btn btn-success btn-sm" style="margin-top:8px;width:100%;" onclick="abrirVenda(${i.id})">🛒 Vender</button>`
-        }
-      </div>
-    `;
-  }).join('');
+  // Histórico de busca por cliente
+  if(busca.length>=2){
+    const vendasCliente = state.vendas.filter(v=>v.comprador.toLowerCase().includes(busca));
+    const hist = document.getElementById('historicoBusca');
+    if(vendasCliente.length===0){
+      hist.innerHTML = `<h3>🔍 Histórico: "${busca}"</h3><p style="color:#888;">Nenhuma venda encontrada.</p>`;
+    } else {
+      hist.innerHTML = `<h3>🔍 Histórico: "${busca}" (${vendasCliente.length} venda(s))</h3>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Data</th><th>Vendedor</th><th>Produto</th><th>Remessa</th><th>Valor</th><th>Pagto</th></tr></thead>
+          <tbody>${vendasCliente.map(v=>{
+            const f = findItem(v.itemId);
+            return `<tr>
+              <td>${formatarDataHora(v.data)}</td>
+              <td>${v.vendedor}</td>
+              <td>${f?f.item.tipo:'?'}</td>
+              <td>${f?f.remessa.nome:'?'}</td>
+              <td>R$ ${v.valor.toFixed(2)}</td>
+              <td><span class="badge badge-${v.pagamento==='Fiado'?'fiado':v.pagamento==='Pix'?'pix':'avista'}">${v.pagamento}</span></td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table></div>`;
+    }
+  } else {
+    document.getElementById('historicoBusca').innerHTML = '';
+  }
 }
 
+// Busca ao digitar
+document.getElementById('buscaComprador').addEventListener('input', renderEstoque);
+document.getElementById('filtroTipo').addEventListener('change', renderEstoque);
+document.getElementById('filtroStatus').addEventListener('change', renderEstoque);
+
 function abrirVenda(itemId){
-  if(!state.usuario){ alert('⚠️ Selecione seu nome no topo para continuar!'); return; }
-  const item = findItem(itemId);
-  if(!item || item.vendido) return;
+  if(!state.usuario){ alert('⚠️ Selecione seu nome no topo!'); return; }
+  const f = findItem(itemId);
+  if(!f || f.item.vendido) return;
   itemSelecionado = itemId;
-  const emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[item.tipo];
-  const rem = state.remessas.find(r=>r.id===item.remessaId);
+  const emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[f.item.tipo];
   document.getElementById('modalInfo').innerHTML = `
-    <b>${emoji} ${item.tipo}</b> • 📦 ${rem.nome}<br>
+    <b>${emoji} ${f.item.tipo}</b> • 📦 ${f.remessa.nome}<br>
     👤 Vendedor: <b>${state.usuario}</b>
   `;
-  document.getElementById('vendaValor').value = rem.preco.toFixed(2);
+  document.getElementById('vendaValor').value = f.remessa.preco.toFixed(2);
   document.getElementById('vendaComprador').value = '';
   document.getElementById('vendaObs').value = '';
+
+  // datalist de compradores
+  const compradores = [...new Set(state.vendas.map(v=>v.comprador))];
+  document.getElementById('listaCompradores').innerHTML = compradores.map(c=>`<option value="${c}">`).join('');
+
   document.getElementById('modalVenda').classList.add('active');
 }
 
-function confirmarVenda(){
+async function confirmarVenda(){
   const comprador = document.getElementById('vendaComprador').value.trim();
   const valor = parseFloat(document.getElementById('vendaValor').value);
   const pagamento = document.getElementById('vendaPagamento').value;
   const obs = document.getElementById('vendaObs').value.trim();
-  if(!comprador){ alert('Informe o nome do comprador!'); return; }
+  if(!comprador){ alert('Informe o comprador!'); return; }
   if(!valor || valor<=0){ alert('Valor inválido!'); return; }
 
-  const item = findItem(itemSelecionado);
-  item.vendido = true;
-  state.vendas.push({
-    id: Date.now(),
-    itemId: item.id,
+  const f = findItem(itemSelecionado);
+  if(!f) return;
+
+  const venda = {
+    itemId: f.item.id,
     vendedor: state.usuario,
     comprador, valor, pagamento, obs,
     data: new Date().toISOString(),
     pago: pagamento!=='Fiado'
-  });
-  save();
+  };
+
+  f.item.vendido = true;
+  const vendaId = await dbAdd('vendas', venda);
+  venda.id = vendaId;
+
+  if(firebaseAtivo && db){
+    await db.collection('remessas').doc(f.remessa.id).update({
+      itens: f.remessa.itens
+    });
+  } else {
+    saveLocal();
+  }
+
   fecharModal();
   renderTudo();
-  alert('✅ Venda registrada com sucesso!');
+  alert('✅ Venda registrada!');
 }
 
 function fecharModal(){ document.getElementById('modalVenda').classList.remove('active'); itemSelecionado=null; }
-
-function findItem(id){
-  for(const r of state.remessas) for(const i of r.itens) if(i.id===id) return i;
-  return null;
-}
 
 // ============ RELATÓRIOS ============
 function renderStats(){
@@ -504,55 +902,65 @@ function renderStats(){
   const pix = state.vendas.filter(v=>v.pagamento==='Pix').reduce((s,v)=>s+v.valor,0);
   const fiado = state.vendas.filter(v=>v.pagamento==='Fiado' && !v.pago).reduce((s,v)=>s+v.valor,0);
   const fiadoPago = state.vendas.filter(v=>v.pagamento==='Fiado' && v.pago).reduce((s,v)=>s+v.valor,0);
+  const custoTotal = state.remessas.reduce((s,r)=>s+(r.custo||0),0);
+  const lucro = totalValor - custoTotal;
 
   div.innerHTML = `
-    <div class="stat-card"><div class="valor">${totalVendas}</div><div class="label">Vendas totais</div></div>
+    <div class="stat-card"><div class="valor">${totalVendas}</div><div class="label">Vendas</div></div>
     <div class="stat-card"><div class="valor">R$ ${totalValor.toFixed(2)}</div><div class="label">Faturamento</div></div>
     <div class="stat-card"><div class="valor">R$ ${avista.toFixed(2)}</div><div class="label">💵 À vista</div></div>
     <div class="stat-card"><div class="valor">R$ ${pix.toFixed(2)}</div><div class="label">📱 Pix</div></div>
-    <div class="stat-card"><div class="valor">R$ ${fiado.toFixed(2)}</div><div class="label">⚠️ Fiado pendente</div></div>
-    <div class="stat-card"><div class="valor">R$ ${fiadoPago.toFixed(2)}</div><div class="label">✅ Fiado recebido</div></div>
+    <div class="stat-card"><div class="valor">R$ ${fiado.toFixed(2)}</div><div class="label">⚠️ Fiado pend.</div></div>
+    <div class="stat-card"><div class="valor">R$ ${lucro.toFixed(2)}</div><div class="label">💹 Lucro total</div></div>
   `;
 }
 
-function renderRelatorios(){
+function getVendasFiltradas(){
+  const fc = (document.getElementById('filtroCliente').value||'').toLowerCase();
   const fv = document.getElementById('filtroVendedor').value;
   const fr = document.getElementById('filtroRemessa').value;
   const fp = document.getElementById('filtroPagamento').value;
-
-  // preenche select de remessas
-  const selR = document.getElementById('filtroRemessa');
-  const atual = selR.value;
-  selR.innerHTML = '<option value="">Todas</option>' + state.remessas.map(r=>`<option value="${r.id}">${r.nome}</option>`).join('');
-  selR.value = atual;
+  const fd = document.getElementById('filtroDataDe').value;
+  const fa = document.getElementById('filtroDataAte').value;
 
   let vendas = [...state.vendas].sort((a,b)=> new Date(b.data)-new Date(a.data));
+  if(fc) vendas = vendas.filter(v=>v.comprador.toLowerCase().includes(fc));
   if(fv) vendas = vendas.filter(v=>v.vendedor===fv);
-  if(fr) {
-    const rem = state.remessas.find(r=>r.id==fr);
+  if(fr){
+    const rem = state.remessas.find(r=>r.id===fr);
     if(rem){
       const ids = rem.itens.map(i=>i.id);
       vendas = vendas.filter(v=>ids.includes(v.itemId));
     }
   }
   if(fp) vendas = vendas.filter(v=>v.pagamento===fp);
+  if(fd) vendas = vendas.filter(v=> v.data.slice(0,10) >= fd);
+  if(fa) vendas = vendas.filter(v=> v.data.slice(0,10) <= fa);
+  return vendas;
+}
 
+function renderRelatorios(){
+  const selR = document.getElementById('filtroRemessa');
+  const atual = selR.value;
+  selR.innerHTML = '<option value="">Todas</option>' + state.remessas.map(r=>`<option value="${r.id}">${r.nome}</option>`).join('');
+  selR.value = atual;
+
+  const vendas = getVendasFiltradas();
   const tb = document.querySelector('#tabelaVendas tbody');
-  if(vendas.length===0){ tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#888;">Nenhuma venda encontrada.</td></tr>'; return; }
+  if(vendas.length===0){ tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#888;">Nenhuma venda.</td></tr>'; return; }
   tb.innerHTML = vendas.map(v=>{
-    const item = findItem(v.itemId);
-    const rem = item ? state.remessas.find(r=>r.id===item.remessaId) : null;
+    const f = findItem(v.itemId);
     const badge = v.pagamento==='Fiado' ? 'badge-fiado' : v.pagamento==='Pix' ? 'badge-pix' : 'badge-avista';
     return `
       <tr>
         <td>${formatarDataHora(v.data)}</td>
         <td><b>${v.vendedor}</b></td>
-        <td>${item?item.tipo:'?'}</td>
-        <td>${rem?rem.nome:'?'}</td>
+        <td>${f?f.item.tipo:'?'}</td>
+        <td>${f?f.remessa.nome:'?'}</td>
         <td>${v.comprador}</td>
         <td>R$ ${v.valor.toFixed(2)}</td>
         <td><span class="badge ${badge}">${v.pagamento}</span></td>
-        <td><button class="btn btn-primary btn-sm" onclick="verDetalhes(${v.id})">👁️</button></td>
+        <td><button class="btn btn-primary btn-sm" onclick="verDetalhes('${v.id}')">👁️</button></td>
       </tr>
     `;
   }).join('');
@@ -560,19 +968,18 @@ function renderRelatorios(){
 
 function verDetalhes(id){
   const v = state.vendas.find(x=>x.id===id);
-  const item = findItem(v.itemId);
-  const rem = item ? state.remessas.find(r=>r.id===item.remessaId) : null;
+  const f = findItem(v.itemId);
   document.getElementById('detalhesConteudo').innerHTML = `
     <div style="background:#fff8dc;padding:12px;border-radius:10px;">
       <p><b>📅 Data:</b> ${formatarDataHora(v.data)}</p>
       <p><b>👤 Vendedor:</b> ${v.vendedor}</p>
-      <p><b>🍬 Produto:</b> ${item?item.tipo:'?'}</p>
-      <p><b>📦 Remessa:</b> ${rem?rem.nome:'?'}</p>
+      <p><b>🍬 Produto:</b> ${f?f.item.tipo:'?'}</p>
+      <p><b>📦 Remessa:</b> ${f?f.remessa.nome:'?'}</p>
       <p><b>🛍️ Comprador:</b> ${v.comprador}</p>
       <p><b>💰 Valor:</b> R$ ${v.valor.toFixed(2)}</p>
       <p><b>💳 Pagamento:</b> ${v.pagamento}</p>
       ${v.obs?`<p><b>📝 Obs:</b> ${v.obs}</p>`:''}
-      ${v.pagamento==='Fiado' ? `<p><b>Status:</b> ${v.pago?'✅ Pago':'⚠️ Pendente'}</p>` : ''}
+      ${v.pagamento==='Fiado' ? `<p><b>Status:</b> ${v.pago?'✅ Pago em '+formatarData(v.dataPagamento):'⚠️ Pendente'}</p>` : ''}
     </div>
   `;
   document.getElementById('modalDetalhes').classList.add('active');
@@ -582,8 +989,11 @@ function fecharDetalhes(){ document.getElementById('modalDetalhes').classList.re
 // ============ FIADOS ============
 function renderFiados(){
   const div = document.getElementById('listaFiados');
-  const fiados = state.vendas.filter(v=>v.pagamento==='Fiado');
-  if(fiados.length===0){ div.innerHTML='<p style="color:#888;">Nenhum fiado registrado.</p>'; return; }
+  const fc = (document.getElementById('filtroFiadoCliente').value||'').toLowerCase();
+  let fiados = state.vendas.filter(v=>v.pagamento==='Fiado');
+  if(fc) fiados = fiados.filter(v=>v.comprador.toLowerCase().includes(fc));
+
+  if(fiados.length===0){ div.innerHTML='<p style="color:#888;">Nenhum fiado.</p>'; return; }
 
   const pendentes = fiados.filter(v=>!v.pago);
   const pagos = fiados.filter(v=>v.pago);
@@ -592,13 +1002,13 @@ function renderFiados(){
   if(pendentes.length){
     const total = pendentes.reduce((s,v)=>s+v.valor,0);
     html += `<div class="alert" style="background:#ffe5e5;border-color:#dc3545;">
-      <b>⚠️ Fiados Pendentes:</b> ${pendentes.length} venda(s) • Total: <b>R$ ${total.toFixed(2)}</b>
+      <b>⚠️ Pendentes:</b> ${pendentes.length} venda(s) • Total: <b>R$ ${total.toFixed(2)}</b>
     </div>`;
     html += renderTabelaFiado(pendentes);
   }
   if(pagos.length){
     const total = pagos.reduce((s,v)=>s+v.valor,0);
-    html += `<h3 style="margin-top:20px;">✅ Fiados Pagos (R$ ${total.toFixed(2)})</h3>`;
+    html += `<h3 style="margin-top:15px;">✅ Pagos (R$ ${total.toFixed(2)})</h3>`;
     html += renderTabelaFiado(pagos);
   }
   div.innerHTML = html;
@@ -606,32 +1016,432 @@ function renderFiados(){
 
 function renderTabelaFiado(lista){
   return `<div style="overflow-x:auto;"><table>
-    <thead><tr><th>Data</th><th>Comprador</th><th>Vendedor</th><th>Valor</th><th>Status</th><th>Ação</th></tr></thead>
+    <thead><tr><th>Data</th><th>Comprador</th><th>Vendedor</th><th>Produto</th><th>Valor</th><th>Status</th><th>Ação</th></tr></thead>
     <tbody>${lista.map(v=>{
-      const item = findItem(v.itemId);
+      const f = findItem(v.itemId);
       return `<tr>
         <td>${formatarData(v.data)}</td>
         <td><b>${v.comprador}</b></td>
         <td>${v.vendedor}</td>
+        <td>${f?f.item.tipo:'?'}</td>
         <td>R$ ${v.valor.toFixed(2)}</td>
-        <td>${v.pago?'<span class="badge badge-avista">PAGO</span>':'<span class="badge badge-fiado">PENDENTE</span>'}</td>
-        <td>${!v.pago?`<button class="btn btn-success btn-sm" onclick="marcarPago(${v.id})">✅ Receber</button>`:''}</td>
+        <td>${v.pago?'<span class="badge badge-avista">PAGO</span>':'<span class="badge badge-fiado">PEND.</span>'}</td>
+        <td>${!v.pago?`<button class="btn btn-success btn-sm" onclick="marcarPago('${v.id}')">✅ Receber</button>`:''}</td>
       </tr>`;
     }).join('')}</tbody></table></div>`;
 }
 
-function marcarPago(id){
+async function marcarPago(id){
   const v = state.vendas.find(x=>x.id===id);
   v.pago = true;
   v.dataPagamento = new Date().toISOString();
-  save(); renderTudo();
-  alert('✅ Fiado marcado como pago!');
+  if(firebaseAtivo && db){
+    await db.collection('vendas').doc(id).update({pago:true, dataPagamento:v.dataPagamento});
+  } else {
+    saveLocal();
+  }
+  renderTudo();
+  alert('✅ Marcado como pago!');
+}
+
+// ============ LUCROS ============
+function renderLucros(){
+  const sel = document.getElementById('lucroRemessa');
+  sel.innerHTML = '<option value="">Todas (consolidado)</option>' + state.remessas.map(r=>`<option value="${r.id}">${r.nome}</option>`).join('');
+
+  const periodo = document.getElementById('lucroPeriodo').value;
+  document.getElementById('lucroPeriodoCustom').style.display = periodo==='custom' ? 'block' : 'none';
+
+  let remessas = state.remessas;
+  const selId = sel.value;
+  if(selId) remessas = remessas.filter(r=>r.id===selId);
+
+  if(remessas.length===0){
+    document.getElementById('lucrosConteudo').innerHTML = '<p style="color:#888;">Nenhuma remessa.</p>';
+    return;
+  }
+
+  // Filtro de período nas vendas
+  let dataDe = null, dataAte = null;
+  if(periodo==='7'){
+    const d = new Date(); d.setDate(d.getDate()-7);
+    dataDe = d.toISOString().slice(0,10);
+  } else if(periodo==='30'){
+    const d = new Date(); d.setDate(d.getDate()-30);
+    dataDe = d.toISOString().slice(0,10);
+  } else if(periodo==='custom'){
+    dataDe = document.getElementById('lucroDe').value || null;
+    dataAte = document.getElementById('lucroAte').value || null;
+  }
+
+  let html = '';
+  let totalReceita = 0, totalCusto = 0, totalLucro = 0;
+  let dataMin = null, dataMax = null;
+
+  remessas.forEach(r=>{
+    const ids = r.itens.map(i=>i.id);
+    let vendas = state.vendas.filter(v=> ids.includes(v.itemId));
+    if(dataDe) vendas = vendas.filter(v=> v.data.slice(0,10) >= dataDe);
+    if(dataAte) vendas = vendas.filter(v=> v.data.slice(0,10) <= dataAte);
+
+    const vendidos = r.itens.filter(i=>i.vendido).length;
+    const receita = vendas.reduce((s,v)=>s+v.valor,0);
+    const custo = r.custo || 0;
+    const custoProporcional = vendidos>0 && r.itens.length>0 ? (custo * vendidos / r.itens.length) : 0;
+    const lucro = receita - custoProporcional;
+
+    if(vendas.length>0){
+      const datas = vendas.map(v=>v.data.slice(0,10)).sort();
+      const dMin = datas[0], dMax = datas[datas.length-1];
+      if(!dataMin || dMin<dataMin) dataMin = dMin;
+      if(!dataMax || dMax>dataMax) dataMax = dMax;
+    }
+
+    totalReceita += receita;
+    totalCusto += custoProporcional;
+    totalLucro += lucro;
+
+    if(!selId || state.remessas.length>1){
+      html += renderBlocoLucro(r, vendas, receita, custoProporcional, lucro);
+    }
+  });
+
+  if(selId){
+    const r = remessas[0];
+    const ids = r.itens.map(i=>i.id);
+    let vendas = state.vendas.filter(v=> ids.includes(v.itemId));
+    if(dataDe) vendas = vendas.filter(v=> v.data.slice(0,10) >= dataDe);
+    if(dataAte) vendas = vendas.filter(v=> v.data.slice(0,10) <= dataAte);
+    const vendidos = vendas.length;
+    const receita = vendas.reduce((s,v)=>s+v.valor,0);
+    const custo = r.custo || 0;
+    const custoProporcional = vendidos>0 && r.itens.length>0 ? (custo * vendidos / r.itens.length) : 0;
+    const lucro = receita - custoProporcional;
+    html = renderBlocoLucro(r, vendas, receita, custoProporcional, lucro, true);
+  }
+
+  // Consolidado
+  if(remessas.length>1 || !selId){
+    html += `<div class="lucro-box" style="border-color:#28a745;background:linear-gradient(135deg,#d4edda,#c3e6cb);">
+      <h3 style="color:#155724;">💼 CONSOLIDADO GERAL</h3>
+      <div class="lucro-grid">
+        <div class="lucro-item"><div class="v">${dataMin?formatarData(dataMin)+' a '+formatarData(dataMax):'-'}</div><div class="l">Período</div></div>
+        <div class="lucro-item"><div class="v">R$ ${totalReceita.toFixed(2)}</div><div class="l">Receita</div></div>
+        <div class="lucro-item"><div class="v">R$ ${totalCusto.toFixed(2)}</div><div class="l">Custo</div></div>
+        <div class="lucro-item" style="border-color:#28a745;"><div class="v" style="color:#28a745;">R$ ${totalLucro.toFixed(2)}</div><div class="l">💰 LUCRO</div></div>
+      </div>
+      ${renderProlabore(totalLucro)}
+    </div>`;
+  }
+
+  document.getElementById('lucrosConteudo').innerHTML = html;
+}
+
+function renderBlocoLucro(r, vendas, receita, custo, lucro, detalhado=false){
+  const vendidos = vendas.length;
+  const datas = vendas.map(v=>v.data.slice(0,10)).sort();
+  const periodo = datas.length ? formatarData(datas[0])+' a '+formatarData(datas[datas.length-1]) : '-';
+
+  // Por tipo
+  const porTipo = {};
+  vendas.forEach(v=>{
+    const f = findItem(v.itemId);
+    if(f){
+      if(!porTipo[f.item.tipo]) porTipo[f.item.tipo] = {qtd:0, valor:0};
+      porTipo[f.item.tipo].qtd++;
+      porTipo[f.item.tipo].valor += v.valor;
+    }
+  });
+  const tiposTxt = Object.entries(porTipo).map(([t,d])=>`${d.qtd} ${t} (R$ ${d.valor.toFixed(2)})`).join(' • ') || '-';
+
+  return `
+    <div class="lucro-box">
+      <div class="lucro-header">
+        <h3 style="margin:0;">📦 ${r.nome}</h3>
+        <span style="font-size:0.85em;color:#666;">📅 ${periodo}</span>
+      </div>
+      <div style="font-size:0.9em;margin-bottom:8px;">
+        <b>Vendeu:</b> ${tiposTxt}
+      </div>
+      <div class="lucro-grid">
+        <div class="lucro-item"><div class="v">${vendidos}</div><div class="l">Vendidas</div></div>
+        <div class="lucro-item"><div class="v">R$ ${custo.toFixed(2)}</div><div class="l">💵 Custo</div></div>
+        <div class="lucro-item"><div class="v">R$ ${receita.toFixed(2)}</div><div class="l">💰 Vendeu</div></div>
+        <div class="lucro-item" style="border-color:${lucro>=0?'#28a745':'#dc3545'};">
+          <div class="v" style="color:${lucro>=0?'#28a745':'#dc3545'};">R$ ${lucro.toFixed(2)}</div>
+          <div class="l">${lucro>=0?'💹 LUCRO':'📉 PREJUÍZO'}</div>
+        </div>
+      </div>
+      ${lucro>0 ? renderProlabore(lucro) : '<p style="color:#888;text-align:center;margin-top:10px;">Sem lucro para distribuir.</p>'}
+    </div>
+  `;
+}
+
+function renderProlabore(lucro){
+  const perc = state.percentuais;
+  const total = Object.values(perc).reduce((a,b)=>a+b,0);
+  const items = [
+    {nome:'Luciano (Pai)', key:'Luciano'},
+    {nome:'Verônica (Mãe)', key:'Verônica'},
+    {nome:'Alexandre', key:'Alexandre'},
+    {nome:'Luciano Junior', key:'Luciano Junior'},
+    {nome:'Caixa da Empresa', key:'Caixa'}
+  ];
+  return `
+    <div class="prolabore-list">
+      <h4 style="color:#8B4513;margin-bottom:8px;">💼 Distribuição do Pró-Labore (lucro: R$ ${lucro.toFixed(2)})</h4>
+      ${items.map(it=>{
+        const p = perc[it.key]||0;
+        const v = lucro * p / 100;
+        return `<div class="prolabore-item">
+          <div>
+            <div class="nome">${it.nome}</div>
+            <div class="perc">${p}% do lucro</div>
+          </div>
+          <div class="valor">R$ ${v.toFixed(2)}</div>
+        </div>`;
+      }).join('')}
+      ${Math.abs(total-100)>0.01 ? `<div class="alert alert-danger" style="margin-top:8px;">⚠️ Total dos percentuais: ${total}% (deveria ser 100%)</div>` : ''}
+    </div>
+  `;
+}
+
+// ============ EXPORTAR ============
+function exportarPDF(){
+  const vendas = getVendasFiltradas();
+  if(vendas.length===0){ alert('Nenhuma venda para exportar!'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFontSize(16);
+  doc.text('Relatório de Vendas - Cocadas da Família', 14, 15);
+  doc.setFontSize(10);
+  doc.text('Gerado em: '+new Date().toLocaleString('pt-BR'), 14, 22);
+
+  const rows = vendas.map(v=>{
+    const f = findItem(v.itemId);
+    return [
+      formatarDataHora(v.data),
+      v.vendedor,
+      f?f.item.tipo:'?',
+      f?f.remessa.nome:'?',
+      v.comprador,
+      'R$ '+v.valor.toFixed(2),
+      v.pagamento
+    ];
+  });
+
+  doc.autoTable({
+    head: [['Data','Vendedor','Produto','Remessa','Comprador','Valor','Pagto']],
+    body: rows,
+    startY: 28,
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [139,69,19] }
+  });
+
+  const total = vendas.reduce((s,v)=>s+v.valor,0);
+  const finalY = doc.lastAutoTable.finalY + 5;
+  doc.setFontSize(11);
+  doc.text('Total: R$ '+total.toFixed(2)+' ('+vendas.length+' vendas)', 14, finalY);
+
+  doc.save('relatorio-vendas-'+new Date().toISOString().slice(0,10)+'.pdf');
+}
+
+function exportarPDFVendedor(){
+  const vendedores = ['Luciano','Verônica','Luciano Junior','Alexandre'];
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFontSize(16);
+  doc.text('Relatório por Vendedor', 14, 15);
+  doc.setFontSize(10);
+  doc.text('Gerado em: '+new Date().toLocaleString('pt-BR'), 14, 22);
+
+  let y = 30;
+  vendedores.forEach(vend=>{
+    const vendas = state.vendas.filter(v=>v.vendedor===vend);
+    const total = vendas.reduce((s,v)=>s+v.valor,0);
+    if(y>260){ doc.addPage(); y=20; }
+    doc.setFontSize(12);
+    doc.setTextColor(139,69,19);
+    doc.text('👤 '+vend+' — '+vendas.length+' vendas — R$ '+total.toFixed(2), 14, y);
+    y+=6;
+    doc.setTextColor(0);
+    doc.setFontSize(9);
+    if(vendas.length>0){
+      const rows = vendas.map(v=>{
+        const f = findItem(v.itemId);
+        return [formatarData(v.data), f?f.item.tipo:'?', v.comprador, 'R$ '+v.valor.toFixed(2), v.pagamento];
+      });
+      doc.autoTable({
+        head: [['Data','Produto','Comprador','Valor','Pagto']],
+        body: rows,
+        startY: y,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [210,105,30] }
+      });
+      y = doc.lastAutoTable.finalY + 8;
+    } else {
+      doc.text('Nenhuma venda.', 14, y);
+      y+=8;
+    }
+  });
+
+  doc.save('relatorio-vendedores.pdf');
+}
+
+function exportarPDFProduto(){
+  const tipos = ['Coco','Cacau','Banana','Paçoca'];
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFontSize(16);
+  doc.text('Relatório por Produto', 14, 15);
+  doc.setFontSize(10);
+  doc.text('Gerado em: '+new Date().toLocaleString('pt-BR'), 14, 22);
+
+  let y = 30;
+  tipos.forEach(tipo=>{
+    const vendas = state.vendas.filter(v=>{
+      const f = findItem(v.itemId);
+      return f && f.item.tipo===tipo;
+    });
+    const total = vendas.reduce((s,v)=>s+v.valor,0);
+    if(y>260){ doc.addPage(); y=20; }
+    const emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[tipo];
+    doc.setFontSize(12);
+    doc.setTextColor(139,69,19);
+    doc.text(emoji+' '+tipo+' — '+vendas.length+' vendas — R$ '+total.toFixed(2), 14, y);
+    y+=6;
+    doc.setTextColor(0);
+    if(vendas.length>0){
+      const rows = vendas.map(v=>{
+        const f = findItem(v.itemId);
+        return [formatarData(v.data), v.vendedor, v.comprador, 'R$ '+v.valor.toFixed(2), v.pagamento];
+      });
+      doc.autoTable({
+        head: [['Data','Vendedor','Comprador','Valor','Pagto']],
+        body: rows,
+        startY: y,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [210,105,30] }
+      });
+      y = doc.lastAutoTable.finalY + 8;
+    } else {
+      doc.setFontSize(9);
+      doc.text('Nenhuma venda.', 14, y);
+      y+=8;
+    }
+  });
+
+  doc.save('relatorio-produtos.pdf');
+}
+
+function exportarExcel(){
+  const vendas = getVendasFiltradas();
+  if(vendas.length===0){ alert('Nenhuma venda!'); return; }
+  const dados = vendas.map(v=>{
+    const f = findItem(v.itemId);
+    return {
+      'Data': formatarDataHora(v.data),
+      'Vendedor': v.vendedor,
+      'Produto': f?f.item.tipo:'',
+      'Remessa': f?f.remessa.nome:'',
+      'Comprador': v.comprador,
+      'Valor': v.valor,
+      'Pagamento': v.pagamento,
+      'Status': v.pagamento==='Fiado' ? (v.pago?'Pago':'Pendente') : 'OK',
+      'Observação': v.obs||''
+    };
+  });
+  const ws = XLSX.utils.json_to_sheet(dados);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Vendas');
+  XLSX.writeFile(wb, 'relatorio-vendas-'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+// ============ CONFIG ============
+function renderConfig(){
+  document.getElementById('firebaseConfig').value = state.firebaseConfig ? JSON.stringify(state.firebaseConfig, null, 2) : '';
+  document.getElementById('percLuciano').value = state.percentuais.Luciano;
+  document.getElementById('percVeronica').value = state.percentuais.Verônica;
+  document.getElementById('percAlexandre').value = state.percentuais.Alexandre;
+  document.getElementById('percLucianoJr').value = state.percentuais['Luciano Junior'];
+  document.getElementById('percCaixa').value = state.percentuais.Caixa;
+}
+
+function salvarPercentuais(){
+  const p = {
+    Luciano: parseFloat(document.getElementById('percLuciano').value)||0,
+    Verônica: parseFloat(document.getElementById('percVeronica').value)||0,
+    Alexandre: parseFloat(document.getElementById('percAlexandre').value)||0,
+    'Luciano Junior': parseFloat(document.getElementById('percLucianoJr').value)||0,
+    Caixa: parseFloat(document.getElementById('percCaixa').value)||0
+  };
+  const total = Object.values(p).reduce((a,b)=>a+b,0);
+  if(Math.abs(total-100)>0.01){
+    if(!confirm('Total é '+total.toFixed(2)+'% (deveria ser 100%). Salvar mesmo assim?')) return;
+  }
+  state.percentuais = p;
+  if(firebaseAtivo && db){
+    db.collection('config').doc('principal').set({percentuais:p});
+  }
+  saveLocal();
+  alert('✅ Percentuais salvos!');
+  renderLucros();
+}
+
+function exportarDados(){
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'backup-cocadas-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importarDados(){
+  document.getElementById('fileImport').click();
+}
+document.getElementById('fileImport').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    try {
+      const data = JSON.parse(ev.target.result);
+      if(!confirm('Isso substituirá TODOS os dados atuais. Continuar?')) return;
+      state = {...state, ...data};
+      saveLocal();
+      renderTudo();
+      alert('✅ Dados restaurados!');
+    } catch(err){
+      alert('❌ Arquivo inválido!');
+    }
+  };
+  reader.readAsText(file);
+});
+
+async function limparTudo(){
+  if(!confirm('⚠️ Apagar TUDO? Isso não pode ser desfeito!')) return;
+  if(!confirm('Tem certeza MESMO?')) return;
+  if(firebaseAtivo && db){
+    const r = await db.collection('remessas').get();
+    const v = await db.collection('vendas').get();
+    const batch = db.batch();
+    r.docs.forEach(d=>batch.delete(d.ref));
+    v.docs.forEach(d=>batch.delete(d.ref));
+    await batch.commit();
+  }
+  state.remessas = [];
+  state.vendas = [];
+  saveLocal();
+  renderTudo();
+  alert('Dados apagados.');
 }
 
 // ============ UTIL ============
 function formatarData(iso){
   if(!iso) return '-';
-  const d = new Date(iso+'T00:00:00');
+  const d = new Date(iso.length===10?iso+'T00:00:00':iso);
   return d.toLocaleDateString('pt-BR');
 }
 function formatarDataHora(iso){
@@ -647,7 +1457,32 @@ function renderTudo(){
   renderFiados();
 }
 
+// ============ PWA SERVICE WORKER ============
+if('serviceWorker' in navigator){
+  const swCode = `
+    const CACHE = 'cocadas-v1';
+    self.addEventListener('install', e=>{ self.skipWaiting(); });
+    self.addEventListener('activate', e=>{ e.waitUntil(clients.claim()); });
+    self.addEventListener('fetch', e=>{
+      if(e.request.method !== 'GET') return;
+      e.respondWith(
+        caches.match(e.request).then(r=> r || fetch(e.request).then(resp=>{
+          const clone = resp.clone();
+          caches.open(CACHE).then(c=> c.put(e.request, clone));
+          return resp;
+        }).catch(()=> caches.match(e.request)))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], {type:'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(e=>console.log('SW:',e));
+}
+
+// ============ INIT ============
+renderConfig();
 renderTudo();
+if(state.firebaseConfig) initFirebase();
 </script>
 </body>
 </html>
