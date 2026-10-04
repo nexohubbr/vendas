@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍬 Cocadas da Família</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
+  body {
+    background: linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #F4A460 100%);
+    min-height:100vh; padding:15px; color:#3a2410;
+  }
+  .container { max-width:1200px; margin:0 auto; }
+  header {
+    background:rgba(255,255,255,0.95); border-radius:20px; padding:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3); margin-bottom:20px;
+    display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:15px;
+  }
+  header h1 { font-size:1.8em; color:#8B4513; }
+  header h1 span { font-size:1.2em; }
+  .user-select {
+    display:flex; align-items:center; gap:10px;
+    background:#fff8dc; padding:8px 15px; border-radius:30px;
+    border:2px solid #D2691E;
+  }
+  .user-select select {
+    border:none; background:transparent; font-size:1em; font-weight:bold; color:#8B4513;
+    cursor:pointer; outline:none;
+  }
+  .tabs {
+    display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;
+  }
+  .tab {
+    flex:1; min-width:120px; padding:14px; background:rgba(255,255,255,0.7);
+    border:none; border-radius:12px; font-size:1em; font-weight:bold;
+    cursor:pointer; color:#8B4513; transition:all 0.3s;
+  }
+  .tab:hover { background:rgba(255,255,255,0.9); transform:translateY(-2px); }
+  .tab.active {
+    background:linear-gradient(135deg,#D2691E,#8B4513); color:#fff;
+    box-shadow:0 5px 15px rgba(139,69,19,0.4);
+  }
+  .panel {
+    background:rgba(255,255,255,0.95); border-radius:20px; padding:25px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2); display:none;
+  }
+  .panel.active { display:block; animation:fadeIn 0.4s; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+  h2 { color:#8B4513; margin-bottom:15px; border-bottom:3px solid #F4A460; padding-bottom:8px; }
+  h3 { color:#D2691E; margin:15px 0 10px; }
+
+  /* Cards de estoque */
+  .grid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:15px;
+  }
+  .card {
+    background:linear-gradient(135deg,#fff8dc,#ffefd5); border-radius:15px;
+    padding:18px; border:2px solid #F4A460; position:relative;
+    transition:transform 0.2s;
+  }
+  .card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+  .card.vendido {
+    background:linear-gradient(135deg,#d3d3d3,#a9a9a9); opacity:0.7;
+    border-color:#888;
+  }
+  .card .tipo { font-size:1.3em; font-weight:bold; color:#8B4513; margin-bottom:5px; }
+  .card .remessa { font-size:0.85em; color:#666; margin-bottom:8px; }
+  .card .preco { font-size:1.1em; font-weight:bold; color:#D2691E; margin-bottom:10px; }
+  .card .status {
+    display:inline-block; padding:4px 10px; border-radius:20px;
+    font-size:0.8em; font-weight:bold;
+  }
+  .status.disponivel { background:#90EE90; color:#006400; }
+  .status.vendido { background:#FF6B6B; color:#fff; }
+  .btn {
+    padding:10px 18px; border:none; border-radius:10px; cursor:pointer;
+    font-weight:bold; font-size:0.95em; transition:all 0.2s;
+  }
+  .btn-primary { background:linear-gradient(135deg,#D2691E,#8B4513); color:#fff; }
+  .btn-primary:hover { transform:scale(1.05); box-shadow:0 5px 15px rgba(0,0,0,0.2); }
+  .btn-success { background:#28a745; color:#fff; }
+  .btn-danger { background:#dc3545; color:#fff; }
+  .btn-warning { background:#ffc107; color:#333; }
+  .btn-sm { padding:6px 12px; font-size:0.85em; }
+
+  /* Formulários */
+  .form-group { margin-bottom:12px; }
+  .form-group label { display:block; font-weight:bold; margin-bottom:5px; color:#8B4513; }
+  .form-group input, .form-group select, .form-group textarea {
+    width:100%; padding:10px; border:2px solid #F4A460; border-radius:8px;
+    font-size:1em; background:#fff;
+  }
+  .form-group input:focus, .form-group select:focus { outline:none; border-color:#D2691E; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  /* Modal */
+  .modal-overlay {
+    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;
+  }
+  .modal-overlay.active { display:flex; }
+  .modal {
+    background:#fff; border-radius:20px; padding:25px; max-width:500px; width:90%;
+    max-height:90vh; overflow-y:auto;
+  }
+  .modal h2 { margin-bottom:15px; }
+  .modal-actions { display:flex; gap:10px; margin-top:15px; justify-content:flex-end; }
+
+  /* Tabela */
+  table { width:100%; border-collapse:collapse; margin-top:10px; background:#fff; border-radius:10px; overflow:hidden; }
+  th { background:linear-gradient(135deg,#D2691E,#8B4513); color:#fff; padding:10px; text-align:left; font-size:0.9em; }
+  td { padding:10px; border-bottom:1px solid #eee; font-size:0.9em; }
+  tr:hover { background:#fff8dc; }
+  .badge {
+    display:inline-block; padding:3px 8px; border-radius:12px; font-size:0.75em; font-weight:bold;
+  }
+  .badge-fiado { background:#FFC107; color:#333; }
+  .badge-avista { background:#28a745; color:#fff; }
+  .badge-pix { background:#17a2b8; color:#fff; }
+
+  /* Dashboard */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:15px; margin-bottom:20px; }
+  .stat-card {
+    background:linear-gradient(135deg,#fff8dc,#ffefd5); padding:20px;
+    border-radius:15px; border-left:5px solid #D2691E;
+  }
+  .stat-card .valor { font-size:1.8em; font-weight:bold; color:#8B4513; }
+  .stat-card .label { color:#666; font-size:0.9em; margin-top:5px; }
+
+  .filter-bar {
+    display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px; align-items:end;
+  }
+  .filter-bar .form-group { margin:0; flex:1; min-width:150px; }
+
+  .alert {
+    padding:12px; border-radius:10px; margin-bottom:15px;
+    background:#fff3cd; border-left:4px solid #ffc107;
+  }
+  .alert-info { background:#d1ecf1; border-color:#17a2b8; }
+  .alert-success { background:#d4edda; border-color:#28a745; }
+
+  @media (max-width:600px){
+    header h1 { font-size:1.3em; }
+    .form-row { grid-template-columns:1fr; }
+    .tab { min-width:100px; font-size:0.9em; padding:10px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1><span>🍬</span> Cocadas da Família</h1>
+    <div class="user-select">
+      👤 Vendedor:
+      <select id="userSelect">
+        <option value="">-- Selecione --</option>
+        <option value="Luciano">Luciano (Pai)</option>
+        <option value="Verônica">Verônica (Mãe)</option>
+        <option value="Luciano Junior">Luciano Junior</option>
+        <option value="Alexandre">Alexandre</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="vender">🛒 Vender</button>
+    <button class="tab" data-tab="remessas">📦 Remessas</button>
+    <button class="tab" data-tab="relatorios">📊 Relatórios</button>
+    <button class="tab" data-tab="fiados">💰 Fiados</button>
+  </div>
+
+  <!-- VENDER -->
+  <div class="panel active" id="panel-vender">
+    <h2>🛒 Estoque Disponível</h2>
+    <div id="estoqueGrid" class="grid"></div>
+  </div>
+
+  <!-- REMESSAS -->
+  <div class="panel" id="panel-remessas">
+    <h2>📦 Gerenciar Remessas</h2>
+    <div class="alert alert-info">
+      Uma <b>remessa</b> é cada compra de cocadas que você faz para revender.
+      Adicione uma nova remessa com a quantidade de cada tipo.
+    </div>
+
+    <div style="background:#fff8dc;padding:15px;border-radius:12px;margin-bottom:20px;">
+      <h3>➕ Nova Remessa</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nome da Remessa</label>
+          <input type="text" id="remessaNome" placeholder="Ex: Remessa 1">
+        </div>
+        <div class="form-group">
+          <label>Data</label>
+          <input type="date" id="remessaData">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>🥥 Coco</label><input type="number" id="qtdCoco" min="0" value="0"></div>
+        <div class="form-group"><label>🍫 Cacau</label><input type="number" id="qtdCacau" min="0" value="0"></div>
+        <div class="form-group"><label>🍌 Banana</label><input type="number" id="qtdBanana" min="0" value="0"></div>
+        <div class="form-group"><label>🥜 Paçoca</label><input type="number" id="qtdPacoca" min="0" value="0"></div>
+      </div>
+      <div class="form-group">
+        <label>Preço unitário (R$)</label>
+        <input type="number" id="remessaPreco" step="0.01" min="0" placeholder="5.00">
+      </div>
+      <button class="btn btn-primary" onclick="criarRemessa()">➕ Adicionar Remessa</button>
+    </div>
+
+    <h3>📋 Remessas Cadastradas</h3>
+    <div id="listaRemessas"></div>
+  </div>
+
+  <!-- RELATÓRIOS -->
+  <div class="panel" id="panel-relatorios">
+    <h2>📊 Relatórios de Vendas</h2>
+
+    <div class="stats" id="statsGerais"></div>
+
+    <div class="filter-bar">
+      <div class="form-group">
+        <label>Filtrar por vendedor</label>
+        <select id="filtroVendedor">
+          <option value="">Todos</option>
+          <option>Luciano</option>
+          <option>Verônica</option>
+          <option>Luciano Junior</option>
+          <option>Alexandre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Filtrar por remessa</label>
+        <select id="filtroRemessa"><option value="">Todas</option></select>
+      </div>
+      <div class="form-group">
+        <label>Filtrar por pagamento</label>
+        <select id="filtroPagamento">
+          <option value="">Todos</option>
+          <option>À vista</option>
+          <option>Pix</option>
+          <option>Fiado</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="renderRelatorios()">🔍 Filtrar</button>
+    </div>
+
+    <h3>📝 Vendas Registradas</h3>
+    <div style="overflow-x:auto;">
+      <table id="tabelaVendas">
+        <thead>
+          <tr>
+            <th>Data</th><th>Vendedor</th><th>Produto</th><th>Remessa</th>
+            <th>Comprador</th><th>Valor</th><th>Pagamento</th><th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FIADOS -->
+  <div class="panel" id="panel-fiados">
+    <h2>💰 Controle de Fiados</h2>
+    <div class="alert">
+      Aqui ficam todas as vendas feitas no <b>fiado</b>. Você pode marcar como <b>pago</b> quando o cliente quitar.
+    </div>
+    <div id="listaFiados"></div>
+  </div>
+
+</div>
+
+<!-- MODAL DE VENDA -->
+<div class="modal-overlay" id="modalVenda">
+  <div class="modal">
+    <h2>🛒 Registrar Venda</h2>
+    <div id="modalInfo" style="background:#fff8dc;padding:10px;border-radius:10px;margin-bottom:15px;"></div>
+    <div class="form-group">
+      <label>Nome do Comprador</label>
+      <input type="text" id="vendaComprador" placeholder="Nome completo">
+    </div>
+    <div class="form-group">
+      <label>Valor (R$)</label>
+      <input type="number" id="vendaValor" step="0.01" min="0">
+    </div>
+    <div class="form-group">
+      <label>Forma de Pagamento</label>
+      <select id="vendaPagamento">
+        <option>À vista</option>
+        <option>Pix</option>
+        <option>Fiado</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Observação (opcional)</label>
+      <textarea id="vendaObs" rows="2"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-success" onclick="confirmarVenda()">✅ Confirmar Venda</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE DETALHES -->
+<div class="modal-overlay" id="modalDetalhes">
+  <div class="modal">
+    <h2>📋 Detalhes da Venda</h2>
+    <div id="detalhesConteudo"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="fecharDetalhes()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ ESTADO ============
+let state = {
+  usuario: '',
+  remessas: [],   // {id, nome, data, preco, itens:[{id,tipo,remessaId,vendido}]}
+  vendas: []      // {id, itemId, vendedor, comprador, valor, pagamento, data, obs, pago:false}
+};
+
+function save(){ localStorage.setItem('cocadasApp', JSON.stringify(state)); }
+function load(){
+  const d = localStorage.getItem('cocadasApp');
+  if(d) state = JSON.parse(d);
+}
+load();
+
+// ============ USUÁRIO ============
+const userSel = document.getElementById('userSelect');
+userSel.value = state.usuario || '';
+userSel.addEventListener('change', e=>{
+  state.usuario = e.target.value;
+  save();
+  renderTudo();
+});
+
+// ============ TABS ============
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('panel-'+t.dataset.tab).classList.add('active');
+    renderTudo();
+  });
+});
+
+// ============ REMESSAS ============
+function criarRemessa(){
+  const nome = document.getElementById('remessaNome').value.trim();
+  const data = document.getElementById('remessaData').value;
+  const preco = parseFloat(document.getElementById('remessaPreco').value);
+  const tipos = {
+    'Coco': +document.getElementById('qtdCoco').value,
+    'Cacau': +document.getElementById('qtdCacau').value,
+    'Banana': +document.getElementById('qtdBanana').value,
+    'Paçoca': +document.getElementById('qtdPacoca').value
+  };
+  if(!nome || !preco || preco<=0){ alert('Preencha nome e preço!'); return; }
+  const total = Object.values(tipos).reduce((a,b)=>a+b,0);
+  if(total===0){ alert('Adicione pelo menos 1 item!'); return; }
+
+  const remessa = {
+    id: Date.now(),
+    nome, data: data || new Date().toISOString().slice(0,10),
+    preco, itens:[]
+  };
+  Object.entries(tipos).forEach(([tipo,qtd])=>{
+    for(let i=0;i<qtd;i++){
+      remessa.itens.push({ id: Date.now()+Math.random(), tipo, remessaId: remessa.id, vendido:false });
+    }
+  });
+  state.remessas.push(remessa);
+  save();
+  // limpa
+  document.getElementById('remessaNome').value='';
+  ['qtdCoco','qtdCacau','qtdBanana','qtdPacoca','remessaPreco'].forEach(i=>document.getElementById(i).value='');
+  renderTudo();
+  alert('✅ Remessa "'+nome+'" criada com '+total+' itens!');
+}
+
+function excluirRemessa(id){
+  const r = state.remessas.find(x=>x.id===id);
+  const temVenda = r.itens.some(i=>i.vendido);
+  if(temVenda){ alert('❌ Não é possível excluir: já há vendas nesta remessa!'); return; }
+  if(!confirm('Excluir remessa "'+r.nome+'"?')) return;
+  state.remessas = state.remessas.filter(x=>x.id!==id);
+  save(); renderTudo();
+}
+
+function renderRemessas(){
+  const div = document.getElementById('listaRemessas');
+  if(state.remessas.length===0){ div.innerHTML='<p style="color:#888;">Nenhuma remessa cadastrada.</p>'; return; }
+  div.innerHTML = state.remessas.map(r=>{
+    const total = r.itens.length;
+    const vendidos = r.itens.filter(i=>i.vendido).length;
+    const disp = total - vendidos;
+    const porTipo = {};
+    r.itens.filter(i=>!i.vendido).forEach(i=> porTipo[i.tipo]=(porTipo[i.tipo]||0)+1 );
+    const tiposTxt = Object.entries(porTipo).map(([t,q])=>`${t}: ${q}`).join(' | ') || 'Todas vendidas';
+    return `
+      <div class="card" style="margin-bottom:10px;">
+        <div class="tipo">${r.nome}</div>
+        <div class="remessa">📅 ${formatarData(r.data)} • 💰 R$ ${r.preco.toFixed(2)} un.</div>
+        <div style="margin:8px 0;">
+          <b>Total:</b> ${total} | <b style="color:#28a745;">Disponível:</b> ${disp} | <b style="color:#dc3545;">Vendidas:</b> ${vendidos}
+        </div>
+        <div style="font-size:0.9em;color:#666;">${tiposTxt}</div>
+        ${vendidos===0 ? `<button class="btn btn-danger btn-sm" style="margin-top:10px;" onclick="excluirRemessa(${r.id})">🗑️ Excluir</button>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+// ============ ESTOQUE / VENDER ============
+let itemSelecionado = null;
+
+function renderEstoque(){
+  const grid = document.getElementById('estoqueGrid');
+  const todosItens = [];
+  state.remessas.forEach(r=> r.itens.forEach(i=> todosItens.push({...i, remessa:r})) );
+
+  if(todosItens.length===0){
+    grid.innerHTML = '<div class="alert">📦 Nenhuma remessa cadastrada ainda. Vá em <b>Remessas</b> para adicionar!</div>';
+    return;
+  }
+
+  grid.innerHTML = todosItens.map(i=>{
+    const venda = state.vendas.find(v=>v.itemId===i.id);
+    const emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[i.tipo] || '🍬';
+    return `
+      <div class="card ${i.vendido?'vendido':''}">
+        <div class="tipo">${emoji} ${i.tipo}</div>
+        <div class="remessa">📦 ${i.remessa.nome}</div>
+        <div class="preco">R$ ${i.remessa.preco.toFixed(2)}</div>
+        ${i.vendido
+          ? `<span class="status vendido">Vendido</span><br><small>👤 ${venda.vendedor}</small>`
+          : `<span class="status disponivel">Disponível</span>
+             <br><button class="btn btn-success btn-sm" style="margin-top:8px;width:100%;" onclick="abrirVenda(${i.id})">🛒 Vender</button>`
+        }
+      </div>
+    `;
+  }).join('');
+}
+
+function abrirVenda(itemId){
+  if(!state.usuario){ alert('⚠️ Selecione seu nome no topo para continuar!'); return; }
+  const item = findItem(itemId);
+  if(!item || item.vendido) return;
+  itemSelecionado = itemId;
+  const emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[item.tipo];
+  const rem = state.remessas.find(r=>r.id===item.remessaId);
+  document.getElementById('modalInfo').innerHTML = `
+    <b>${emoji} ${item.tipo}</b> • 📦 ${rem.nome}<br>
+    👤 Vendedor: <b>${state.usuario}</b>
+  `;
+  document.getElementById('vendaValor').value = rem.preco.toFixed(2);
+  document.getElementById('vendaComprador').value = '';
+  document.getElementById('vendaObs').value = '';
+  document.getElementById('modalVenda').classList.add('active');
+}
+
+function confirmarVenda(){
+  const comprador = document.getElementById('vendaComprador').value.trim();
+  const valor = parseFloat(document.getElementById('vendaValor').value);
+  const pagamento = document.getElementById('vendaPagamento').value;
+  const obs = document.getElementById('vendaObs').value.trim();
+  if(!comprador){ alert('Informe o nome do comprador!'); return; }
+  if(!valor || valor<=0){ alert('Valor inválido!'); return; }
+
+  const item = findItem(itemSelecionado);
+  item.vendido = true;
+  state.vendas.push({
+    id: Date.now(),
+    itemId: item.id,
+    vendedor: state.usuario,
+    comprador, valor, pagamento, obs,
+    data: new Date().toISOString(),
+    pago: pagamento!=='Fiado'
+  });
+  save();
+  fecharModal();
+  renderTudo();
+  alert('✅ Venda registrada com sucesso!');
+}
+
+function fecharModal(){ document.getElementById('modalVenda').classList.remove('active'); itemSelecionado=null; }
+
+function findItem(id){
+  for(const r of state.remessas) for(const i of r.itens) if(i.id===id) return i;
+  return null;
+}
+
+// ============ RELATÓRIOS ============
+function renderStats(){
+  const div = document.getElementById('statsGerais');
+  const totalVendas = state.vendas.length;
+  const totalValor = state.vendas.reduce((s,v)=>s+v.valor,0);
+  const avista = state.vendas.filter(v=>v.pagamento==='À vista').reduce((s,v)=>s+v.valor,0);
+  const pix = state.vendas.filter(v=>v.pagamento==='Pix').reduce((s,v)=>s+v.valor,0);
+  const fiado = state.vendas.filter(v=>v.pagamento==='Fiado' && !v.pago).reduce((s,v)=>s+v.valor,0);
+  const fiadoPago = state.vendas.filter(v=>v.pagamento==='Fiado' && v.pago).reduce((s,v)=>s+v.valor,0);
+
+  div.innerHTML = `
+    <div class="stat-card"><div class="valor">${totalVendas}</div><div class="label">Vendas totais</div></div>
+    <div class="stat-card"><div class="valor">R$ ${totalValor.toFixed(2)}</div><div class="label">Faturamento</div></div>
+    <div class="stat-card"><div class="valor">R$ ${avista.toFixed(2)}</div><div class="label">💵 À vista</div></div>
+    <div class="stat-card"><div class="valor">R$ ${pix.toFixed(2)}</div><div class="label">📱 Pix</div></div>
+    <div class="stat-card"><div class="valor">R$ ${fiado.toFixed(2)}</div><div class="label">⚠️ Fiado pendente</div></div>
+    <div class="stat-card"><div class="valor">R$ ${fiadoPago.toFixed(2)}</div><div class="label">✅ Fiado recebido</div></div>
+  `;
+}
+
+function renderRelatorios(){
+  const fv = document.getElementById('filtroVendedor').value;
+  const fr = document.getElementById('filtroRemessa').value;
+  const fp = document.getElementById('filtroPagamento').value;
+
+  // preenche select de remessas
+  const selR = document.getElementById('filtroRemessa');
+  const atual = selR.value;
+  selR.innerHTML = '<option value="">Todas</option>' + state.remessas.map(r=>`<option value="${r.id}">${r.nome}</option>`).join('');
+  selR.value = atual;
+
+  let vendas = [...state.vendas].sort((a,b)=> new Date(b.data)-new Date(a.data));
+  if(fv) vendas = vendas.filter(v=>v.vendedor===fv);
+  if(fr) {
+    const rem = state.remessas.find(r=>r.id==fr);
+    if(rem){
+      const ids = rem.itens.map(i=>i.id);
+      vendas = vendas.filter(v=>ids.includes(v.itemId));
+    }
+  }
+  if(fp) vendas = vendas.filter(v=>v.pagamento===fp);
+
+  const tb = document.querySelector('#tabelaVendas tbody');
+  if(vendas.length===0){ tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#888;">Nenhuma venda encontrada.</td></tr>'; return; }
+  tb.innerHTML = vendas.map(v=>{
+    const item = findItem(v.itemId);
+    const rem = item ? state.remessas.find(r=>r.id===item.remessaId) : null;
+    const badge = v.pagamento==='Fiado' ? 'badge-fiado' : v.pagamento==='Pix' ? 'badge-pix' : 'badge-avista';
+    return `
+      <tr>
+        <td>${formatarDataHora(v.data)}</td>
+        <td><b>${v.vendedor}</b></td>
+        <td>${item?item.tipo:'?'}</td>
+        <td>${rem?rem.nome:'?'}</td>
+        <td>${v.comprador}</td>
+        <td>R$ ${v.valor.toFixed(2)}</td>
+        <td><span class="badge ${badge}">${v.pagamento}</span></td>
+        <td><button class="btn btn-primary btn-sm" onclick="verDetalhes(${v.id})">👁️</button></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function verDetalhes(id){
+  const v = state.vendas.find(x=>x.id===id);
+  const item = findItem(v.itemId);
+  const rem = item ? state.remessas.find(r=>r.id===item.remessaId) : null;
+  document.getElementById('detalhesConteudo').innerHTML = `
+    <div style="background:#fff8dc;padding:12px;border-radius:10px;">
+      <p><b>📅 Data:</b> ${formatarDataHora(v.data)}</p>
+      <p><b>👤 Vendedor:</b> ${v.vendedor}</p>
+      <p><b>🍬 Produto:</b> ${item?item.tipo:'?'}</p>
+      <p><b>📦 Remessa:</b> ${rem?rem.nome:'?'}</p>
+      <p><b>🛍️ Comprador:</b> ${v.comprador}</p>
+      <p><b>💰 Valor:</b> R$ ${v.valor.toFixed(2)}</p>
+      <p><b>💳 Pagamento:</b> ${v.pagamento}</p>
+      ${v.obs?`<p><b>📝 Obs:</b> ${v.obs}</p>`:''}
+      ${v.pagamento==='Fiado' ? `<p><b>Status:</b> ${v.pago?'✅ Pago':'⚠️ Pendente'}</p>` : ''}
+    </div>
+  `;
+  document.getElementById('modalDetalhes').classList.add('active');
+}
+function fecharDetalhes(){ document.getElementById('modalDetalhes').classList.remove('active'); }
+
+// ============ FIADOS ============
+function renderFiados(){
+  const div = document.getElementById('listaFiados');
+  const fiados = state.vendas.filter(v=>v.pagamento==='Fiado');
+  if(fiados.length===0){ div.innerHTML='<p style="color:#888;">Nenhum fiado registrado.</p>'; return; }
+
+  const pendentes = fiados.filter(v=>!v.pago);
+  const pagos = fiados.filter(v=>v.pago);
+
+  let html = '';
+  if(pendentes.length){
+    const total = pendentes.reduce((s,v)=>s+v.valor,0);
+    html += `<div class="alert" style="background:#ffe5e5;border-color:#dc3545;">
+      <b>⚠️ Fiados Pendentes:</b> ${pendentes.length} venda(s) • Total: <b>R$ ${total.toFixed(2)}</b>
+    </div>`;
+    html += renderTabelaFiado(pendentes);
+  }
+  if(pagos.length){
+    const total = pagos.reduce((s,v)=>s+v.valor,0);
+    html += `<h3 style="margin-top:20px;">✅ Fiados Pagos (R$ ${total.toFixed(2)})</h3>`;
+    html += renderTabelaFiado(pagos);
+  }
+  div.innerHTML = html;
+}
+
+function renderTabelaFiado(lista){
+  return `<div style="overflow-x:auto;"><table>
+    <thead><tr><th>Data</th><th>Comprador</th><th>Vendedor</th><th>Valor</th><th>Status</th><th>Ação</th></tr></thead>
+    <tbody>${lista.map(v=>{
+      const item = findItem(v.itemId);
+      return `<tr>
+        <td>${formatarData(v.data)}</td>
+        <td><b>${v.comprador}</b></td>
+        <td>${v.vendedor}</td>
+        <td>R$ ${v.valor.toFixed(2)}</td>
+        <td>${v.pago?'<span class="badge badge-avista">PAGO</span>':'<span class="badge badge-fiado">PENDENTE</span>'}</td>
+        <td>${!v.pago?`<button class="btn btn-success btn-sm" onclick="marcarPago(${v.id})">✅ Receber</button>`:''}</td>
+      </tr>`;
+    }).join('')}</tbody></table></div>`;
+}
+
+function marcarPago(id){
+  const v = state.vendas.find(x=>x.id===id);
+  v.pago = true;
+  v.dataPagamento = new Date().toISOString();
+  save(); renderTudo();
+  alert('✅ Fiado marcado como pago!');
+}
+
+// ============ UTIL ============
+function formatarData(iso){
+  if(!iso) return '-';
+  const d = new Date(iso+'T00:00:00');
+  return d.toLocaleDateString('pt-BR');
+}
+function formatarDataHora(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function renderTudo(){
+  renderEstoque();
+  renderRemessas();
+  renderStats();
+  renderRelatorios();
+  renderFiados();
+}
+
+renderTudo();
+</script>
+</body>
+</html>
