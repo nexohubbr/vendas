@@ -81,6 +81,7 @@ tr:hover{background:#fff8dc}
 .alert-info{background:#d1ecf1;border-color:#17a2b8}
 .alert-success{background:#d4edda;border-color:#28a745}
 .alert-danger{background:#f8d7da;border-color:#dc3545}
+.alert-warning{background:#fff3cd;border-color:#ffc107}
 .lucro-box{background:linear-gradient(135deg,#fff8dc,#ffefd5);border-radius:13px;padding:15px;margin-bottom:12px;border:2px solid #D2691E}
 .lucro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:10px 0}
 .lucro-item{background:#fff;padding:8px;border-radius:8px;text-align:center;border:2px solid #F4A460}
@@ -93,13 +94,15 @@ tr:hover{background:#fff8dc}
 .export-bar{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
 .search-box{position:relative}
 .search-box input{padding-left:28px!important}
-.search-box::before{content:'';position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:0.8em}
+.search-box::before{content:'🔍';position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:0.8em}
 .preco-tipo{background:#fff;padding:8px;border-radius:8px;border:2px solid #F4A460}
 .remessa-card{background:linear-gradient(135deg,#fff8dc,#ffefd5);border-radius:13px;padding:14px;border:2px solid #F4A460;margin-bottom:10px}
 .remessa-stats{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;font-size:0.9em}
 .remessa-tipos{font-size:0.8em;color:#666;margin-top:4px}
 .remessa-acoes{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
 .pacote-badge{background:#8B4513;color:#fff;padding:2px 6px;border-radius:8px;font-size:0.7em;font-weight:bold}
+.cache-info{background:#fff3cd;border:2px solid #ffc107;border-radius:10px;padding:12px;margin:10px 0;font-size:0.85em}
+.cache-info b{color:#856404}
 @media(max-width:600px){
 header h1{font-size:1.1em}
 .form-row,.form-row-4,.form-row-2{grid-template-columns:1fr 1fr}
@@ -119,17 +122,17 @@ th,td{padding:4px}
     <div class="user-select"><select id="userSelect"><option value="">Selecione</option><option value="Luciano">Luciano (Pai)</option><option value="Verônica">Verônica (Mãe)</option><option value="Luciano Junior">Luciano Junior</option><option value="Alexandre">Alexandre</option></select></div>
   </header>
   <div class="tabs">
-    <button class="tab active" data-tab="vender"> Vender</button>
+    <button class="tab active" data-tab="vender">🛒 Vender</button>
     <button class="tab" data-tab="remessas">📦 Remessas</button>
     <button class="tab" data-tab="relatorios">📊 Relatórios</button>
     <button class="tab" data-tab="fiados">💰 Fiados</button>
-    <button class="tab" data-tab="lucros">💹 Lucros</button>
+    <button class="tab" data-tab="lucros"> Lucros</button>
     <button class="tab" data-tab="config">⚙️ Config</button>
   </div>
 
   <!-- VENDER -->
   <div class="panel active" id="panel-vender">
-    <h2>🛒 Estoque Disponível</h2>
+    <h2> Estoque Disponível</h2>
     <div class="filter-bar">
       <div class="form-group search-box"><label>Buscar comprador</label><input type="text" id="buscaComprador" placeholder="Nome do cliente..."></div>
       <div class="form-group"><label>Tipo</label><select id="filtroTipo"><option value="">Todos</option><option>Coco</option><option>Cacau</option><option>Banana</option><option>Paçoca</option></select></div>
@@ -151,15 +154,15 @@ th,td{padding:4px}
       </div>
       <div class="form-row-4">
         <div class="form-group"><label>🥥 Coco (qtd)</label><input type="number" id="qtdCoco" min="0" value="0"></div>
-        <div class="form-group"><label>🍫 Cacau (qtd)</label><input type="number" id="qtdCacau" min="0" value="0"></div>
+        <div class="form-group"><label> Cacau (qtd)</label><input type="number" id="qtdCacau" min="0" value="0"></div>
         <div class="form-group"><label>🍌 Banana (qtd)</label><input type="number" id="qtdBanana" min="0" value="0"></div>
         <div class="form-group"><label>🥜 Paçoca (qtd)</label><input type="number" id="qtdPacoca" min="0" value="0"></div>
       </div>
       <h4 style="color:#8B4513;margin:8px 0">💰 Preço de venda por tipo:</h4>
       <div class="form-row-4">
-        <div class="form-group preco-tipo"><label> Coco (R$)</label><input type="number" id="precoCoco" step="0.01" min="0" placeholder="2.00"></div>
+        <div class="form-group preco-tipo"><label>🥥 Coco (R$)</label><input type="number" id="precoCoco" step="0.01" min="0" placeholder="2.00"></div>
         <div class="form-group preco-tipo"><label>🍫 Cacau (R$)</label><input type="number" id="precoCacau" step="0.01" min="0" placeholder="2.50"></div>
-        <div class="form-group preco-tipo"><label>🍌 Banana (R$)</label><input type="number" id="precoBanana" step="0.01" min="0" placeholder="2.50"></div>
+        <div class="form-group preco-tipo"><label> Banana (R$)</label><input type="number" id="precoBanana" step="0.01" min="0" placeholder="2.50"></div>
         <div class="form-group preco-tipo"><label>🥜 Paçoca (R$)</label><input type="number" id="precoPacoca" step="0.01" min="0" placeholder="1.00"></div>
       </div>
       <div class="form-group"><label>💵 Custo total da remessa (R$) — quanto você pagou</label><input type="number" id="remessaCusto" step="0.01" min="0" placeholder="25.00"></div>
@@ -180,13 +183,13 @@ th,td{padding:4px}
       <div class="form-group"><label>Pagamento</label><select id="filtroPagamento"><option value="">Todos</option><option>À vista</option><option>Pix</option><option>Fiado</option></select></div>
       <div class="form-group"><label>De</label><input type="date" id="filtroDataDe"></div>
       <div class="form-group"><label>Até</label><input type="date" id="filtroDataAte"></div>
-      <button class="btn btn-primary" onclick="renderRelatorios()">🔍 Filtrar</button>
+      <button class="btn btn-primary" onclick="renderRelatorios()"> Filtrar</button>
     </div>
     <div class="export-bar">
       <button class="btn btn-danger" onclick="exportarPDF()">📄 PDF Geral</button>
       <button class="btn btn-success" onclick="exportarExcel()">📊 Excel</button>
       <button class="btn btn-info" onclick="exportarPDFVendedor()">👤 PDF Vendedor</button>
-      <button class="btn btn-warning" onclick="exportarPDFProduto()"> PDF Produto</button>
+      <button class="btn btn-warning" onclick="exportarPDFProduto()">🍬 PDF Produto</button>
     </div>
     <div style="overflow-x:auto"><table id="tabelaVendas"><thead><tr><th>Data</th><th>Vendedor</th><th>Produto</th><th>Remessa</th><th>Comprador</th><th>Valor</th><th>Pagto</th><th>Ações</th></tr></thead><tbody></tbody></table></div>
   </div>
@@ -196,7 +199,7 @@ th,td{padding:4px}
     <h2>💰 Controle de Fiados</h2>
     <div class="filter-bar">
       <div class="form-group search-box"><label>Buscar devedor</label><input type="text" id="filtroFiadoCliente" placeholder="Nome..."></div>
-      <button class="btn btn-primary" onclick="renderFiados()"> Filtrar</button>
+      <button class="btn btn-primary" onclick="renderFiados()">🔍 Filtrar</button>
     </div>
     <div id="listaFiados"></div>
   </div>
@@ -215,12 +218,39 @@ th,td{padding:4px}
 
   <!-- CONFIG -->
   <div class="panel" id="panel-config">
-    <h2>️ Configurações</h2>
+    <h2>⚙️ Configurações</h2>
+    
+    <!-- LIMPEZA DE CACHE -->
+    <div class="lucro-box" style="border-color:#ffc107;background:linear-gradient(135deg,#fff3cd,#ffeaa7)">
+      <h3>🔄 Limpeza de Cache</h3>
+      <div class="cache-info">
+        <b>⚠️ Problema detectado:</b> Seu navegador pode estar usando dados antigos em cache. Use os botões abaixo para resolver.
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn btn-warning" onclick="limparCacheRecarregar()">🔄 Limpar Cache e Recarregar</button>
+        <button class="btn btn-info" onclick="forcarAtualizacao()">⬇️ Forçar Atualização do App</button>
+      </div>
+      <div class="cache-info" style="background:#d1ecf1;border-color:#17a2b8">
+        <b> No celular (Chrome/Android):</b><br>
+        1. Toque nos 3 pontinhos (⋮) no canto superior<br>
+        2. Vá em "Configurações" → "Privacidade e segurança"<br>
+        3. "Limpar dados de navegação"<br>
+        4. Marque "Imagens e arquivos em cache"<br>
+        5. Clique em "Limpar dados"
+      </div>
+      <div class="cache-info" style="background:#d1ecf1;border-color:#17a2b8">
+        <b>💻 No computador (Chrome):</b><br>
+        1. Pressione <b>Ctrl + Shift + Delete</b><br>
+        2. Marque "Imagens e arquivos em cache"<br>
+        3. Clique em "Limpar dados"
+      </div>
+    </div>
+
     <div class="lucro-box">
       <h3>🔥 Sincronização Firebase</h3>
       <p style="font-size:0.85em;margin:6px 0">Status: <span id="configSyncStatus">Offline</span></p>
       <details style="margin:8px 0"><summary style="cursor:pointer;font-weight:bold;color:#D2691E;font-size:0.9em">📖 Como configurar</summary>
-        <ol style="margin:8px 0;padding-left:18px;font-size:0.85em"><li>Acesse console.firebase.google.com</li><li>Crie um projeto → Ative Firestore Database (modo teste)</li><li>Configurações → Geral → Seus apps → Web (</>)</li><li>Copie o firebaseConfig e cole abaixo</li></ol>
+        <ol style="margin:8px 0;padding-left:18px;font-size:0.85em"><li>Acesse console.firebase.google.com</li><li>Crie um projeto → Ative Firestore Database (modo teste)</li><li>Configurações → Geral → Seus apps → Web (&lt;/&gt;)</li><li>Copie o firebaseConfig e cole abaixo</li></ol>
       </details>
       <div class="form-group"><label>Credenciais Firebase (JSON)</label><textarea id="firebaseConfig" rows="7" placeholder='Cole aqui o JSON com aspas duplas nas chaves' style="font-family:monospace;font-size:0.8em"></textarea></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -244,7 +274,7 @@ th,td{padding:4px}
     </div>
     <div class="lucro-box">
       <h3>⚠️ Zona de Perigo</h3>
-      <button class="btn btn-danger" onclick="limparTudo()">🗑️ Apagar TODOS os dados</button>
+      <button class="btn btn-danger" onclick="limparTudo()">️ Apagar TODOS os dados</button>
     </div>
   </div>
 </div>
@@ -273,10 +303,10 @@ th,td{padding:4px}
     <div id="editarInfo" style="background:#fff8dc;padding:8px;border-radius:8px;margin-bottom:10px"></div>
     <h4 style="color:#8B4513;margin:8px 0">💰 Alterar preços de venda:</h4>
     <div class="form-row-2">
-      <div class="form-group preco-tipo"><label>🥥 Coco (R$)</label><input type="number" id="editPrecoCoco" step="0.01" min="0"></div>
+      <div class="form-group preco-tipo"><label> Coco (R$)</label><input type="number" id="editPrecoCoco" step="0.01" min="0"></div>
       <div class="form-group preco-tipo"><label>🍫 Cacau (R$)</label><input type="number" id="editPrecoCacau" step="0.01" min="0"></div>
       <div class="form-group preco-tipo"><label>🍌 Banana (R$)</label><input type="number" id="editPrecoBanana" step="0.01" min="0"></div>
-      <div class="form-group preco-tipo"><label> Paçoca (R$)</label><input type="number" id="editPrecoPacoca" step="0.01" min="0"></div>
+      <div class="form-group preco-tipo"><label>🥜 Paçoca (R$)</label><input type="number" id="editPrecoPacoca" step="0.01" min="0"></div>
     </div>
     <div class="form-group"><label>💵 Custo total (R$)</label><input type="number" id="editCusto" step="0.01" min="0"></div>
     <div class="alert alert-info" style="font-size:0.8em">⚠️ Alterar o preço só afeta vendas <b>futuras</b>. Vendas já feitas mantêm o valor original.</div>
@@ -299,6 +329,9 @@ th,td{padding:4px}
 <input type="file" id="fileImport" accept=".json" style="display:none">
 
 <script>
+// ============ VERSÃO DO APP (para forçar atualização) ============
+var APP_VERSION = '2.0.0';
+
 // ============ ESTADO ============
 var state = {
   usuario: '',
@@ -313,6 +346,30 @@ var firebaseAtivo = false;
 var itemSelecionado = null;
 var editandoRemessaId = null;
 var vendaPacote = false;
+
+// ============ VERIFICAÇÃO DE VERSÃO ============
+function verificarVersao() {
+  var versaoSalva = localStorage.getItem('appVersao');
+  if (versaoSalva !== APP_VERSION) {
+    console.log('Nova versão detectada: ' + APP_VERSION + ' (anterior: ' + versaoSalva + ')');
+    localStorage.setItem('appVersao', APP_VERSION);
+    // Limpa cache do service worker
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        names.forEach(function(name) {
+          if (name.indexOf('cocadas') !== -1) {
+            caches.delete(name);
+          }
+        });
+      });
+    }
+    // Força recarregamento sem cache
+    if (versaoSalva && versaoSalva !== APP_VERSION) {
+      alert(' App atualizado! Recarregando para aplicar as mudanças...');
+      window.location.reload(true);
+    }
+  }
+}
 
 // ============ STORAGE ============
 function saveLocal() {
@@ -333,7 +390,40 @@ function loadLocal() {
     }
   }
 }
-loadLocal();
+
+// ============ LIMPEZA DE CACHE ============
+function limparCacheRecarregar() {
+  if (!confirm('🔄 Isso vai limpar o cache e recarregar o app.\n\nSeus dados do Firebase serão mantidos.\nDados locais serão preservados.\n\nContinuar?')) return;
+  
+  // Limpa cache do service worker
+  if ('caches' in window) {
+    caches.keys().then(function(names) {
+      names.forEach(function(name) {
+        caches.delete(name);
+      });
+    });
+  }
+  
+  // Limpa sessionStorage
+  sessionStorage.clear();
+  
+  // Recarrega forçando nova versão do servidor
+  alert('✅ Cache limpo! Recarregando...');
+  window.location.reload(true);
+}
+
+function forcarAtualizacao() {
+  if (!confirm('⬇️ Isso vai forçar o download da versão mais recente do app.\n\nContinuar?')) return;
+  
+  // Adiciona timestamp na URL para bypass do cache
+  var url = window.location.href;
+  if (url.indexOf('?') === -1) {
+    url += '?v=' + Date.now();
+  } else {
+    url += '&v=' + Date.now();
+  }
+  window.location.href = url;
+}
 
 // ============ FIREBASE ============
 function initFirebase() {
@@ -470,7 +560,6 @@ document.querySelectorAll('.tab').forEach(function(t) {
 
 // ============ HELPERS ============
 function getPrecoItem(item, remessa) {
-  // Compatibilidade: remessas antigas têm 'preco' único, novas têm 'precos' por tipo
   if (remessa.precos && remessa.precos[item.tipo] !== undefined) {
     return remessa.precos[item.tipo];
   }
@@ -523,7 +612,6 @@ function criarRemessa() {
   var total = qtdCoco + qtdCacau + qtdBanana + qtdPacoca;
   if (total === 0) { alert('Adicione pelo menos 1 item!'); return; }
   
-  // Valida preços
   if (qtdCoco > 0 && precoCoco <= 0) { alert('Defina o preço do Coco!'); return; }
   if (qtdCacau > 0 && precoCacau <= 0) { alert('Defina o preço do Cacau!'); return; }
   if (qtdBanana > 0 && precoBanana <= 0) { alert('Defina o preço da Banana!'); return; }
@@ -550,7 +638,6 @@ function criarRemessa() {
       state.remessas.push(remessa);
       saveLocal();
     }
-    // Limpa formulário
     document.getElementById('remessaNome').value = '';
     document.getElementById('remessaData').value = '';
     document.getElementById('remessaCusto').value = '';
@@ -693,7 +780,7 @@ function renderRemessas() {
     
     html += '<div class="remessa-card">';
     html += '<div style="font-size:1.1em;font-weight:bold;color:#8B4513">' + r.nome + '</div>';
-    html += '<div class="remessa-tipos">📅 ' + formatarData(r.data) + ' • 💵 Custo: R$ ' + (r.custo || 0).toFixed(2) + '</div>';
+    html += '<div class="remessa-tipos">📅 ' + formatarData(r.data) + ' •  Custo: R$ ' + (r.custo || 0).toFixed(2) + '</div>';
     html += '<div class="remessa-tipos" style="margin-top:3px"><b>Preços:</b> ' + precosTxt + '</div>';
     html += '<div class="remessa-stats"><b>Total:</b> ' + total + ' <span style="color:#28a745"><b>Disp:</b> ' + disp + '</span> <span style="color:#dc3545"><b>Vend:</b> ' + vendidos + '</span></div>';
     html += '<div class="remessa-tipos">' + tiposTxt + '</div>';
@@ -751,19 +838,18 @@ function renderEstoque() {
       if (item.vendido) {
         html += '<span class="status vendido">Vendido</span>';
         html += '<div style="font-size:0.75em;margin-top:4px">👤 ' + (venda ? venda.vendedor : '?');
-        html += '<br>🛍️ ' + (venda ? venda.comprador : '?');
-        if (venda && venda.pacote) html += '<br>📦 Pacote de 10';
+        html += '<br>️ ' + (venda ? venda.comprador : '?');
+        if (venda && venda.pacote) html += '<br> Pacote de 10';
         html += '</div>';
       } else {
         html += '<span class="status disponivel">Disponível</span>';
-        html += '<br><button class="btn btn-success btn-sm" style="margin-top:5px;width:100%" onclick="abrirVenda(\'' + item.id + '\')"> Vender</button>';
+        html += '<br><button class="btn btn-success btn-sm" style="margin-top:5px;width:100%" onclick="abrirVenda(\'' + item.id + '\')">🛒 Vender</button>';
       }
       html += '</div>';
     });
     grid.innerHTML = html;
   }
   
-  // Histórico de busca
   if (busca.length >= 2) {
     var vendasCliente = state.vendas.filter(function(v) {
       return v.comprador.toLowerCase().indexOf(busca) !== -1;
@@ -800,7 +886,7 @@ function abrirVenda(itemId) {
   itemSelecionado = itemId;
   vendaPacote = false;
   
-  var emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'','Paçoca':'🥜'}[f.item.tipo] || '🍬';
+  var emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[f.item.tipo] || '🍬';
   var preco = getPrecoItem(f.item, f.remessa);
   
   document.getElementById('modalInfo').innerHTML = '<b>' + emoji + ' ' + f.item.tipo + '</b> • 📦 ' + f.remessa.nome + '<br>👤 Vendedor: <b>' + state.usuario + '</b> • 💰 R$ ' + preco.toFixed(2);
@@ -809,7 +895,6 @@ function abrirVenda(itemId) {
   document.getElementById('vendaObs').value = '';
   document.getElementById('pacoteInfo').style.display = 'none';
   
-  // Se for paçoca, oferecer pacote de 10
   if (f.item.tipo === 'Paçoca') {
     var itensPacoca = f.remessa.itens.filter(function(i) { return i.tipo === 'Paçoca' && !i.vendido; });
     if (itensPacoca.length >= 10) {
@@ -818,7 +903,6 @@ function abrirVenda(itemId) {
     }
   }
   
-  // Datalist de compradores
   var compradores = [];
   state.vendas.forEach(function(v) {
     if (compradores.indexOf(v.comprador) === -1) compradores.push(v.comprador);
@@ -904,7 +988,6 @@ function excluirVenda(vendaId) {
   var f = findItem(v.itemId);
   if (f) f.item.vendido = false;
   
-  // Se foi pacote, liberar todos os itens
   if (v.pacote && v.itemIdPacote) {
     v.itemIdPacote.forEach(function(id) {
       var ff = findItem(id);
@@ -941,8 +1024,8 @@ function renderStats() {
   div.innerHTML = '<div class="stat-card"><div class="valor">' + totalVendas + '</div><div class="label">Vendas</div></div>' +
     '<div class="stat-card"><div class="valor">R$ ' + totalValor.toFixed(2) + '</div><div class="label">Faturamento</div></div>' +
     '<div class="stat-card"><div class="valor">R$ ' + avista.toFixed(2) + '</div><div class="label">💵 À vista</div></div>' +
-    '<div class="stat-card"><div class="valor">R$ ' + pix.toFixed(2) + '</div><div class="label">📱 Pix</div></div>' +
-    '<div class="stat-card"><div class="valor">R$ ' + fiado.toFixed(2) + '</div><div class="label">️ Fiado pend.</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + pix.toFixed(2) + '</div><div class="label"> Pix</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + fiado.toFixed(2) + '</div><div class="label">⚠️ Fiado pend.</div></div>' +
     '<div class="stat-card"><div class="valor">R$ ' + lucro.toFixed(2) + '</div><div class="label">💹 Lucro</div></div>';
 }
 
@@ -991,7 +1074,7 @@ function renderRelatorios() {
     html += '<tr>';
     html += '<td>' + formatarDataHora(v.data) + '</td>';
     html += '<td><b>' + v.vendedor + '</b></td>';
-    html += '<td>' + (f ? f.item.tipo : '?') + (v.pacote ? '<br><small>📦Pacote×10</small>' : '') + '</td>';
+    html += '<td>' + (f ? f.item.tipo : '?') + (v.pacote ? '<br><small>Pacote×10</small>' : '') + '</td>';
     html += '<td>' + (f ? f.remessa.nome : '?') + '</td>';
     html += '<td>' + v.comprador + '</td>';
     html += '<td>R$ ' + v.valor.toFixed(2) + '</td>';
@@ -1009,15 +1092,15 @@ function verDetalhes(id) {
   var f = findItem(v.itemId);
   
   var html = '<div style="background:#fff8dc;padding:10px;border-radius:8px">';
-  html += '<p><b>📅 Data:</b> ' + formatarDataHora(v.data) + '</p>';
+  html += '<p><b> Data:</b> ' + formatarDataHora(v.data) + '</p>';
   html += '<p><b>👤 Vendedor:</b> ' + v.vendedor + '</p>';
   html += '<p><b>🍬 Produto:</b> ' + (f ? f.item.tipo : '?') + (v.pacote ? ' (Pacote de 10 paçocas)' : '') + '</p>';
-  html += '<p><b>📦 Remessa:</b> ' + (f ? f.remessa.nome : '?') + '</p>';
+  html += '<p><b> Remessa:</b> ' + (f ? f.remessa.nome : '?') + '</p>';
   html += '<p><b>🛍️ Comprador:</b> ' + v.comprador + '</p>';
   html += '<p><b>💰 Valor:</b> R$ ' + v.valor.toFixed(2) + '</p>';
   html += '<p><b>💳 Pagamento:</b> ' + v.pagamento + '</p>';
-  if (v.obs) html += '<p><b>📝 Obs:</b> ' + v.obs + '</p>';
-  if (v.pagamento === 'Fiado') html += '<p><b>Status:</b> ' + (v.pago ? '✅ Pago em ' + formatarData(v.dataPagamento) : '⚠️ Pendente') + '</p>';
+  if (v.obs) html += '<p><b> Obs:</b> ' + v.obs + '</p>';
+  if (v.pagamento === 'Fiado') html += '<p><b>Status:</b> ' + (v.pago ? '✅ Pago em ' + formatarData(v.dataPagamento) : '️ Pendente') + '</p>';
   html += '</div>';
   
   document.getElementById('detalhesConteudo').innerHTML = html;
@@ -1196,7 +1279,7 @@ function renderBlocoLucro(r, vendas, receita, custo, lucro, detalhado) {
   var html = '<div class="lucro-box">';
   html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px">';
   html += '<h3 style="margin:0">📦 ' + r.nome + '</h3>';
-  html += '<span style="font-size:0.8em;color:#666"> ' + periodo + '</span>';
+  html += '<span style="font-size:0.8em;color:#666">📅 ' + periodo + '</span>';
   html += '</div>';
   html += '<div style="font-size:0.85em;margin-bottom:6px"><b>Vendeu:</b> ' + tiposTxt + '</div>';
   html += '<div class="lucro-grid">';
@@ -1337,7 +1420,7 @@ function exportarPDFProduto() {
     });
     var total = vendas.reduce(function(s, v) { return s + v.valor; }, 0);
     if (y > 250) { doc.addPage(); y = 20; }
-    var emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[tipo] || '';
+    var emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':''}[tipo] || '';
     doc.setFontSize(11);
     doc.setTextColor(139, 69, 19);
     doc.text(emoji + ' ' + tipo + ' - ' + vendas.length + ' vendas - R$ ' + total.toFixed(2), 14, y);
@@ -1495,13 +1578,15 @@ function renderTudo() {
 
 // ============ PWA ============
 if ('serviceWorker' in navigator) {
-  var swCode = "var C='cocadas-v3';self.addEventListener('install',function(e){self.skipWaiting()});self.addEventListener('activate',function(e){e.waitUntil(clients.claim())});self.addEventListener('fetch',function(e){if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(resp){var c=resp.clone();caches.open(C).then(function(ca){ca.put(e.request,c)});return resp}).catch(function(){return caches.match(e.request)})})})";
+  var swCode = "var C='cocadas-v4';self.addEventListener('install',function(e){self.skipWaiting()});self.addEventListener('activate',function(e){e.waitUntil(clients.claim())});self.addEventListener('fetch',function(e){if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(resp){var c=resp.clone();caches.open(C).then(function(ca){ca.put(e.request,c)});return resp}).catch(function(){return caches.match(e.request)})})})";
   var blob = new Blob([swCode], { type: 'application/javascript' });
   navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(function(e) { console.log('SW:', e); });
 }
 
 // ============ INIT ============
+verificarVersao();
 renderConfig();
+loadLocal();
 renderTudo();
 if (state.firebaseConfig) initFirebase();
 </script>
