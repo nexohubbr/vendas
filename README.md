@@ -1,1 +1,1 @@
-https://nexohubbr.github.io/vendas/cocadas.html
+https://nexohubbr.github.io/vendas
