@@ -9,7 +9,7 @@
 <meta http-equiv="Expires" content="0">
 <title>Cocadas da Família</title>
 <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Cocadas da Família","short_name":"Cocadas","start_url":".","display":"standalone","background_color":"%23F4A460","theme_color":"%238B4513","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%238B4513%22/><text x=%2296%22 y=%22130%22 font-size=%22110%22 text-anchor=%22middle%22>🍬</text></svg>","sizes":"192x192","type":"image/svg+xml"}]}'>
-<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍬</text></svg>'>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90"></text></svg>'>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.0/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -108,6 +108,10 @@ tr:hover{background:#fff8dc}
 .debug-box{background:#f8d7da;border:2px solid #dc3545;border-radius:10px;padding:10px;margin:10px 0;font-size:0.8em;color:#721c24;max-height:200px;overflow-y:auto}
 .edit-icon{cursor:pointer;font-size:0.8em;margin-left:3px;opacity:0.7}
 .edit-icon:hover{opacity:1}
+.fiado-resumo{background:#fff8dc;border:2px solid #F4A460;border-radius:10px;padding:10px;margin:10px 0}
+.fiado-resumo h4{color:#8B4513;margin-bottom:8px}
+.relatorio-resumo{background:#fff8dc;border:2px solid #D2691E;border-radius:10px;padding:12px;margin:15px 0}
+.relatorio-resumo h4{color:#8B4513;margin-bottom:8px}
 @media(max-width:600px){
 header h1{font-size:1.1em}
 .form-row,.form-row-4,.form-row-2{grid-template-columns:1fr 1fr}
@@ -132,7 +136,7 @@ th,td{padding:4px}
     <button class="tab" data-tab="relatorios">📊 Relatórios</button>
     <button class="tab" data-tab="fiados">💰 Fiados</button>
     <button class="tab" data-tab="lucros">💹 Lucros</button>
-    <button class="tab" data-tab="config">️ Config</button>
+    <button class="tab" data-tab="config">⚙️ Config</button>
   </div>
 
   <div class="panel active" id="panel-vender">
@@ -156,22 +160,22 @@ th,td{padding:4px}
         <div class="form-group"><label>Data da compra</label><input type="date" id="remessaData"></div>
       </div>
       <div class="form-row-4">
-        <div class="form-group"><label>🥥 Coco (qtd)</label><input type="number" id="qtdCoco" min="0" value="0"></div>
+        <div class="form-group"><label> Coco (qtd)</label><input type="number" id="qtdCoco" min="0" value="0"></div>
         <div class="form-group"><label>🍫 Cacau (qtd)</label><input type="number" id="qtdCacau" min="0" value="0"></div>
-        <div class="form-group"><label> Banana (qtd)</label><input type="number" id="qtdBanana" min="0" value="0"></div>
-        <div class="form-group"><label>🥜 Paçoca (qtd)</label><input type="number" id="qtdPacoca" min="0" value="0"></div>
+        <div class="form-group"><label>🍌 Banana (qtd)</label><input type="number" id="qtdBanana" min="0" value="0"></div>
+        <div class="form-group"><label> Paçoca (qtd)</label><input type="number" id="qtdPacoca" min="0" value="0"></div>
       </div>
       <h4 style="color:#8B4513;margin:8px 0">💰 Preço de venda por tipo:</h4>
       <div class="form-row-4">
         <div class="form-group preco-tipo"><label>🥥 Coco (R$)</label><input type="number" id="precoCoco" step="0.01" min="0" placeholder="2.00"></div>
         <div class="form-group preco-tipo"><label>🍫 Cacau (R$)</label><input type="number" id="precoCacau" step="0.01" min="0" placeholder="2.50"></div>
         <div class="form-group preco-tipo"><label>🍌 Banana (R$)</label><input type="number" id="precoBanana" step="0.01" min="0" placeholder="2.50"></div>
-        <div class="form-group preco-tipo"><label> Paçoca (R$)</label><input type="number" id="precoPacoca" step="0.01" min="0" placeholder="1.00"></div>
+        <div class="form-group preco-tipo"><label>🥜 Paçoca (R$)</label><input type="number" id="precoPacoca" step="0.01" min="0" placeholder="1.00"></div>
       </div>
-      <div class="form-group"><label> Custo total da remessa (R$)</label><input type="number" id="remessaCusto" step="0.01" min="0" placeholder="25.00"></div>
+      <div class="form-group"><label>💵 Custo total da remessa (R$)</label><input type="number" id="remessaCusto" step="0.01" min="0" placeholder="25.00"></div>
       <button class="btn btn-primary" id="btnCriarRemessa">➕ Adicionar Remessa</button>
     </div>
-    <h3> Remessas Cadastradas</h3>
+    <h3>📋 Remessas Cadastradas</h3>
     <div id="listaRemessas"></div>
   </div>
 
@@ -191,6 +195,7 @@ th,td{padding:4px}
       <button class="btn btn-danger" id="btnExpPDF">📄 PDF Geral</button>
       <button class="btn btn-success" id="btnExpExcel">📊 Excel</button>
     </div>
+    <div id="relatorioResumo"></div>
     <div style="overflow-x:auto"><table id="tabelaVendas"><thead><tr><th>Data</th><th>Vendedor</th><th>Produto</th><th>Remessa</th><th>Comprador</th><th>Qtd</th><th>Valor</th><th>Pagto</th><th>Ações</th></tr></thead><tbody></tbody></table></div>
   </div>
 
@@ -198,8 +203,10 @@ th,td{padding:4px}
     <h2>💰 Controle de Fiados</h2>
     <div class="filter-bar">
       <div class="form-group search-box"><label>Buscar devedor</label><input type="text" id="filtroFiadoCliente" placeholder="Nome..."></div>
+      <div class="form-group"><label>Remessa</label><select id="filtroFiadoRemessa"><option value="">Todas</option></select></div>
       <button class="btn btn-primary" id="btnFiltrarFiado">🔍 Filtrar</button>
     </div>
+    <div id="fiadoResumo"></div>
     <div id="listaFiados"></div>
   </div>
 
@@ -215,20 +222,20 @@ th,td{padding:4px}
   </div>
 
   <div class="panel" id="panel-config">
-    <h2>⚙️ Configurações</h2>
+    <h2>️ Configurações</h2>
     <div class="lucro-box" style="border-color:#ffc107;background:linear-gradient(135deg,#fff3cd,#ffeaa7)">
-      <h3> Limpeza de Cache</h3>
+      <h3>🔄 Limpeza de Cache</h3>
       <div class="cache-info"><b>⚠️ Se os botões não funcionam, use estes:</b></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
         <button class="btn btn-warning" id="btnLimparCache">🔄 Limpar Cache e Recarregar</button>
-        <button class="btn btn-info" id="btnForcarAtual">⬇️ Forçar Atualização</button>
+        <button class="btn btn-info" id="btnForcarAtual">️ Forçar Atualização</button>
       </div>
       <div class="cache-info" style="background:#d1ecf1;border-color:#17a2b8">
         <b>📱 No celular:</b> Configurações → Privacidade → Limpar dados de navegação → Marque "Cache" → Limpar
       </div>
     </div>
     <div class="lucro-box">
-      <h3>🔥 Sincronização Firebase</h3>
+      <h3> Sincronização Firebase</h3>
       <p style="font-size:0.85em;margin:6px 0">Status: <span id="configSyncStatus">Offline</span></p>
       <div class="form-group"><label>Credenciais Firebase (JSON)</label><textarea id="firebaseConfig" rows="7" style="font-family:monospace;font-size:0.8em"></textarea></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -239,7 +246,7 @@ th,td{padding:4px}
       </div>
     </div>
     <div class="lucro-box">
-      <h3>💼 Percentuais do Pró-Labore</h3>
+      <h3> Percentuais do Pró-Labore</h3>
       <div class="form-row">
         <div class="form-group"><label>Luciano (Pai) %</label><input type="number" id="percLuciano" min="0" max="100" step="0.01"></div>
         <div class="form-group"><label>Verônica (Mãe) %</label><input type="number" id="percVeronica" min="0" max="100" step="0.01"></div>
@@ -250,7 +257,7 @@ th,td{padding:4px}
       <button class="btn btn-primary" id="btnSalvarPerc">💾 Salvar Percentuais</button>
     </div>
     <div class="lucro-box">
-      <h3>⚠️ Zona de Perigo</h3>
+      <h3>️ Zona de Perigo</h3>
       <button class="btn btn-danger" id="btnLimparTudo">🗑️ Apagar TODOS os dados</button>
     </div>
   </div>
@@ -266,7 +273,7 @@ th,td{padding:4px}
       <div class="form-group"><label>Quantidade</label><input type="number" id="vendaQtd" min="1" value="1"></div>
       <div class="form-group"><label>Preço unitário (R$)</label><input type="number" id="vendaPrecoUnit" step="0.01" min="0" readonly></div>
     </div>
-    <div class="valor-total-box"> Valor Total: R$ <span id="valorTotalDisplay">0.00</span></div>
+    <div class="valor-total-box">💰 Valor Total: R$ <span id="valorTotalDisplay">0.00</span></div>
     <div class="form-group"><label>Forma de Pagamento</label><select id="vendaPagamento"><option>À vista</option><option>Pix</option><option>Fiado</option></select></div>
     <div class="form-group"><label>Observação (opcional)</label><textarea id="vendaObs" rows="2"></textarea></div>
     <div class="modal-actions">
@@ -283,7 +290,7 @@ th,td{padding:4px}
     <div id="editarInfo" style="background:#fff8dc;padding:8px;border-radius:8px;margin-bottom:10px"></div>
     <h4 style="color:#8B4513;margin:8px 0">💰 Alterar preços:</h4>
     <div class="form-row-2">
-      <div class="form-group preco-tipo"><label>🥥 Coco (R$)</label><input type="number" id="editPrecoCoco" step="0.01" min="0"></div>
+      <div class="form-group preco-tipo"><label> Coco (R$)</label><input type="number" id="editPrecoCoco" step="0.01" min="0"></div>
       <div class="form-group preco-tipo"><label>🍫 Cacau (R$)</label><input type="number" id="editPrecoCacau" step="0.01" min="0"></div>
       <div class="form-group preco-tipo"><label>🍌 Banana (R$)</label><input type="number" id="editPrecoBanana" step="0.01" min="0"></div>
       <div class="form-group preco-tipo"><label>🥜 Paçoca (R$)</label><input type="number" id="editPrecoPacoca" step="0.01" min="0"></div>
@@ -291,12 +298,12 @@ th,td{padding:4px}
     <div class="form-group"><label>💵 Custo total (R$)</label><input type="number" id="editCusto" step="0.01" min="0"></div>
     <div class="modal-actions">
       <button class="btn btn-danger" id="btnCancelarEditar">Cancelar</button>
-      <button class="btn btn-success" id="btnSalvarEditar"> Salvar</button>
+      <button class="btn btn-success" id="btnSalvarEditar">💾 Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL EDITAR VENDA (vendedor/comprador) -->
+<!-- MODAL EDITAR VENDA -->
 <div class="modal-overlay" id="modalEditarVenda">
   <div class="modal">
     <h2>✏️ Editar Venda</h2>
@@ -326,7 +333,7 @@ th,td{padding:4px}
 <!-- MODAL DETALHES -->
 <div class="modal-overlay" id="modalDetalhes">
   <div class="modal">
-    <h2>📋 Detalhes da Venda</h2>
+    <h2> Detalhes da Venda</h2>
     <div id="detalhesConteudo"></div>
     <div class="modal-actions"><button class="btn btn-primary" id="btnFecharDetalhes">Fechar</button></div>
   </div>
@@ -336,10 +343,8 @@ th,td{padding:4px}
 <div id="debugBox" class="debug-box"></div>
 
 <script>
-// ============ VERSÃO ============
-var APP_VERSION = '3.3.0';
+var APP_VERSION = '3.4.0';
 
-// ============ DEBUG ============
 function debug(msg) {
   console.log('[APP]', msg);
   var box = document.getElementById('debugBox');
@@ -350,7 +355,6 @@ function debug(msg) {
   }
 }
 
-// ============ ESTADO ============
 var state = {
   usuario: '',
   remessas: [],
@@ -358,15 +362,9 @@ var state = {
   percentuais: {Luciano: 20, Verônica: 0, Alexandre: 32, 'Luciano Junior': 32, Caixa: 16},
   firebaseConfig: null
 };
-var db = null;
-var unsubscribe = [];
-var firebaseAtivo = false;
-var itemSelecionado = null;
-var editandoRemessaId = null;
-var editandoVendaId = null;
-var precoUnitarioAtual = 0;
+var db = null, unsubscribe = [], firebaseAtivo = false;
+var itemSelecionado = null, editandoRemessaId = null, editandoVendaId = null, precoUnitarioAtual = 0;
 
-// ============ VERIFICAÇÃO DE VERSÃO ============
 function verificarVersao() {
   var versaoSalva = localStorage.getItem('appVersao');
   debug('Versão atual: ' + APP_VERSION + ', salva: ' + versaoSalva);
@@ -375,28 +373,22 @@ function verificarVersao() {
     if ('caches' in window) {
       caches.keys().then(function(names) {
         names.forEach(function(name) {
-          if (name.indexOf('cocadas') !== -1) {
-            caches.delete(name);
-            debug('Cache deletado: ' + name);
-          }
+          if (name.indexOf('cocadas') !== -1) { caches.delete(name); debug('Cache deletado: ' + name); }
         });
       });
     }
     if (versaoSalva && versaoSalva !== APP_VERSION) {
       setTimeout(function() {
-        alert('🔄 App atualizado para v' + APP_VERSION + '! Recarregando...');
+        alert(' App atualizado para v' + APP_VERSION + '! Recarregando...');
         window.location.href = window.location.pathname + '?t=' + Date.now();
       }, 500);
     }
   }
 }
 
-// ============ STORAGE ============
 function saveLocal() {
-  try {
-    localStorage.setItem('cocadasApp', JSON.stringify(state));
-    localStorage.setItem('cocadasApp_ts', Date.now().toString());
-  } catch(e) { debug('Erro ao salvar: ' + e.message); }
+  try { localStorage.setItem('cocadasApp', JSON.stringify(state)); localStorage.setItem('cocadasApp_ts', Date.now().toString()); }
+  catch(e) { debug('Erro ao salvar: ' + e.message); }
 }
 function loadLocal() {
   var d = localStorage.getItem('cocadasApp');
@@ -413,7 +405,6 @@ function loadLocal() {
   } else { debug('Nenhum dado local encontrado'); }
 }
 
-// ============ LIMPEZA DE CACHE ============
 function limparCacheRecarregar() {
   if (!confirm('🔄 Limpar cache e recarregar?')) return;
   if ('caches' in window) { caches.keys().then(function(names) { names.forEach(function(name) { caches.delete(name); }); }); }
@@ -423,11 +414,10 @@ function limparCacheRecarregar() {
   window.location.href = window.location.pathname + '?t=' + Date.now();
 }
 function forcarAtualizacao() {
-  if (!confirm('️ Forçar download da versão mais recente?')) return;
+  if (!confirm('⬇️ Forçar download da versão mais recente?')) return;
   window.location.href = window.location.pathname + '?v=' + Date.now();
 }
 
-// ============ FIREBASE ============
 function initFirebase() {
   if (!state.firebaseConfig) { debug('Sem config Firebase'); return; }
   try {
@@ -438,17 +428,14 @@ function initFirebase() {
     firebaseAtivo = true;
     atualizarStatusSync(true);
     debug('Firebase conectado!');
-    
     unsubscribe.push(
       db.collection('remessas').onSnapshot(function(snap) {
         state.remessas = snap.docs.map(function(d) { var data = d.data(); data.id = String(d.id); return data; });
-        saveLocal();
-        renderTudo();
+        saveLocal(); renderTudo();
       }),
       db.collection('vendas').onSnapshot(function(snap) {
         state.vendas = snap.docs.map(function(d) { var data = d.data(); data.id = String(d.id); return data; });
-        saveLocal();
-        renderTudo();
+        saveLocal(); renderTudo();
       }),
       db.collection('config').doc('principal').onSnapshot(function(doc) {
         if (doc.exists) { var c = doc.data(); if (c.percentuais) state.percentuais = c.percentuais; saveLocal(); renderLucros(); renderConfig(); }
@@ -478,7 +465,6 @@ function dbUpdate(col, id, data) {
   return Promise.resolve();
 }
 
-// ============ HELPERS ============
 function getPrecoItem(item, remessa) {
   if (remessa.precos && remessa.precos[item.tipo] !== undefined) return remessa.precos[item.tipo];
   if (remessa.preco !== undefined) return remessa.preco;
@@ -504,14 +490,11 @@ function findRemessa(id) {
   return null;
 }
 
-// NOVA: Busca venda considerando itemIdPacote (vendas em quantidade)
 function findVendaByItemId(itemId) {
   var idStr = String(itemId);
   for (var i = 0; i < state.vendas.length; i++) {
     var v = state.vendas[i];
-    // Verifica se é o itemId principal
     if (String(v.itemId) === idStr) return v;
-    // Verifica se está no pacote de itens vendidos juntos
     if (v.itemIdPacote && v.itemIdPacote.length > 0) {
       for (var j = 0; j < v.itemIdPacote.length; j++) {
         if (String(v.itemIdPacote[j]) === idStr) return v;
@@ -521,18 +504,29 @@ function findVendaByItemId(itemId) {
   return null;
 }
 
+// NOVA: Verifica se uma venda pertence a uma remessa específica
+function vendaPertenceRemessa(venda, remessa) {
+  if (!remessa || !remessa.itens) return false;
+  var idsRemessa = remessa.itens.map(function(i) { return String(i.id); });
+  // Verifica itemId principal
+  if (idsRemessa.indexOf(String(venda.itemId)) !== -1) return true;
+  // Verifica se algum item do pacote pertence à remessa
+  if (venda.itemIdPacote && venda.itemIdPacote.length > 0) {
+    for (var i = 0; i < venda.itemIdPacote.length; i++) {
+      if (idsRemessa.indexOf(String(venda.itemIdPacote[i])) !== -1) return true;
+    }
+  }
+  return false;
+}
+
 function formatarData(iso) { if (!iso) return '-'; var d = new Date(iso.length === 10 ? iso + 'T00:00:00' : iso); return d.toLocaleDateString('pt-BR'); }
 function formatarDataHora(iso) { var d = new Date(iso); return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}); }
 
-// ============ USUÁRIO ============
 document.getElementById('userSelect').value = state.usuario || '';
 document.getElementById('userSelect').addEventListener('change', function(e) {
-  state.usuario = e.target.value;
-  saveLocal();
-  renderTudo();
+  state.usuario = e.target.value; saveLocal(); renderTudo();
 });
 
-// ============ TABS ============
 document.querySelectorAll('.tab').forEach(function(t) {
   t.addEventListener('click', function() {
     document.querySelectorAll('.tab').forEach(function(x) { x.classList.remove('active'); });
@@ -541,6 +535,8 @@ document.querySelectorAll('.tab').forEach(function(t) {
     document.getElementById('panel-' + t.dataset.tab).classList.add('active');
     if (t.dataset.tab === 'config') renderConfig();
     if (t.dataset.tab === 'lucros') renderLucros();
+    if (t.dataset.tab === 'fiados') renderFiados();
+    if (t.dataset.tab === 'relatorios') renderRelatorios();
     renderTudo();
   });
 });
@@ -601,13 +597,10 @@ function excluirRemessa(id) {
   debug('Excluir remessa ID: ' + idStr);
   var r = findRemessa(idStr);
   if (!r) { alert('Remessa não encontrada!'); return; }
-  
   var temVenda = false;
   for (var i = 0; i < r.itens.length; i++) { if (r.itens[i].vendido) { temVenda = true; break; } }
-  
   var msg = temVenda ? '⚠️ Esta remessa tem vendas. Excluir TUDO?' : 'Excluir "' + r.nome + '"?';
   if (!confirm(msg)) return;
-  
   if (temVenda) {
     var ids = r.itens.map(function(i) { return String(i.id); });
     var vendasParaExcluir = state.vendas.filter(function(v) { return ids.indexOf(String(v.itemId)) !== -1; });
@@ -615,19 +608,13 @@ function excluirRemessa(id) {
     vendasParaExcluir.forEach(function(v) { promises.push(dbDelete('vendas', v.id)); });
     promises.push(dbDelete('remessas', idStr));
     Promise.all(promises).then(function() {
-      if (!firebaseAtivo) {
-        state.vendas = state.vendas.filter(function(v) { return ids.indexOf(String(v.itemId)) === -1; });
-        state.remessas = state.remessas.filter(function(x) { return String(x.id) !== idStr; });
-        saveLocal();
-      }
-      renderTudo();
-      alert('Remessa excluída!');
+      if (!firebaseAtivo) { state.vendas = state.vendas.filter(function(v) { return ids.indexOf(String(v.itemId)) === -1; }); state.remessas = state.remessas.filter(function(x) { return String(x.id) !== idStr; }); saveLocal(); }
+      renderTudo(); alert('Remessa excluída!');
     }).catch(function(e) { alert('Erro: ' + e.message); });
   } else {
     dbDelete('remessas', idStr).then(function() {
       if (!firebaseAtivo) { state.remessas = state.remessas.filter(function(x) { return String(x.id) !== idStr; }); saveLocal(); }
-      renderTudo();
-      alert('Remessa excluída!');
+      renderTudo(); alert('Remessa excluída!');
     }).catch(function(e) { alert('Erro: ' + e.message); });
   }
 }
@@ -636,7 +623,6 @@ function abrirEditar(id) {
   var idStr = String(id);
   var r = findRemessa(idStr);
   if (!r) { alert('Remessa não encontrada!'); return; }
-  
   editandoRemessaId = idStr;
   document.getElementById('editarInfo').innerHTML = '<b>' + r.nome + '</b> • 📅 ' + formatarData(r.data);
   document.getElementById('editPrecoCoco').value = (r.precos && r.precos.Coco) || r.preco || 0;
@@ -651,7 +637,6 @@ document.getElementById('btnSalvarEditar').addEventListener('click', function() 
   if (!editandoRemessaId) return;
   var r = findRemessa(editandoRemessaId);
   if (!r) { alert('Remessa não encontrada!'); return; }
-  
   r.precos = {
     Coco: parseFloat(document.getElementById('editPrecoCoco').value) || 0,
     Cacau: parseFloat(document.getElementById('editPrecoCacau').value) || 0,
@@ -659,13 +644,11 @@ document.getElementById('btnSalvarEditar').addEventListener('click', function() 
     'Paçoca': parseFloat(document.getElementById('editPrecoPacoca').value) || 0
   };
   r.custo = parseFloat(document.getElementById('editCusto').value) || 0;
-  
   dbUpdate('remessas', String(r.id), { precos: r.precos, custo: r.custo }).then(function() {
     if (!firebaseAtivo) saveLocal();
     document.getElementById('modalEditar').classList.remove('active');
     editandoRemessaId = null;
-    renderTudo();
-    alert('✅ Preços atualizados!');
+    renderTudo(); alert('✅ Preços atualizados!');
   }).catch(function(e) { alert('Erro: ' + e.message); });
 });
 
@@ -677,7 +660,6 @@ document.getElementById('btnCancelarEditar').addEventListener('click', function(
 function renderRemessas() {
   var div = document.getElementById('listaRemessas');
   if (state.remessas.length === 0) { div.innerHTML = '<p style="color:#888">Nenhuma remessa cadastrada.</p>'; return; }
-  
   var html = '';
   state.remessas.forEach(function(r) {
     var total = r.itens.length;
@@ -685,15 +667,12 @@ function renderRemessas() {
     var porTipo = {};
     r.itens.forEach(function(i) { if (i.vendido) vendidos++; else porTipo[i.tipo] = (porTipo[i.tipo] || 0) + 1; });
     var disp = total - vendidos;
-    
     var tiposTxt = '';
     Object.keys(porTipo).forEach(function(t) { if (tiposTxt) tiposTxt += ' | '; tiposTxt += t + ': ' + porTipo[t]; });
     if (!tiposTxt) tiposTxt = 'Todas vendidas';
-    
     var precosTxt = '';
     if (r.precos) { Object.keys(r.precos).forEach(function(t) { if (precosTxt) precosTxt += ' • '; precosTxt += t + ': R$ ' + r.precos[t].toFixed(2); }); }
     else if (r.preco !== undefined) { precosTxt = 'Todos: R$ ' + r.preco.toFixed(2); }
-    
     var idStr = String(r.id);
     html += '<div class="remessa-card">';
     html += '<div style="font-size:1.1em;font-weight:bold;color:#8B4513">' + r.nome + '</div>';
@@ -702,14 +681,11 @@ function renderRemessas() {
     html += '<div class="remessa-stats"><b>Total:</b> ' + total + ' <span style="color:#28a745"><b>Disp:</b> ' + disp + '</span> <span style="color:#dc3545"><b>Vend:</b> ' + vendidos + '</span></div>';
     html += '<div class="remessa-tipos">' + tiposTxt + '</div>';
     html += '<div class="remessa-acoes">';
-    html += '<button class="btn btn-warning btn-sm btn-editar-remessa" data-id="' + idStr + '">✏️ Editar preços</button>';
+    html += '<button class="btn btn-warning btn-sm btn-editar-remessa" data-id="' + idStr + '">️ Editar preços</button>';
     html += '<button class="btn btn-danger btn-sm btn-excluir-remessa" data-id="' + idStr + '">🗑️ Excluir remessa</button>';
-    html += '</div>';
-    html += '</div>';
+    html += '</div></div>';
   });
-  
   div.innerHTML = html;
-  
   div.querySelectorAll('.btn-editar-remessa').forEach(function(btn) { btn.addEventListener('click', function() { abrirEditar(this.getAttribute('data-id')); }); });
   div.querySelectorAll('.btn-excluir-remessa').forEach(function(btn) { btn.addEventListener('click', function() { excluirRemessa(this.getAttribute('data-id')); }); });
 }
@@ -720,31 +696,24 @@ function renderEstoque() {
   var busca = (document.getElementById('buscaComprador').value || '').toLowerCase();
   var fTipo = document.getElementById('filtroTipo').value;
   var fStatus = document.getElementById('filtroStatus').value;
-  
   var todosItens = [];
   state.remessas.forEach(function(r) { r.itens.forEach(function(i) { todosItens.push({ item: i, remessa: r }); }); });
-  
   var itens = todosItens;
   if (fTipo) itens = itens.filter(function(x) { return x.item.tipo === fTipo; });
   if (fStatus === 'disponivel') itens = itens.filter(function(x) { return !x.item.vendido; });
   if (fStatus === 'vendido') itens = itens.filter(function(x) { return x.item.vendido; });
-  
   if (itens.length === 0) { grid.innerHTML = '<div class="alert">📦 Nenhum item encontrado.</div>'; return; }
-  
   var html = '';
   itens.forEach(function(x) {
     var item = x.item;
     var remessa = x.remessa;
-    // CORREÇÃO: usa findVendaByItemId para achar venda mesmo em pacotes
     var venda = findVendaByItemId(item.id);
-    var emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'','Paçoca':'🥜'}[item.tipo] || '🍬';
+    var emoji = {'Coco':'🥥','Cacau':'','Banana':'🍌','Paçoca':'🥜'}[item.tipo] || '🍬';
     var preco = getPrecoItem(item, remessa);
-    
     html += '<div class="card ' + (item.vendido ? 'vendido' : '') + '">';
     html += '<div class="tipo">' + emoji + ' ' + item.tipo + '</div>';
     html += '<div class="remessa">📦 ' + remessa.nome + '</div>';
     html += '<div class="preco">R$ ' + preco.toFixed(2) + '</div>';
-    
     if (item.vendido) {
       html += '<span class="status vendido">Vendido</span>';
       html += '<div style="font-size:0.75em;margin-top:4px">👤 ' + (venda ? venda.vendedor : '?') + ' <span class="edit-icon" onclick="abrirEditarVenda(\'' + (venda ? String(venda.id) : '') + '\')">✏️</span>';
@@ -753,14 +722,12 @@ function renderEstoque() {
       html += '</div>';
     } else {
       html += '<span class="status disponivel">Disponível</span>';
-      html += '<br><button class="btn btn-success btn-sm btn-vender-item" data-id="' + String(item.id) + '" style="margin-top:5px;width:100%"> Vender</button>';
+      html += '<br><button class="btn btn-success btn-sm btn-vender-item" data-id="' + String(item.id) + '" style="margin-top:5px;width:100%">🛒 Vender</button>';
     }
     html += '</div>';
   });
   grid.innerHTML = html;
-  
   grid.querySelectorAll('.btn-vender-item').forEach(function(btn) { btn.addEventListener('click', function() { abrirVenda(this.getAttribute('data-id')); }); });
-  
   if (busca.length >= 2) {
     var vendasCliente = state.vendas.filter(function(v) { return v.comprador.toLowerCase().indexOf(busca) !== -1; });
     var hist = document.getElementById('historicoBusca');
@@ -784,15 +751,13 @@ document.getElementById('filtroStatus').addEventListener('change', renderEstoque
 
 // ============ VENDA ============
 function abrirVenda(itemId) {
-  if (!state.usuario) { alert('⚠️ Selecione seu nome no topo!'); return; }
+  if (!state.usuario) { alert('️ Selecione seu nome no topo!'); return; }
   var f = findItem(itemId);
   if (!f || f.item.vendido) return;
-  
   itemSelecionado = String(itemId);
   precoUnitarioAtual = getPrecoItem(f.item, f.remessa);
-  var emoji = {'Coco':'','Cacau':'🍫','Banana':'🍌','Paçoca':''}[f.item.tipo] || '🍬';
+  var emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[f.item.tipo] || '';
   var itensDisponiveis = f.remessa.itens.filter(function(i) { return i.tipo === f.item.tipo && !i.vendido; });
-  
   document.getElementById('modalInfo').innerHTML = '<b>' + emoji + ' ' + f.item.tipo + '</b> • 📦 ' + f.remessa.nome + '<br>👤 Vendedor: <b>' + state.usuario + '</b><br>💰 R$ ' + precoUnitarioAtual.toFixed(2) + ' un. (Disponível: ' + itensDisponiveis.length + ')';
   document.getElementById('vendaComprador').value = '';
   document.getElementById('vendaQtd').value = '1';
@@ -800,11 +765,9 @@ function abrirVenda(itemId) {
   document.getElementById('vendaPrecoUnit').value = precoUnitarioAtual.toFixed(2);
   document.getElementById('vendaObs').value = '';
   atualizarValorTotal();
-  
   var compradores = [];
   state.vendas.forEach(function(v) { if (compradores.indexOf(v.comprador) === -1) compradores.push(v.comprador); });
   document.getElementById('listaCompradores').innerHTML = compradores.map(function(c) { return '<option value="' + c + '">'; }).join('');
-  
   document.getElementById('modalVenda').classList.add('active');
 }
 
@@ -819,19 +782,14 @@ document.getElementById('btnConfirmarVenda').addEventListener('click', function(
   var qtd = parseInt(document.getElementById('vendaQtd').value) || 1;
   var pagamento = document.getElementById('vendaPagamento').value;
   var obs = document.getElementById('vendaObs').value.trim();
-  
   if (!comprador) { alert('Informe o comprador!'); return; }
   if (qtd < 1) { alert('Quantidade inválida!'); return; }
-  
   var f = findItem(itemSelecionado);
   if (!f) return;
-  
   var itensDisponiveis = f.remessa.itens.filter(function(i) { return i.tipo === f.item.tipo && !i.vendido; });
-  if (qtd > itensDisponiveis.length) { alert('⚠️ Só tem ' + itensDisponiveis.length + ' ' + f.item.tipo + ' disponível(is)!'); return; }
-  
+  if (qtd > itensDisponiveis.length) { alert('️ Só tem ' + itensDisponiveis.length + ' ' + f.item.tipo + ' disponível(is)!'); return; }
   var itensParaVender = itensDisponiveis.slice(0, qtd);
   var valorTotal = qtd * precoUnitarioAtual;
-  
   var venda = {
     itemId: String(f.item.id),
     itemIdPacote: itensParaVender.map(function(i) { return String(i.id); }),
@@ -844,17 +802,14 @@ document.getElementById('btnConfirmarVenda').addEventListener('click', function(
     data: new Date().toISOString(),
     pago: pagamento !== 'Fiado'
   };
-  
   itensParaVender.forEach(function(i) { i.vendido = true; });
-  
   dbAdd('vendas', venda).then(function(vendaId) {
     venda.id = String(vendaId);
     if (firebaseAtivo && db) return dbUpdate('remessas', String(f.remessa.id), { itens: f.remessa.itens });
     else { saveLocal(); return Promise.resolve(); }
   }).then(function() {
     document.getElementById('modalVenda').classList.remove('active');
-    itemSelecionado = null;
-    precoUnitarioAtual = 0;
+    itemSelecionado = null; precoUnitarioAtual = 0;
     renderTudo();
     alert('✅ Venda registrada!\n\n' + qtd + 'x ' + f.item.tipo + ' = R$ ' + valorTotal.toFixed(2));
   }).catch(function(e) { alert('Erro: ' + e.message); });
@@ -862,47 +817,37 @@ document.getElementById('btnConfirmarVenda').addEventListener('click', function(
 
 document.getElementById('btnCancelarVenda').addEventListener('click', function() {
   document.getElementById('modalVenda').classList.remove('active');
-  itemSelecionado = null;
-  precoUnitarioAtual = 0;
+  itemSelecionado = null; precoUnitarioAtual = 0;
 });
 
-// ============ EXCLUIR VENDA ============
 function excluirVenda(vendaId) {
   var idStr = String(vendaId);
   var v = null;
   state.vendas.forEach(function(x) { if (String(x.id) === idStr) v = x; });
   if (!v) return;
   if (!confirm('Excluir esta venda? Os itens voltarão para disponível.')) return;
-  
   var f = findItem(v.itemId);
   if (f) f.item.vendido = false;
-  if (v.itemIdPacote) {
-    v.itemIdPacote.forEach(function(id) { var ff = findItem(id); if (ff) ff.item.vendido = false; });
-  }
-  
+  if (v.itemIdPacote) { v.itemIdPacote.forEach(function(id) { var ff = findItem(id); if (ff) ff.item.vendido = false; }); }
   dbDelete('vendas', idStr).then(function() {
     if (firebaseAtivo && db && f) return dbUpdate('remessas', String(f.remessa.id), { itens: f.remessa.itens });
     else { state.vendas = state.vendas.filter(function(x) { return String(x.id) !== idStr; }); saveLocal(); return Promise.resolve(); }
   }).then(function() { renderTudo(); alert('Venda excluída!'); }).catch(function(e) { alert('Erro: ' + e.message); });
 }
 
-// ============ EDITAR VENDA (vendedor/comprador) ============
 function abrirEditarVenda(vendaId) {
   if (!vendaId) { alert('Venda não encontrada!'); return; }
   var idStr = String(vendaId);
   var v = null;
   state.vendas.forEach(function(x) { if (String(x.id) === idStr) v = x; });
   if (!v) { alert('Venda não encontrada!'); return; }
-  
   editandoVendaId = idStr;
   var f = findItem(v.itemId);
-  
   document.getElementById('editarVendaInfo').innerHTML = '<b>📅 ' + formatarDataHora(v.data) + '</b><br>🍬 ' + (f ? f.item.tipo : '?') + ' • 📦 ' + (f ? f.remessa.nome : '?') + '<br>📦 Qtd: ' + (v.quantidade || 1) + ' • 💰 R$ ' + v.valor.toFixed(2);
   document.getElementById('editVendaVendedor').value = v.vendedor || '';
   document.getElementById('editVendaComprador').value = v.comprador || '';
   document.getElementById('editVendaValor').value = v.valor || 0;
   document.getElementById('editVendaPagamento').value = v.pagamento || 'À vista';
-  
   document.getElementById('modalEditarVenda').classList.add('active');
 }
 
@@ -912,26 +857,17 @@ document.getElementById('btnSalvarEditVenda').addEventListener('click', function
   var comprador = document.getElementById('editVendaComprador').value.trim();
   var valor = parseFloat(document.getElementById('editVendaValor').value);
   var pagamento = document.getElementById('editVendaPagamento').value;
-  
   if (!comprador) { alert('Informe o comprador!'); return; }
   if (!valor || valor <= 0) { alert('Valor inválido!'); return; }
-  
   var v = null;
   state.vendas.forEach(function(x) { if (String(x.id) === editandoVendaId) v = x; });
   if (!v) { alert('Venda não encontrada!'); return; }
-  
-  v.vendedor = vendedor;
-  v.comprador = comprador;
-  v.valor = valor;
-  v.pagamento = pagamento;
-  v.pago = pagamento !== 'Fiado';
-  
+  v.vendedor = vendedor; v.comprador = comprador; v.valor = valor; v.pagamento = pagamento; v.pago = pagamento !== 'Fiado';
   dbUpdate('vendas', editandoVendaId, { vendedor: vendedor, comprador: comprador, valor: valor, pagamento: pagamento, pago: v.pago }).then(function() {
     if (!firebaseAtivo) saveLocal();
     document.getElementById('modalEditarVenda').classList.remove('active');
     editandoVendaId = null;
-    renderTudo();
-    alert('✅ Venda atualizada!');
+    renderTudo(); alert('✅ Venda atualizada!');
   }).catch(function(e) { alert('Erro: ' + e.message); });
 });
 
@@ -941,26 +877,6 @@ document.getElementById('btnCancelarEditVenda').addEventListener('click', functi
 });
 
 // ============ RELATÓRIOS ============
-function renderStats() {
-  var div = document.getElementById('statsGerais');
-  var totalVendas = state.vendas.length;
-  var totalItens = state.vendas.reduce(function(s, v) { return s + (v.quantidade || 1); }, 0);
-  var totalValor = state.vendas.reduce(function(s, v) { return s + v.valor; }, 0);
-  var avista = state.vendas.filter(function(v) { return v.pagamento === 'À vista'; }).reduce(function(s, v) { return s + v.valor; }, 0);
-  var pix = state.vendas.filter(function(v) { return v.pagamento === 'Pix'; }).reduce(function(s, v) { return s + v.valor; }, 0);
-  var fiado = state.vendas.filter(function(v) { return v.pagamento === 'Fiado' && !v.pago; }).reduce(function(s, v) { return s + v.valor; }, 0);
-  var custoTotal = state.remessas.reduce(function(s, r) { return s + (r.custo || 0); }, 0);
-  var lucro = totalValor - custoTotal;
-  
-  div.innerHTML = '<div class="stat-card"><div class="valor">' + totalVendas + '</div><div class="label">Vendas</div></div>' +
-    '<div class="stat-card"><div class="valor">' + totalItens + '</div><div class="label">Itens vendidos</div></div>' +
-    '<div class="stat-card"><div class="valor">R$ ' + totalValor.toFixed(2) + '</div><div class="label">Faturamento</div></div>' +
-    '<div class="stat-card"><div class="valor">R$ ' + avista.toFixed(2) + '</div><div class="label">💵 À vista</div></div>' +
-    '<div class="stat-card"><div class="valor">R$ ' + pix.toFixed(2) + '</div><div class="label">📱 Pix</div></div>' +
-    '<div class="stat-card"><div class="valor">R$ ' + fiado.toFixed(2) + '</div><div class="label">️ Fiado pend.</div></div>' +
-    '<div class="stat-card"><div class="valor">R$ ' + lucro.toFixed(2) + '</div><div class="label">💹 Lucro</div></div>';
-}
-
 function getVendasFiltradas() {
   var fc = (document.getElementById('filtroCliente').value || '').toLowerCase();
   var fv = document.getElementById('filtroVendedor').value;
@@ -971,11 +887,11 @@ function getVendasFiltradas() {
   var vendas = state.vendas.slice().sort(function(a, b) { return new Date(b.data) - new Date(a.data); });
   if (fc) vendas = vendas.filter(function(v) { return v.comprador.toLowerCase().indexOf(fc) !== -1; });
   if (fv) vendas = vendas.filter(function(v) { return v.vendedor === fv; });
+  // CORREÇÃO: usa vendaPertenceRemessa para filtrar corretamente
   if (fr) {
     var rem = findRemessa(fr);
     if (rem) {
-      var ids = rem.itens.map(function(i) { return String(i.id); });
-      vendas = vendas.filter(function(v) { return ids.indexOf(String(v.itemId)) !== -1; });
+      vendas = vendas.filter(function(v) { return vendaPertenceRemessa(v, rem); });
     }
   }
   if (fp) vendas = vendas.filter(function(v) { return v.pagamento === fp; });
@@ -984,12 +900,87 @@ function getVendasFiltradas() {
   return vendas;
 }
 
+function renderStatsRelatorio(vendas) {
+  var div = document.getElementById('statsGerais');
+  var totalVendas = vendas.length;
+  var totalItens = vendas.reduce(function(s, v) { return s + (v.quantidade || 1); }, 0);
+  var totalValor = vendas.reduce(function(s, v) { return s + v.valor; }, 0);
+  var avista = vendas.filter(function(v) { return v.pagamento === 'À vista'; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  var pix = vendas.filter(function(v) { return v.pagamento === 'Pix'; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  var fiado = vendas.filter(function(v) { return v.pagamento === 'Fiado' && !v.pago; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  var fiadoPago = vendas.filter(function(v) { return v.pagamento === 'Fiado' && v.pago; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  
+  // Calcula lucro baseado nas remessas filtradas
+  var fr = document.getElementById('filtroRemessa').value;
+  var custoTotal = 0;
+  if (fr) {
+    var rem = findRemessa(fr);
+    if (rem) {
+      var ids = rem.itens.map(function(i) { return String(i.id); });
+      var vendidosNaRemessa = 0;
+      vendas.forEach(function(v) {
+        if (ids.indexOf(String(v.itemId)) !== -1) vendidosNaRemessa += (v.quantidade || 1);
+      });
+      custoTotal = vendidosNaRemessa > 0 && rem.itens.length > 0 ? (rem.custo || 0) * vendidosNaRemessa / rem.itens.length : 0;
+    }
+  } else {
+    // Todas as remessas - calcula proporcional
+    state.remessas.forEach(function(r) {
+      var ids = r.itens.map(function(i) { return String(i.id); });
+      var vendidosNaRemessa = 0;
+      vendas.forEach(function(v) {
+        if (ids.indexOf(String(v.itemId)) !== -1) vendidosNaRemessa += (v.quantidade || 1);
+      });
+      if (vendidosNaRemessa > 0 && r.itens.length > 0) {
+        custoTotal += (r.custo || 0) * vendidosNaRemessa / r.itens.length;
+      }
+    });
+  }
+  var lucro = totalValor - custoTotal;
+  
+  div.innerHTML = '<div class="stat-card"><div class="valor">' + totalVendas + '</div><div class="label">Vendas</div></div>' +
+    '<div class="stat-card"><div class="valor">' + totalItens + '</div><div class="label">Itens vendidos</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + totalValor.toFixed(2) + '</div><div class="label">Faturamento</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + avista.toFixed(2) + '</div><div class="label">💵 À vista</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + pix.toFixed(2) + '</div><div class="label">📱 Pix</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + fiado.toFixed(2) + '</div><div class="label">⚠️ Fiado pend.</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + lucro.toFixed(2) + '</div><div class="label">💹 Lucro</div></div>';
+}
+
 function renderRelatorios() {
   var selR = document.getElementById('filtroRemessa');
   var atual = selR.value;
   selR.innerHTML = '<option value="">Todas</option>' + state.remessas.map(function(r) { return '<option value="' + String(r.id) + '">' + r.nome + '</option>'; }).join('');
   selR.value = atual;
+  
   var vendas = getVendasFiltradas();
+  
+  // Atualiza stats com base no filtro
+  renderStatsRelatorio(vendas);
+  
+  // Mostra resumo no rodapé
+  var fr = document.getElementById('filtroRemessa').value;
+  var remSelecionada = fr ? findRemessa(fr) : null;
+  var fiadoPend = vendas.filter(function(v) { return v.pagamento === 'Fiado' && !v.pago; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  var fiadoPago = vendas.filter(function(v) { return v.pagamento === 'Fiado' && v.pago; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  var avista = vendas.filter(function(v) { return v.pagamento === 'À vista'; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  var pix = vendas.filter(function(v) { return v.pagamento === 'Pix'; }).reduce(function(s, v) { return s + v.valor; }, 0);
+  
+  var resumoHtml = '<div class="relatorio-resumo">';
+  resumoHtml += '<h4>📋 Resumo do Relatório';
+  if (remSelecionada) resumoHtml += ' — ' + remSelecionada.nome;
+  else resumoHtml += ' — Todas as Remessas';
+  resumoHtml += '</h4>';
+  resumoHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">';
+  resumoHtml += '<div class="lucro-item"><div class="v">' + vendas.length + '</div><div class="l">Vendas</div></div>';
+  resumoHtml += '<div class="lucro-item"><div class="v">' + vendas.reduce(function(s, v) { return s + (v.quantidade || 1); }, 0) + '</div><div class="l">Itens</div></div>';
+  resumoHtml += '<div class="lucro-item"><div class="v" style="color:#28a745">R$ ' + avista.toFixed(2) + '</div><div class="l">💵 À vista</div></div>';
+  resumoHtml += '<div class="lucro-item"><div class="v" style="color:#17a2b8">R$ ' + pix.toFixed(2) + '</div><div class="l">📱 Pix</div></div>';
+  resumoHtml += '<div class="lucro-item"><div class="v" style="color:#dc3545">R$ ' + fiadoPend.toFixed(2) + '</div><div class="l">⚠️ Fiado pendente</div></div>';
+  resumoHtml += '<div class="lucro-item"><div class="v" style="color:#28a745">R$ ' + fiadoPago.toFixed(2) + '</div><div class="l">✅ Fiado pago</div></div>';
+  resumoHtml += '</div></div>';
+  document.getElementById('relatorioResumo').innerHTML = resumoHtml;
+  
   var tb = document.querySelector('#tabelaVendas tbody');
   if (vendas.length === 0) { tb.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#888">Nenhuma venda.</td></tr>'; return; }
   var html = '';
@@ -1000,7 +991,7 @@ function renderRelatorios() {
     html += '<td><b>' + v.vendedor + '</b> <span class="edit-icon" onclick="abrirEditarVenda(\'' + String(v.id) + '\')">✏️</span></td>';
     html += '<td>' + (f ? f.item.tipo : '?') + '</td>';
     html += '<td>' + (f ? f.remessa.nome : '?') + '</td>';
-    html += '<td>' + v.comprador + ' <span class="edit-icon" onclick="abrirEditarVenda(\'' + String(v.id) + '\')">✏️</span></td>';
+    html += '<td>' + v.comprador + ' <span class="edit-icon" onclick="abrirEditarVenda(\'' + String(v.id) + '\')">️</span></td>';
     html += '<td>' + (v.quantidade || 1) + '</td>';
     html += '<td>R$ ' + v.valor.toFixed(2) + '</td>';
     html += '<td><span class="badge ' + badgeClass + '">' + v.pagamento + '</span></td>';
@@ -1015,25 +1006,91 @@ document.getElementById('btnFiltrarRel').addEventListener('click', renderRelator
 // ============ FIADOS ============
 function renderFiados() {
   var div = document.getElementById('listaFiados');
+  var resumoDiv = document.getElementById('fiadoResumo');
+  
+  // Popula select de remessa
+  var selR = document.getElementById('filtroFiadoRemessa');
+  var atual = selR.value;
+  selR.innerHTML = '<option value="">Todas</option>' + state.remessas.map(function(r) { return '<option value="' + String(r.id) + '">' + r.nome + '</option>'; }).join('');
+  selR.value = atual;
+  
   var fc = (document.getElementById('filtroFiadoCliente').value || '').toLowerCase();
+  var fr = document.getElementById('filtroFiadoRemessa').value;
   var fiados = state.vendas.filter(function(v) { return v.pagamento === 'Fiado'; });
   if (fc) fiados = fiados.filter(function(v) { return v.comprador.toLowerCase().indexOf(fc) !== -1; });
-  if (fiados.length === 0) { div.innerHTML = '<p style="color:#888">Nenhum fiado.</p>'; return; }
+  // Filtra por remessa
+  if (fr) {
+    var rem = findRemessa(fr);
+    if (rem) fiados = fiados.filter(function(v) { return vendaPertenceRemessa(v, rem); });
+  }
+  
+  if (fiados.length === 0) { 
+    div.innerHTML = '<p style="color:#888">Nenhum fiado.</p>'; 
+    resumoDiv.innerHTML = '';
+    return; 
+  }
+  
   var pendentes = fiados.filter(function(v) { return !v.pago; });
   var pagos = fiados.filter(function(v) { return v.pago; });
+  
+  // Resumo por remessa
+  var resumoHtml = '<div class="fiado-resumo"><h4>📊 Resumo de Fiados';
+  if (fr) {
+    var remSel = findRemessa(fr);
+    resumoHtml += ' — ' + (remSel ? remSel.nome : 'Remessa selecionada');
+  } else {
+    resumoHtml += ' — Todas as Remessas';
+  }
+  resumoHtml += '</h4>';
+  
+  // Total geral
+  var totalPend = pendentes.reduce(function(s, v) { return s + v.valor; }, 0);
+  var totalPago = pagos.reduce(function(s, v) { return s + v.valor; }, 0);
+  resumoHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:10px">';
+  resumoHtml += '<div class="lucro-item"><div class="v" style="color:#dc3545">R$ ' + totalPend.toFixed(2) + '</div><div class="l">⚠️ Pendente</div></div>';
+  resumoHtml += '<div class="lucro-item"><div class="v" style="color:#28a745">R$ ' + totalPago.toFixed(2) + '</div><div class="l">✅ Pago</div></div>';
+  resumoHtml += '<div class="lucro-item"><div class="v">' + fiados.length + '</div><div class="l">Total fiados</div></div>';
+  resumoHtml += '</div>';
+  
+  // Por remessa
+  if (!fr) {
+    resumoHtml += '<h4 style="margin-top:10px">📦 Por Remessa:</h4>';
+    state.remessas.forEach(function(r) {
+      var fiadosRem = fiados.filter(function(v) { return vendaPertenceRemessa(v, r); });
+      if (fiadosRem.length > 0) {
+        var pendRem = fiadosRem.filter(function(v) { return !v.pago; }).reduce(function(s, v) { return s + v.valor; }, 0);
+        var pagoRem = fiadosRem.filter(function(v) { return v.pago; }).reduce(function(s, v) { return s + v.valor; }, 0);
+        resumoHtml += '<div style="background:#fff;padding:8px;border-radius:8px;margin:5px 0;border-left:4px solid #D2691E">';
+        resumoHtml += '<b>' + r.nome + '</b>: ' + fiadosRem.length + ' fiado(s)';
+        resumoHtml += ' — <span style="color:#dc3545">Pend: R$ ' + pendRem.toFixed(2) + '</span>';
+        resumoHtml += ' — <span style="color:#28a745">Pago: R$ ' + pagoRem.toFixed(2) + '</span>';
+        resumoHtml += '</div>';
+      }
+    });
+  }
+  resumoHtml += '</div>';
+  resumoDiv.innerHTML = resumoHtml;
+  
   var html = '';
-  if (pendentes.length) { var total = pendentes.reduce(function(s, v) { return s + v.valor; }, 0); html += '<div class="alert" style="background:#ffe5e5;border-color:#dc3545"><b>⚠️ Pendentes:</b> ' + pendentes.length + ' • Total: <b>R$ ' + total.toFixed(2) + '</b></div>'; html += renderTabelaFiado(pendentes); }
-  if (pagos.length) { var total2 = pagos.reduce(function(s, v) { return s + v.valor; }, 0); html += '<h3 style="margin-top:12px">✅ Pagos (R$ ' + total2.toFixed(2) + ')</h3>'; html += renderTabelaFiado(pagos); }
+  if (pendentes.length) {
+    html += '<div class="alert" style="background:#ffe5e5;border-color:#dc3545"><b>⚠️ Pendentes:</b> ' + pendentes.length + ' • Total: <b>R$ ' + totalPend.toFixed(2) + '</b></div>';
+    html += renderTabelaFiado(pendentes);
+  }
+  if (pagos.length) {
+    html += '<h3 style="margin-top:12px">✅ Pagos (R$ ' + totalPago.toFixed(2) + ')</h3>';
+    html += renderTabelaFiado(pagos);
+  }
   div.innerHTML = html;
   div.querySelectorAll('.btn-marcar-pago').forEach(function(btn) { btn.addEventListener('click', function() { marcarPago(this.getAttribute('data-id')); }); });
   div.querySelectorAll('.btn-desmarcar-pago').forEach(function(btn) { btn.addEventListener('click', function() { desmarcarPago(this.getAttribute('data-id')); }); });
 }
 
 function renderTabelaFiado(lista) {
-  var html = '<div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Comprador</th><th>Vendedor</th><th>Produto</th><th>Qtd</th><th>Valor</th><th>Status</th><th>Ação</th></tr></thead><tbody>';
+  var html = '<div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Comprador</th><th>Vendedor</th><th>Produto</th><th>Remessa</th><th>Qtd</th><th>Valor</th><th>Status</th><th>Ação</th></tr></thead><tbody>';
   lista.forEach(function(v) {
     var f = findItem(v.itemId);
-    html += '<tr><td>' + formatarData(v.data) + '</td><td><b>' + v.comprador + '</b></td><td>' + v.vendedor + '</td><td>' + (f ? f.item.tipo : '?') + '</td><td>' + (v.quantidade || 1) + '</td><td>R$ ' + v.valor.toFixed(2) + '</td><td>' + (v.pago ? '<span class="badge badge-avista">PAGO</span>' : '<span class="badge badge-fiado">PEND.</span>') + '</td><td>' + (!v.pago ? '<button class="btn btn-success btn-sm btn-marcar-pago" data-id="' + String(v.id) + '">✅ Receber</button>' : '<button class="btn btn-warning btn-sm btn-desmarcar-pago" data-id="' + String(v.id) + '">↩️ Desfazer</button>') + '</td></tr>';
+    var remNome = f ? f.remessa.nome : '?';
+    html += '<tr><td>' + formatarData(v.data) + '</td><td><b>' + v.comprador + '</b></td><td>' + v.vendedor + '</td><td>' + (f ? f.item.tipo : '?') + '</td><td>' + remNome + '</td><td>' + (v.quantidade || 1) + '</td><td>R$ ' + v.valor.toFixed(2) + '</td><td>' + (v.pago ? '<span class="badge badge-avista">PAGO</span>' : '<span class="badge badge-fiado">PEND.</span>') + '</td><td>' + (!v.pago ? '<button class="btn btn-success btn-sm btn-marcar-pago" data-id="' + String(v.id) + '">✅ Receber</button>' : '<button class="btn btn-warning btn-sm btn-desmarcar-pago" data-id="' + String(v.id) + '">↩️ Desfazer</button>') + '</td></tr>';
   });
   html += '</tbody></table></div>';
   return html;
@@ -1057,7 +1114,7 @@ function desmarcarPago(id) {
   if (!confirm('Desfazer o pagamento de ' + v.comprador + '?\n\nO fiado voltará para a lista de pendentes.')) return;
   v.pago = false;
   v.dataPagamento = null;
-  dbUpdate('vendas', idStr, { pago: false, dataPagamento: null }).then(function() { if (!firebaseAtivo) saveLocal(); renderTudo(); alert('↩️ Fiado revertido para pendente!'); }).catch(function(e) { alert('Erro: ' + e.message); });
+  dbUpdate('vendas', idStr, { pago: false, dataPagamento: null }).then(function() { if (!firebaseAtivo) saveLocal(); renderTudo(); alert('️ Fiado revertido para pendente!'); }).catch(function(e) { alert('Erro: ' + e.message); });
 }
 
 document.getElementById('btnFiltrarFiado').addEventListener('click', renderFiados);
@@ -1068,18 +1125,30 @@ function renderLucros() {
   sel.innerHTML = '<option value="">Todas (consolidado)</option>' + state.remessas.map(function(r) { return '<option value="' + String(r.id) + '">' + r.nome + '</option>'; }).join('');
   var periodo = document.getElementById('lucroPeriodo').value;
   document.getElementById('lucroPeriodoCustom').style.display = periodo === 'custom' ? 'block' : 'none';
-  var remessas = state.remessas.slice();
+  
   var selId = sel.value;
-  if (selId) remessas = remessas.filter(function(r) { return String(r.id) === String(selId); });
-  if (remessas.length === 0) { document.getElementById('lucrosConteudo').innerHTML = '<p style="color:#888">Nenhuma remessa.</p>'; return; }
+  var remessasParaMostrar = [];
+  
+  if (selId) {
+    // CORREÇÃO: mostra apenas a remessa selecionada
+    var rSel = findRemessa(selId);
+    if (rSel) remessasParaMostrar = [rSel];
+  } else {
+    remessasParaMostrar = state.remessas.slice();
+  }
+  
+  if (remessasParaMostrar.length === 0) { document.getElementById('lucrosConteudo').innerHTML = '<p style="color:#888">Nenhuma remessa.</p>'; return; }
+  
   var dataDe = null, dataAte = null;
   if (periodo === '7') { var d = new Date(); d.setDate(d.getDate() - 7); dataDe = d.toISOString().slice(0,10); }
   else if (periodo === '30') { var d = new Date(); d.setDate(d.getDate() - 30); dataDe = d.toISOString().slice(0,10); }
   else if (periodo === 'custom') { dataDe = document.getElementById('lucroDe').value || null; dataAte = document.getElementById('lucroAte').value || null; }
+  
   var html = '';
   var totalReceita = 0, totalCusto = 0, totalLucro = 0;
   var dataMin = null, dataMax = null;
-  remessas.forEach(function(r) {
+  
+  remessasParaMostrar.forEach(function(r) {
     var ids = r.itens.map(function(i) { return String(i.id); });
     var vendas = state.vendas.filter(function(v) { return ids.indexOf(String(v.itemId)) !== -1; });
     if (dataDe) vendas = vendas.filter(function(v) { return v.data.slice(0,10) >= dataDe; });
@@ -1091,22 +1160,11 @@ function renderLucros() {
     var lucro = receita - custoProp;
     if (vendas.length > 0) { var datas = vendas.map(function(v) { return v.data.slice(0,10); }).sort(); if (!dataMin || datas[0] < dataMin) dataMin = datas[0]; if (!dataMax || datas[datas.length-1] > dataMax) dataMax = datas[datas.length-1]; }
     totalReceita += receita; totalCusto += custoProp; totalLucro += lucro;
-    if (!selId || state.remessas.length > 1) html += renderBlocoLucro(r, vendas, receita, custoProp, lucro);
+    html += renderBlocoLucro(r, vendas, receita, custoProp, lucro);
   });
-  if (selId) {
-    var r = remessas[0];
-    var ids = r.itens.map(function(i) { return String(i.id); });
-    var vendas = state.vendas.filter(function(v) { return ids.indexOf(String(v.itemId)) !== -1; });
-    if (dataDe) vendas = vendas.filter(function(v) { return v.data.slice(0,10) >= dataDe; });
-    if (dataAte) vendas = vendas.filter(function(v) { return v.data.slice(0,10) <= dataAte; });
-    var receita = vendas.reduce(function(s, v) { return s + v.valor; }, 0);
-    var custo = r.custo || 0;
-    var vendidos = vendas.reduce(function(s, v) { return s + (v.quantidade || 1); }, 0);
-    var custoProp = vendidos > 0 && r.itens.length > 0 ? (custo * vendidos / r.itens.length) : 0;
-    var lucro = receita - custoProp;
-    html = renderBlocoLucro(r, vendas, receita, custoProp, lucro, true);
-  }
-  if (remessas.length > 1 || !selId) {
+  
+  // Consolidado - só mostra se não estiver filtrando uma remessa específica
+  if (!selId) {
     html += '<div class="lucro-box" style="border-color:#28a745;background:linear-gradient(135deg,#d4edda,#c3e6cb)"><h3 style="color:#155724">💼 CONSOLIDADO GERAL</h3><div class="lucro-grid"><div class="lucro-item"><div class="v">' + (dataMin ? formatarData(dataMin) + ' a ' + formatarData(dataMax) : '-') + '</div><div class="l">Período</div></div><div class="lucro-item"><div class="v">R$ ' + totalReceita.toFixed(2) + '</div><div class="l">Receita</div></div><div class="lucro-item"><div class="v">R$ ' + totalCusto.toFixed(2) + '</div><div class="l">Custo</div></div><div class="lucro-item" style="border-color:#28a745"><div class="v" style="color:#28a745">R$ ' + totalLucro.toFixed(2) + '</div><div class="l">💰 LUCRO</div></div></div>' + renderProlabore(totalLucro) + '</div>';
   }
   document.getElementById('lucrosConteudo').innerHTML = html;
@@ -1121,7 +1179,7 @@ function renderBlocoLucro(r, vendas, receita, custo, lucro) {
   var tiposTxt = '';
   Object.keys(porTipo).forEach(function(t) { if (tiposTxt) tiposTxt += ' • '; tiposTxt += porTipo[t].qtd + ' ' + t + ' (R$ ' + porTipo[t].valor.toFixed(2) + ')'; });
   if (!tiposTxt) tiposTxt = '-';
-  var html = '<div class="lucro-box"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px"><h3 style="margin:0">📦 ' + r.nome + '</h3><span style="font-size:0.8em;color:#666">📅 ' + periodo + '</span></div><div style="font-size:0.85em;margin-bottom:6px"><b>Vendeu:</b> ' + tiposTxt + '</div><div class="lucro-grid"><div class="lucro-item"><div class="v">' + vendidos + '</div><div class="l">Vendidas</div></div><div class="lucro-item"><div class="v">R$ ' + custo.toFixed(2) + '</div><div class="l">💵 Custo</div></div><div class="lucro-item"><div class="v">R$ ' + receita.toFixed(2) + '</div><div class="l">💰 Vendeu</div></div><div class="lucro-item" style="border-color:' + (lucro >= 0 ? '#28a745' : '#dc3545') + '"><div class="v" style="color:' + (lucro >= 0 ? '#28a745' : '#dc3545') + '">R$ ' + lucro.toFixed(2) + '</div><div class="l">' + (lucro >= 0 ? '💹 LUCRO' : '📉 PREJUÍZO') + '</div></div></div>';
+  var html = '<div class="lucro-box"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px"><h3 style="margin:0">📦 ' + r.nome + '</h3><span style="font-size:0.8em;color:#666"> ' + periodo + '</span></div><div style="font-size:0.85em;margin-bottom:6px"><b>Vendeu:</b> ' + tiposTxt + '</div><div class="lucro-grid"><div class="lucro-item"><div class="v">' + vendidos + '</div><div class="l">Vendidas</div></div><div class="lucro-item"><div class="v">R$ ' + custo.toFixed(2) + '</div><div class="l">💵 Custo</div></div><div class="lucro-item"><div class="v">R$ ' + receita.toFixed(2) + '</div><div class="l"> Vendeu</div></div><div class="lucro-item" style="border-color:' + (lucro >= 0 ? '#28a745' : '#dc3545') + '"><div class="v" style="color:' + (lucro >= 0 ? '#28a745' : '#dc3545') + '">R$ ' + lucro.toFixed(2) + '</div><div class="l">' + (lucro >= 0 ? '💹 LUCRO' : '📉 PREJUÍZO') + '</div></div></div>';
   if (lucro > 0) html += renderProlabore(lucro); else html += '<p style="color:#888;text-align:center;margin-top:8px">Sem lucro.</p>';
   html += '</div>';
   return html;
@@ -1186,20 +1244,16 @@ document.getElementById('btnSalvarFirebase').addEventListener('click', function(
     var cfg = JSON.parse(t);
     if (!cfg.apiKey || !cfg.projectId) throw new Error('JSON inválido');
     state.firebaseConfig = cfg;
-    saveLocal();
-    initFirebase();
+    saveLocal(); initFirebase();
     alert('✅ Firebase conectado!');
   } catch(e) { alert('❌ Erro: ' + e.message); }
 });
 
 document.getElementById('btnDesconectar').addEventListener('click', function() {
-  unsubscribe.forEach(function(u) { u(); });
-  unsubscribe = [];
+  unsubscribe.forEach(function(u) { u(); }); unsubscribe = [];
   if (firebase.apps.length) firebase.app().delete();
   firebaseAtivo = false; db = null;
-  state.firebaseConfig = null;
-  saveLocal();
-  atualizarStatusSync(false);
+  state.firebaseConfig = null; saveLocal(); atualizarStatusSync(false);
   alert('Desconectado.');
 });
 
@@ -1209,9 +1263,7 @@ document.getElementById('btnSalvarPerc').addEventListener('click', function() {
   if (Math.abs(total - 100) > 0.01) { if (!confirm('Total é ' + total.toFixed(2) + '% (deveria ser 100%). Salvar mesmo?')) return; }
   state.percentuais = p;
   if (firebaseAtivo && db) db.collection('config').doc('principal').set({ percentuais: p });
-  saveLocal();
-  alert('✅ Percentuais salvos!');
-  renderLucros();
+  saveLocal(); alert('✅ Percentuais salvos!'); renderLucros();
 });
 
 document.getElementById('btnBackup').addEventListener('click', function() {
@@ -1252,10 +1304,8 @@ document.getElementById('btnLimparCache').addEventListener('click', limparCacheR
 document.getElementById('btnForcarAtual').addEventListener('click', forcarAtualizacao);
 document.getElementById('btnFecharDetalhes').addEventListener('click', function() { document.getElementById('modalDetalhes').classList.remove('active'); });
 
-// ============ RENDER TUDO ============
-function renderTudo() { renderEstoque(); renderRemessas(); renderStats(); renderRelatorios(); renderFiados(); }
+function renderTudo() { renderEstoque(); renderRemessas(); renderStatsRelatorio(getVendasFiltradas()); renderRelatorios(); renderFiados(); }
 
-// ============ INIT ============
 verificarVersao();
 renderConfig();
 loadLocal();
