@@ -113,8 +113,9 @@ tr:hover{background:#fff8dc}
 .fiado-resumo h4{color:#8B4513;margin-bottom:8px}
 .relatorio-resumo{background:#fff8dc;border:2px solid #D2691E;border-radius:10px;padding:12px;margin:15px 0}
 .relatorio-resumo h4{color:#8B4513;margin-bottom:8px}
-.inconsistencia-box{background:#ffe5e5;border:2px solid #dc3545;border-radius:10px;padding:10px;margin:10px 0}
+.inconsistencia-box{background:#ffe5e5;border:2px solid #dc3545;border-radius:10px;padding:12px;margin:10px 0}
 .inconsistencia-box h4{color:#dc3545;margin-bottom:8px}
+.inconsistencia-box .detalhe{background:#fff;padding:8px;border-radius:8px;margin:5px 0;border-left:4px solid #ffc107}
 @media(max-width:600px){
 header h1{font-size:1.1em}
 .form-row,.form-row-4,.form-row-2{grid-template-columns:1fr 1fr}
@@ -128,7 +129,7 @@ th,td{padding:4px}
 <div class="container">
   <header>
     <div>
-      <h1> Cocadas da Família</h1>
+      <h1>🍬 Cocadas da Família</h1>
       <span id="syncStatus" class="sync-status sync-offline"><span class="sync-dot"></span><span id="syncText">Offline (Local)</span></span>
     </div>
     <div class="user-select"><select id="userSelect"><option value="">Selecione</option><option value="Luciano">Luciano (Pai)</option><option value="Verônica">Verônica (Mãe)</option><option value="Luciano Junior">Luciano Junior</option><option value="Alexandre">Alexandre</option></select></div>
@@ -164,26 +165,26 @@ th,td{padding:4px}
       </div>
       <div class="form-row-4">
         <div class="form-group"><label>🥥 Coco (qtd)</label><input type="number" id="qtdCoco" min="0" value="0"></div>
-        <div class="form-group"><label>🍫 Cacau (qtd)</label><input type="number" id="qtdCacau" min="0" value="0"></div>
+        <div class="form-group"><label> Cacau (qtd)</label><input type="number" id="qtdCacau" min="0" value="0"></div>
         <div class="form-group"><label>🍌 Banana (qtd)</label><input type="number" id="qtdBanana" min="0" value="0"></div>
         <div class="form-group"><label>🥜 Paçoca (qtd)</label><input type="number" id="qtdPacoca" min="0" value="0"></div>
       </div>
-      <h4 style="color:#8B4513;margin:8px 0"> Preço de venda por tipo:</h4>
+      <h4 style="color:#8B4513;margin:8px 0">💰 Preço de venda por tipo:</h4>
       <div class="form-row-4">
-        <div class="form-group preco-tipo"><label> Coco (R$)</label><input type="number" id="precoCoco" step="0.01" min="0" placeholder="2.00"></div>
+        <div class="form-group preco-tipo"><label>🥥 Coco (R$)</label><input type="number" id="precoCoco" step="0.01" min="0" placeholder="2.00"></div>
         <div class="form-group preco-tipo"><label>🍫 Cacau (R$)</label><input type="number" id="precoCacau" step="0.01" min="0" placeholder="2.50"></div>
-        <div class="form-group preco-tipo"><label>🍌 Banana (R$)</label><input type="number" id="precoBanana" step="0.01" min="0" placeholder="2.50"></div>
+        <div class="form-group preco-tipo"><label> Banana (R$)</label><input type="number" id="precoBanana" step="0.01" min="0" placeholder="2.50"></div>
         <div class="form-group preco-tipo"><label>🥜 Paçoca (R$)</label><input type="number" id="precoPacoca" step="0.01" min="0" placeholder="1.00"></div>
       </div>
       <div class="form-group"><label>💵 Custo total da remessa (R$)</label><input type="number" id="remessaCusto" step="0.01" min="0" placeholder="25.00"></div>
-      <button class="btn btn-primary" id="btnCriarRemessa">➕ Adicionar Remessa</button>
+      <button class="btn btn-primary" id="btnCriarRemessa"> Adicionar Remessa</button>
     </div>
     <h3>📋 Remessas Cadastradas</h3>
     <div id="listaRemessas"></div>
   </div>
 
   <div class="panel" id="panel-relatorios">
-    <h2>📊 Relatórios de Vendas</h2>
+    <h2> Relatórios de Vendas</h2>
     <div class="stats" id="statsGerais"></div>
     <div class="filter-bar">
       <div class="form-group search-box"><label>Buscar cliente</label><input type="text" id="filtroCliente" placeholder="Nome..."></div>
@@ -192,7 +193,7 @@ th,td{padding:4px}
       <div class="form-group"><label>Pagamento</label><select id="filtroPagamento"><option value="">Todos</option><option>À vista</option><option>Pix</option><option>Fiado</option></select></div>
       <div class="form-group"><label>De</label><input type="date" id="filtroDataDe"></div>
       <div class="form-group"><label>Até</label><input type="date" id="filtroDataAte"></div>
-      <button class="btn btn-primary" id="btnFiltrarRel">🔍 Filtrar</button>
+      <button class="btn btn-primary" id="btnFiltrarRel"> Filtrar</button>
     </div>
     <div class="export-bar">
       <button class="btn btn-danger" id="btnExpPDF">📄 PDF Geral</button>
@@ -215,7 +216,7 @@ th,td{padding:4px}
   </div>
 
   <div class="panel" id="panel-lucros">
-    <h2>💹 Lucros e Pró-Labore</h2>
+    <h2> Lucros e Pró-Labore</h2>
     <div class="alert alert-info">Cálculo automático do lucro por remessa e distribuição do <b>pró-labore</b>.</div>
     <div class="filter-bar">
       <div class="form-group"><label>Selecionar Remessa</label><select id="lucroRemessa"><option value="">Todas (consolidado)</option></select></div>
@@ -229,7 +230,7 @@ th,td{padding:4px}
     <h2>⚙️ Configurações</h2>
     <div class="lucro-box" style="border-color:#ffc107;background:linear-gradient(135deg,#fff3cd,#ffeaa7)">
       <h3>🔄 Limpeza de Cache</h3>
-      <div class="cache-info"><b>⚠️ Se os botões não funcionam, use estes:</b></div>
+      <div class="cache-info"><b>️ Se os botões não funcionam, use estes:</b></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
         <button class="btn btn-warning" id="btnLimparCache">🔄 Limpar Cache e Recarregar</button>
         <button class="btn btn-info" id="btnForcarAtual">⬇️ Forçar Atualização</button>
@@ -239,7 +240,7 @@ th,td{padding:4px}
       </div>
     </div>
     <div class="lucro-box">
-      <h3> Sincronização Firebase</h3>
+      <h3>🔥 Sincronização Firebase</h3>
       <p style="font-size:0.85em;margin:6px 0">Status: <span id="configSyncStatus">Offline</span></p>
       <div class="form-group"><label>Credenciais Firebase (JSON)</label><textarea id="firebaseConfig" rows="7" style="font-family:monospace;font-size:0.8em"></textarea></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -277,7 +278,7 @@ th,td{padding:4px}
       <div class="form-group"><label>Quantidade</label><input type="number" id="vendaQtd" min="1" value="1"></div>
       <div class="form-group"><label>Preço unitário (R$)</label><input type="number" id="vendaPrecoUnit" step="0.01" min="0" readonly></div>
     </div>
-    <div class="valor-total-box"> Valor Total: R$ <span id="valorTotalDisplay">0.00</span></div>
+    <div class="valor-total-box">💰 Valor Total: R$ <span id="valorTotalDisplay">0.00</span></div>
     <div class="form-group"><label>Forma de Pagamento</label><select id="vendaPagamento"><option>À vista</option><option>Pix</option><option>Fiado</option></select></div>
     <div class="form-group"><label>Observação (opcional)</label><textarea id="vendaObs" rows="2"></textarea></div>
     <div class="modal-actions">
@@ -297,12 +298,12 @@ th,td{padding:4px}
       <div class="form-group preco-tipo"><label>🥥 Coco (R$)</label><input type="number" id="editPrecoCoco" step="0.01" min="0"></div>
       <div class="form-group preco-tipo"><label>🍫 Cacau (R$)</label><input type="number" id="editPrecoCacau" step="0.01" min="0"></div>
       <div class="form-group preco-tipo"><label>🍌 Banana (R$)</label><input type="number" id="editPrecoBanana" step="0.01" min="0"></div>
-      <div class="form-group preco-tipo"><label> Paçoca (R$)</label><input type="number" id="editPrecoPacoca" step="0.01" min="0"></div>
+      <div class="form-group preco-tipo"><label>🥜 Paçoca (R$)</label><input type="number" id="editPrecoPacoca" step="0.01" min="0"></div>
     </div>
     <div class="form-group"><label>💵 Custo total (R$)</label><input type="number" id="editCusto" step="0.01" min="0"></div>
     <div class="modal-actions">
       <button class="btn btn-danger" id="btnCancelarEditar">Cancelar</button>
-      <button class="btn btn-success" id="btnSalvarEditar">💾 Salvar</button>
+      <button class="btn btn-success" id="btnSalvarEditar"> Salvar</button>
     </div>
   </div>
 </div>
@@ -367,7 +368,7 @@ th,td{padding:4px}
 <div id="debugBox" class="debug-box"></div>
 
 <script>
-var APP_VERSION = '3.6.0';
+var APP_VERSION = '3.7.0';
 
 function debug(msg) {
   console.log('[APP]', msg);
@@ -438,7 +439,7 @@ function limparCacheRecarregar() {
   window.location.href = window.location.pathname + '?t=' + Date.now();
 }
 function forcarAtualizacao() {
-  if (!confirm('️ Forçar download da versão mais recente?')) return;
+  if (!confirm('⬇️ Forçar download da versão mais recente?')) return;
   window.location.href = window.location.pathname + '?v=' + Date.now();
 }
 
@@ -554,10 +555,12 @@ function contarItensVendidos(remessa) {
   return idsVendidos.size;
 }
 
-// NOVA: Conta itens por tipo vendidos
-function contarItensVendidosPorTipo(remessa) {
+// NOVA: Conta itens vendidos por tipo de forma inteligente
+function contarVendasPorTipo(remessa) {
   var contagem = { Coco: 0, Cacau: 0, Banana: 0, 'Paçoca': 0 };
   var idsVendidos = new Set();
+  
+  // Coleta todos os IDs vendidos
   state.vendas.forEach(function(v) {
     if (vendaPertenceRemessa(v, remessa)) {
       if (v.itemIdPacote && v.itemIdPacote.length > 0) {
@@ -567,28 +570,41 @@ function contarItensVendidosPorTipo(remessa) {
       }
     }
   });
+  
+  // Conta por tipo baseado nos itens da remessa
   remessa.itens.forEach(function(i) {
     if (idsVendidos.has(String(i.id))) {
       contagem[i.tipo] = (contagem[i.tipo] || 0) + 1;
     }
   });
+  
   return contagem;
 }
 
-// NOVA: Detecta inconsistências
-function detectarInconsistencias(remessa) {
+// NOVA: Conta itens cadastrados por tipo
+function contarItensCadastradosPorTipo(remessa) {
+  var contagem = { Coco: 0, Cacau: 0, Banana: 0, 'Paçoca': 0 };
+  remessa.itens.forEach(function(i) {
+    contagem[i.tipo] = (contagem[i.tipo] || 0) + 1;
+  });
+  return contagem;
+}
+
+// NOVA: Detecta inconsistências detalhadas
+function detectarInconsistenciasDetalhadas(remessa) {
+  var vendidos = contarVendasPorTipo(remessa);
+  var cadastrados = contarItensCadastradosPorTipo(remessa);
   var inconsistencias = [];
-  var contagemVendida = contarItensVendidosPorTipo(remessa);
-  var contagemTotal = { Coco: 0, Cacau: 0, Banana: 0, 'Paçoca': 0 };
-  remessa.itens.forEach(function(i) { contagemTotal[i.tipo] = (contagemTotal[i.tipo] || 0) + 1; });
   
-  Object.keys(contagemTotal).forEach(function(tipo) {
-    if (contagemVendida[tipo] > contagemTotal[tipo]) {
+  Object.keys(vendidos).forEach(function(tipo) {
+    var vendido = vendidos[tipo];
+    var cadastrado = cadastrados[tipo];
+    if (vendido > cadastrado) {
       inconsistencias.push({
         tipo: tipo,
-        vendido: contagemVendida[tipo],
-        cadastrado: contagemTotal[tipo],
-        excesso: contagemVendida[tipo] - contagemTotal[tipo]
+        vendido: vendido,
+        cadastrado: cadastrado,
+        excesso: vendido - cadastrado
       });
     }
   });
@@ -676,7 +692,7 @@ function excluirRemessa(id) {
   if (!r) { alert('Remessa não encontrada!'); return; }
   var temVenda = false;
   for (var i = 0; i < r.itens.length; i++) { if (r.itens[i].vendido) { temVenda = true; break; } }
-  var msg = temVenda ? '️ Esta remessa tem vendas. Excluir TUDO?' : 'Excluir "' + r.nome + '"?';
+  var msg = temVenda ? '⚠️ Esta remessa tem vendas. Excluir TUDO?' : 'Excluir "' + r.nome + '"?';
   if (!confirm(msg)) return;
   if (temVenda) {
     var ids = r.itens.map(function(i) { return String(i.id); });
@@ -828,14 +844,14 @@ function renderRemessas() {
     var idStr = String(r.id);
     html += '<div class="remessa-card">';
     html += '<div style="font-size:1.1em;font-weight:bold;color:#8B4513">' + r.nome + '</div>';
-    html += '<div class="remessa-tipos">📅 ' + formatarData(r.data) + ' • 💵 Custo: R$ ' + (r.custo || 0).toFixed(2) + '</div>';
+    html += '<div class="remessa-tipos">📅 ' + formatarData(r.data) + ' •  Custo: R$ ' + (r.custo || 0).toFixed(2) + '</div>';
     html += '<div class="remessa-tipos" style="margin-top:3px"><b>Preços:</b> ' + precosTxt + '</div>';
     html += '<div class="remessa-stats"><b>Total:</b> ' + total + ' <span style="color:#28a745"><b>Disp:</b> ' + disp + '</span> <span style="color:#dc3545"><b>Vend:</b> ' + vendidos + '</span></div>';
     html += '<div class="remessa-tipos">' + tiposTxt + '</div>';
     html += '<div class="remessa-acoes">';
     html += '<button class="btn btn-warning btn-sm btn-editar-remessa" data-id="' + idStr + '">✏️ Editar preços</button>';
     html += '<button class="btn btn-info btn-sm btn-editar-qtd" data-id="' + idStr + '">📦 Editar qtd</button>';
-    html += '<button class="btn btn-danger btn-sm btn-excluir-remessa" data-id="' + idStr + '">️ Excluir remessa</button>';
+    html += '<button class="btn btn-danger btn-sm btn-excluir-remessa" data-id="' + idStr + '">🗑️ Excluir remessa</button>';
     html += '</div></div>';
   });
   div.innerHTML = html;
@@ -862,7 +878,7 @@ function renderEstoque() {
     var item = x.item;
     var remessa = x.remessa;
     var venda = findVendaByItemId(item.id);
-    var emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'🍌','Paçoca':'🥜'}[item.tipo] || '🍬';
+    var emoji = {'Coco':'🥥','Cacau':'','Banana':'🍌','Paçoca':'🥜'}[item.tipo] || '🍬';
     var preco = getPrecoItem(item, remessa);
     html += '<div class="card ' + (item.vendido ? 'vendido' : '') + '">';
     html += '<div class="tipo">' + emoji + ' ' + item.tipo + '</div>';
@@ -876,7 +892,7 @@ function renderEstoque() {
       html += '</div>';
     } else {
       html += '<span class="status disponivel">Disponível</span>';
-      html += '<br><button class="btn btn-success btn-sm btn-vender-item" data-id="' + String(item.id) + '" style="margin-top:5px;width:100%"> Vender</button>';
+      html += '<br><button class="btn btn-success btn-sm btn-vender-item" data-id="' + String(item.id) + '" style="margin-top:5px;width:100%">🛒 Vender</button>';
     }
     html += '</div>';
   });
@@ -887,7 +903,7 @@ function renderEstoque() {
     var hist = document.getElementById('historicoBusca');
     if (vendasCliente.length === 0) { hist.innerHTML = '<h3>🔍 "' + busca + '"</h3><p style="color:#888">Nenhuma venda.</p>'; }
     else {
-      var h = '<h3> "' + busca + '" (' + vendasCliente.length + ')</h3><div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Vendedor</th><th>Produto</th><th>Qtd</th><th>Valor</th><th>Pagto</th></tr></thead><tbody>';
+      var h = '<h3>🔍 "' + busca + '" (' + vendasCliente.length + ')</h3><div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Vendedor</th><th>Produto</th><th>Qtd</th><th>Valor</th><th>Pagto</th></tr></thead><tbody>';
       vendasCliente.forEach(function(v) {
         var f = findItem(v.itemId);
         var badgeClass = v.pagamento === 'Fiado' ? 'badge-fiado' : v.pagamento === 'Pix' ? 'badge-pix' : 'badge-avista';
@@ -905,14 +921,14 @@ document.getElementById('filtroStatus').addEventListener('change', renderEstoque
 
 // ============ VENDA ============
 function abrirVenda(itemId) {
-  if (!state.usuario) { alert('️ Selecione seu nome no topo!'); return; }
+  if (!state.usuario) { alert('⚠️ Selecione seu nome no topo!'); return; }
   var f = findItem(itemId);
   if (!f || f.item.vendido) return;
   itemSelecionado = String(itemId);
   precoUnitarioAtual = getPrecoItem(f.item, f.remessa);
-  var emoji = {'Coco':'','Cacau':'🍫','Banana':'🍌','Paçoca':''}[f.item.tipo] || '';
+  var emoji = {'Coco':'🥥','Cacau':'🍫','Banana':'','Paçoca':'🥜'}[f.item.tipo] || '';
   var itensDisponiveis = f.remessa.itens.filter(function(i) { return i.tipo === f.item.tipo && !i.vendido; });
-  document.getElementById('modalInfo').innerHTML = '<b>' + emoji + ' ' + f.item.tipo + '</b> • 📦 ' + f.remessa.nome + '<br> Vendedor: <b>' + state.usuario + '</b><br>💰 R$ ' + precoUnitarioAtual.toFixed(2) + ' un. (Disponível: ' + itensDisponiveis.length + ')';
+  document.getElementById('modalInfo').innerHTML = '<b>' + emoji + ' ' + f.item.tipo + '</b> • 📦 ' + f.remessa.nome + '<br>👤 Vendedor: <b>' + state.usuario + '</b><br> R$ ' + precoUnitarioAtual.toFixed(2) + ' un. (Disponível: ' + itensDisponiveis.length + ')';
   document.getElementById('vendaComprador').value = '';
   document.getElementById('vendaQtd').value = '1';
   document.getElementById('vendaQtd').max = itensDisponiveis.length;
@@ -1089,10 +1105,10 @@ function renderStatsRelatorio(vendas) {
   div.innerHTML = '<div class="stat-card"><div class="valor">' + totalVendas + '</div><div class="label">Vendas</div></div>' +
     '<div class="stat-card"><div class="valor">' + totalItens + '</div><div class="label">Itens vendidos</div></div>' +
     '<div class="stat-card"><div class="valor">R$ ' + totalValor.toFixed(2) + '</div><div class="label">Faturamento</div></div>' +
-    '<div class="stat-card"><div class="valor">R$ ' + avista.toFixed(2) + '</div><div class="label">💵 À vista</div></div>' +
+    '<div class="stat-card"><div class="valor">R$ ' + avista.toFixed(2) + '</div><div class="label"> À vista</div></div>' +
     '<div class="stat-card"><div class="valor">R$ ' + pix.toFixed(2) + '</div><div class="label">📱 Pix</div></div>' +
     '<div class="stat-card"><div class="valor">R$ ' + fiado.toFixed(2) + '</div><div class="label">⚠️ Fiado pend.</div></div>' +
-    '<div class="stat-card"><div class="valor">R$ ' + lucro.toFixed(2) + '</div><div class="label">💹 Lucro</div></div>';
+    '<div class="stat-card"><div class="valor">R$ ' + lucro.toFixed(2) + '</div><div class="label"> Lucro</div></div>';
 }
 
 function renderRelatorios() {
@@ -1112,7 +1128,7 @@ function renderRelatorios() {
   var pix = vendas.filter(function(v) { return v.pagamento === 'Pix'; }).reduce(function(s, v) { return s + v.valor; }, 0);
   
   var resumoHtml = '<div class="relatorio-resumo">';
-  resumoHtml += '<h4>📋 Resumo do Relatório';
+  resumoHtml += '<h4> Resumo do Relatório';
   if (remSelecionada) resumoHtml += ' — ' + remSelecionada.nome;
   else resumoHtml += ' — Todas as Remessas';
   resumoHtml += '</h4>';
@@ -1121,21 +1137,22 @@ function renderRelatorios() {
   resumoHtml += '<div class="lucro-item"><div class="v">' + vendas.reduce(function(s, v) { return s + (v.quantidade || 1); }, 0) + '</div><div class="l">Itens</div></div>';
   resumoHtml += '<div class="lucro-item"><div class="v" style="color:#28a745">R$ ' + avista.toFixed(2) + '</div><div class="l">💵 À vista</div></div>';
   resumoHtml += '<div class="lucro-item"><div class="v" style="color:#17a2b8">R$ ' + pix.toFixed(2) + '</div><div class="l"> Pix</div></div>';
-  resumoHtml += '<div class="lucro-item"><div class="v" style="color:#dc3545">R$ ' + fiadoPend.toFixed(2) + '</div><div class="l">️ Fiado pendente</div></div>';
+  resumoHtml += '<div class="lucro-item"><div class="v" style="color:#dc3545">R$ ' + fiadoPend.toFixed(2) + '</div><div class="l">⚠️ Fiado pendente</div></div>';
   resumoHtml += '<div class="lucro-item"><div class="v" style="color:#28a745">R$ ' + fiadoPago.toFixed(2) + '</div><div class="l">✅ Fiado pago</div></div>';
   resumoHtml += '</div></div>';
   document.getElementById('relatorioResumo').innerHTML = resumoHtml;
   
-  // Detecta inconsistências
+  // Detecta inconsistências detalhadas
   var inconsistenciasHtml = '';
   if (remSelecionada) {
-    var inconsistencias = detectarInconsistencias(remSelecionada);
+    var inconsistencias = detectarInconsistenciasDetalhadas(remSelecionada);
     if (inconsistencias.length > 0) {
-      inconsistenciasHtml = '<div class="inconsistencia-box"><h4>⚠️ Inconsistência Detectada</h4>';
+      inconsistenciasHtml = '<div class="inconsistencia-box"><h4>⚠️ Inconsistência Detectada na ' + remSelecionada.nome + '</h4>';
+      inconsistenciasHtml += '<p style="margin-bottom:10px">Foram vendidas mais cocadas do que o cadastrado. Clique abaixo para corrigir automaticamente.</p>';
       inconsistencias.forEach(function(inc) {
-        inconsistenciasHtml += '<p><b>' + inc.tipo + ':</b> Vendidos ' + inc.vendido + ' mas cadastrados apenas ' + inc.cadastrado + ' (excesso: ' + inc.excesso + ')</p>';
+        inconsistenciasHtml += '<div class="detalhe"><b>' + inc.tipo + ':</b> Vendidos <b>' + inc.vendido + '</b> mas cadastrados apenas <b>' + inc.cadastrado + '</b> (excesso: <b style="color:#dc3545">' + inc.excesso + '</b>)</div>';
       });
-      inconsistenciasHtml += '<button class="btn btn-warning btn-sm" onclick="corrigirInconsistencia(\'' + String(remSelecionada.id) + '\')">🔧 Corrigir Automaticamente</button>';
+      inconsistenciasHtml += '<button class="btn btn-warning" onclick="corrigirInconsistenciaAutomatica(\'' + String(remSelecionada.id) + '\')" style="margin-top:10px">🔧 Corrigir Automaticamente (Remover Excesso)</button>';
       inconsistenciasHtml += '</div>';
     }
   }
@@ -1151,44 +1168,81 @@ function renderRelatorios() {
     html += '<td><b>' + v.vendedor + '</b> <span class="edit-icon" onclick="abrirEditarVenda(\'' + String(v.id) + '\')">✏️</span></td>';
     html += '<td>' + (f ? f.item.tipo : '?') + '</td>';
     html += '<td>' + (f ? f.remessa.nome : '?') + '</td>';
-    html += '<td>' + v.comprador + ' <span class="edit-icon" onclick="abrirEditarVenda(\'' + String(v.id) + '\')">✏️</span></td>';
+    html += '<td>' + v.comprador + ' <span class="edit-icon" onclick="abrirEditarVenda(\'' + String(v.id) + '\')">️</span></td>';
     html += '<td>' + (v.quantidade || 1) + '</td>';
     html += '<td>R$ ' + v.valor.toFixed(2) + '</td>';
     html += '<td><span class="badge ' + badgeClass + '">' + v.pagamento + '</span></td>';
-    html += '<td><button class="btn btn-danger btn-sm btn-excluir-venda" data-id="' + String(v.id) + '">🗑️</button></td></tr>';
+    html += '<td><button class="btn btn-danger btn-sm btn-excluir-venda" data-id="' + String(v.id) + '">️</button></td></tr>';
   });
   tb.innerHTML = html;
   tb.querySelectorAll('.btn-excluir-venda').forEach(function(btn) { btn.addEventListener('click', function() { excluirVenda(this.getAttribute('data-id')); }); });
 }
 
-// NOVA: Corrige inconsistências
-function corrigirInconsistencia(remessaId) {
+// NOVA: Corrige inconsistências automaticamente removendo vendas excedentes
+function corrigirInconsistenciaAutomatica(remessaId) {
   var r = findRemessa(remessaId);
   if (!r) { alert('Remessa não encontrada!'); return; }
   
-  var inconsistencias = detectarInconsistencias(r);
+  var inconsistencias = detectarInconsistenciasDetalhadas(r);
   if (inconsistencias.length === 0) { alert('Nenhuma inconsistência detectada!'); return; }
   
   var msg = 'Foram detectadas inconsistências:\n\n';
   inconsistencias.forEach(function(inc) {
-    msg += inc.tipo + ': ' + inc.vendido + ' vendidos, ' + inc.cadastrado + ' cadastrados\n';
+    msg += inc.tipo + ': ' + inc.vendido + ' vendidos, ' + inc.cadastrado + ' cadastrados (excesso: ' + inc.excesso + ')\n';
   });
-  msg += '\nDeseja corrigir adicionando os itens faltantes?';
+  msg += '\nO sistema irá remover as últimas vendas do tipo com excesso para igualar ao cadastrado.\n\nDeseja continuar?';
   
   if (!confirm(msg)) return;
   
-  // Adiciona itens faltantes
+  var promises = [];
+  
   inconsistencias.forEach(function(inc) {
-    var now = Date.now();
-    for (var i = 0; i < inc.excesso; i++) {
-      r.itens.push({ id: String(now) + '_corr_' + i + '_' + inc.tipo.toLowerCase(), tipo: inc.tipo, vendido: false });
+    // Encontra vendas desse tipo na remessa, ordenadas por data (mais recentes primeiro)
+    var vendasDoTipo = state.vendas.filter(function(v) {
+      if (!vendaPertenceRemessa(v, r)) return false;
+      var f = findItem(v.itemId);
+      return f && f.item.tipo === inc.tipo;
+    }).sort(function(a, b) { return new Date(b.data) - new Date(a.data); });
+    
+    var removidos = 0;
+    var idx = 0;
+    
+    while (removidos < inc.excesso && idx < vendasDoTipo.length) {
+      var v = vendasDoTipo[idx];
+      
+      // Se a venda tem quantidade > 1, reduz a quantidade
+      if (v.quantidade > 1) {
+        v.quantidade = v.quantidade - 1;
+        v.valor = v.valor - getPrecoItem(findItem(v.itemId).item, r);
+        
+        // Marca um item do pacote como não vendido
+        if (v.itemIdPacote && v.itemIdPacote.length > 0) {
+          var ultimoItemId = v.itemIdPacote[v.itemIdPacote.length - 1];
+          var itemParaDesmarcar = findItem(ultimoItemId);
+          if (itemParaDesmarcar) itemParaDesmarcar.item.vendido = false;
+          v.itemIdPacote.pop();
+        }
+        
+        promises.push(dbUpdate('vendas', v.id, { quantidade: v.quantidade, valor: v.valor, itemIdPacote: v.itemIdPacote }));
+        removidos++;
+      } else {
+        // Venda unitária - exclui completamente
+        var f = findItem(v.itemId);
+        if (f) f.item.vendido = false;
+        if (v.itemIdPacote) {
+          v.itemIdPacote.forEach(function(id) { var ff = findItem(id); if (ff) ff.item.vendido = false; });
+        }
+        promises.push(dbDelete('vendas', v.id));
+        removidos++;
+      }
+      idx++;
     }
   });
   
-  dbUpdate('remessas', String(r.id), { itens: r.itens }).then(function() {
+  Promise.all(promises).then(function() {
     if (!firebaseAtivo) saveLocal();
     renderTudo();
-    alert('✅ Inconsistência corrigida! Itens faltantes adicionados.');
+    alert('✅ Inconsistência corrigida! Vendas excedentes removidas.');
   }).catch(function(e) { alert('Erro: ' + e.message); });
 }
 
@@ -1213,7 +1267,7 @@ function renderFiados() {
   if (fiados.length === 0) { div.innerHTML = '<p style="color:#888">Nenhum fiado.</p>'; resumoDiv.innerHTML = ''; return; }
   var pendentes = fiados.filter(function(v) { return !v.pago; });
   var pagos = fiados.filter(function(v) { return v.pago; });
-  var resumoHtml = '<div class="fiado-resumo"><h4>📊 Resumo de Fiados';
+  var resumoHtml = '<div class="fiado-resumo"><h4> Resumo de Fiados';
   if (fr) { var remSel = findRemessa(fr); resumoHtml += ' — ' + (remSel ? remSel.nome : 'Remessa selecionada'); }
   else { resumoHtml += ' — Todas as Remessas'; }
   resumoHtml += '</h4>';
@@ -1225,7 +1279,7 @@ function renderFiados() {
   resumoHtml += '<div class="lucro-item"><div class="v">' + fiados.length + '</div><div class="l">Total fiados</div></div>';
   resumoHtml += '</div>';
   if (!fr) {
-    resumoHtml += '<h4 style="margin-top:10px"> Por Remessa:</h4>';
+    resumoHtml += '<h4 style="margin-top:10px">📦 Por Remessa:</h4>';
     state.remessas.forEach(function(r) {
       var fiadosRem = fiados.filter(function(v) { return vendaPertenceRemessa(v, r); });
       if (fiadosRem.length > 0) {
@@ -1242,7 +1296,7 @@ function renderFiados() {
   resumoHtml += '</div>';
   resumoDiv.innerHTML = resumoHtml;
   var html = '';
-  if (pendentes.length) { html += '<div class="alert" style="background:#ffe5e5;border-color:#dc3545"><b>⚠️ Pendentes:</b> ' + pendentes.length + ' • Total: <b>R$ ' + totalPend.toFixed(2) + '</b></div>'; html += renderTabelaFiado(pendentes); }
+  if (pendentes.length) { html += '<div class="alert" style="background:#ffe5e5;border-color:#dc3545"><b>️ Pendentes:</b> ' + pendentes.length + ' • Total: <b>R$ ' + totalPend.toFixed(2) + '</b></div>'; html += renderTabelaFiado(pendentes); }
   if (pagos.length) { html += '<h3 style="margin-top:12px">✅ Pagos (R$ ' + totalPago.toFixed(2) + ')</h3>'; html += renderTabelaFiado(pagos); }
   div.innerHTML = html;
   div.querySelectorAll('.btn-marcar-pago').forEach(function(btn) { btn.addEventListener('click', function() { marcarPago(this.getAttribute('data-id')); }); });
@@ -1330,7 +1384,7 @@ function renderBlocoLucro(r, vendas, receita, custo, lucro) {
   var tiposTxt = '';
   Object.keys(porTipo).forEach(function(t) { if (tiposTxt) tiposTxt += ' • '; tiposTxt += porTipo[t].qtd + ' ' + t + ' (R$ ' + porTipo[t].valor.toFixed(2) + ')'; });
   if (!tiposTxt) tiposTxt = '-';
-  var html = '<div class="lucro-box"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px"><h3 style="margin:0">📦 ' + r.nome + '</h3><span style="font-size:0.8em;color:#666">📅 ' + periodo + '</span></div><div style="font-size:0.85em;margin-bottom:6px"><b>Vendeu:</b> ' + tiposTxt + '</div><div class="lucro-grid"><div class="lucro-item"><div class="v">' + vendidos + '</div><div class="l">Vendidas</div></div><div class="lucro-item"><div class="v">R$ ' + custo.toFixed(2) + '</div><div class="l">💵 Custo</div></div><div class="lucro-item"><div class="v">R$ ' + receita.toFixed(2) + '</div><div class="l">💰 Vendeu</div></div><div class="lucro-item" style="border-color:' + (lucro >= 0 ? '#28a745' : '#dc3545') + '"><div class="v" style="color:' + (lucro >= 0 ? '#28a745' : '#dc3545') + '">R$ ' + lucro.toFixed(2) + '</div><div class="l">' + (lucro >= 0 ? '💹 LUCRO' : '📉 PREJUÍZO') + '</div></div></div>';
+  var html = '<div class="lucro-box"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px"><h3 style="margin:0">📦 ' + r.nome + '</h3><span style="font-size:0.8em;color:#666">📅 ' + periodo + '</span></div><div style="font-size:0.85em;margin-bottom:6px"><b>Vendeu:</b> ' + tiposTxt + '</div><div class="lucro-grid"><div class="lucro-item"><div class="v">' + vendidos + '</div><div class="l">Vendidas</div></div><div class="lucro-item"><div class="v">R$ ' + custo.toFixed(2) + '</div><div class="l">💵 Custo</div></div><div class="lucro-item"><div class="v">R$ ' + receita.toFixed(2) + '</div><div class="l">💰 Vendeu</div></div><div class="lucro-item" style="border-color:' + (lucro >= 0 ? '#28a745' : '#dc3545') + '"><div class="v" style="color:' + (lucro >= 0 ? '#28a745' : '#dc3545') + '">R$ ' + lucro.toFixed(2) + '</div><div class="l">' + (lucro >= 0 ? '💹 LUCRO' : ' PREJUÍZO') + '</div></div></div>';
   if (lucro > 0) html += renderProlabore(lucro); else html += '<p style="color:#888;text-align:center;margin-top:8px">Sem lucro.</p>';
   html += '</div>';
   return html;
@@ -1444,7 +1498,7 @@ document.getElementById('fileImport').addEventListener('change', function(e) {
 });
 
 document.getElementById('btnLimparTudo').addEventListener('click', function() {
-  if (!confirm('⚠️ Apagar TUDO?')) return;
+  if (!confirm('️ Apagar TUDO?')) return;
   if (!confirm('Tem certeza MESMO?')) return;
   if (firebaseAtivo && db) {
     db.collection('remessas').get().then(function(r) { db.collection('vendas').get().then(function(v) { var batch = db.batch(); r.docs.forEach(function(d) { batch.delete(d.ref); }); v.docs.forEach(function(d) { batch.delete(d.ref); }); batch.commit().then(function() { state.remessas = []; state.vendas = []; saveLocal(); renderTudo(); alert('Dados apagados.'); }); }); });
